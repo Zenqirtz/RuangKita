@@ -1,10 +1,10 @@
 import React from 'react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
-import { rooms, roomStatusStyles } from '@/Data/ruangkita';
+import { roomStatusStyles } from '@/Data/ruangkita';
 import { accentStyles } from '@/Components/RuangKita/accent';
 
-export default function Rooms() {
+export default function Rooms({ rooms = [], stats = {} }) {
     return (
         <RuangKitaLayout activeTab="rooms">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -25,10 +25,10 @@ export default function Rooms() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total ruangan', value: '5', icon: 'door', accent: accentStyles.blue },
-                    { label: 'Tersedia hari ini', value: '3', icon: 'check', accent: accentStyles.emerald },
-                    { label: 'Total kapasitas', value: '650', icon: 'users', accent: accentStyles.violet },
-                    { label: 'Rata-rata okupansi', value: '72%', icon: 'trending', accent: accentStyles.amber },
+                    { label: 'Total ruangan', value: String(stats.totalRooms ?? rooms.length), icon: 'door', accent: accentStyles.blue },
+                    { label: 'Tersedia hari ini', value: String(stats.availableToday ?? rooms.length), icon: 'check', accent: accentStyles.emerald },
+                    { label: 'Total kapasitas', value: String(stats.totalCapacity ?? '650'), icon: 'users', accent: accentStyles.violet },
+                    { label: 'Rata-rata okupansi', value: `${stats.avgOccupancy ?? 0}%`, icon: 'trending', accent: accentStyles.amber },
                 ].map((item) => (
                     <div key={item.label} className="min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.accent.tile}`}>

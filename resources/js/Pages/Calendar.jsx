@@ -56,6 +56,8 @@ export default function Calendar({
     prevWeek = null,
     nextWeek = null,
     stats = {},
+    todayRoomStatuses = [],
+    availableSlots = [],
 }) {
     const [roomFilter, setRoomFilter] = useState('all');
 
@@ -317,6 +319,80 @@ export default function Calendar({
                             })}
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+                <div className="md:col-span-2 xl:col-span-1 bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                    <h3 className="text-sm font-bold text-slate-900">Status Ruangan Hari Ini</h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Status dari pengajuan yang sudah disetujui.</p>
+                    <div className="mt-4 space-y-3">
+                        {todayRoomStatuses.length === 0 ? (
+                            <p className="text-[11px] text-slate-400">Data status ruangan belum tersedia.</p>
+                        ) : todayRoomStatuses.map((room) => (
+                            <div key={room.id} className="flex items-center justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="text-[11px] font-bold text-slate-700 truncate">{room.shortName}</p>
+                                    <p className="text-[9px] text-slate-400">Kapasitas {room.capacity} orang</p>
+                                    {room.eventToday && (
+                                        <p className="text-[9px] text-slate-400 truncate">{room.eventToday} · {room.hoursToday}</p>
+                                    )}
+                                </div>
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                                    room.hasSchedule
+                                        ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                        : 'bg-slate-50 text-slate-600 border-slate-200'
+                                }`}>
+                                    {room.statusLabel}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                    <h3 className="text-sm font-bold text-slate-900">Jadwal Ruangan</h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Jadwal tersedia dari database minggu ini.</p>
+                    <div className="mt-4 space-y-2.5">
+                        {availableSlots.length === 0 ? (
+                            <p className="text-[11px] text-slate-400">Belum ada jadwal pengajuan di minggu ini.</p>
+                        ) : availableSlots.map((slot) => (
+                            <div
+                                key={slot.roomId}
+                                className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100"
+                            >
+                                <div className="min-w-0">
+                                    <p className="text-[11px] font-bold text-slate-700 truncate">{slot.room}</p>
+                                    <p className="text-[9.5px] text-slate-400 mt-0.5 truncate">{slot.time}</p>
+                                </div>
+                                <a
+                                    href="/bookings/create"
+                                    className="text-[9.5px] font-bold text-blue-600 bg-white border border-blue-100 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 shrink-0"
+                                >
+                                    Ajukan
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg shadow-blue-600/15 flex flex-col justify-between">
+                    <div>
+                        <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center mb-3">
+                            <Icon name="shield" className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-sm font-bold">Pemeriksaan Jadwal</h3>
+                        <p className="text-[11px] text-blue-100/90 leading-relaxed mt-2">
+                            Kalender menampilkan data pengajuan aktual. Pastikan cek ketersediaan sebelum mengirim pengajuan.
+                        </p>
+                    </div>
+                    <a
+                        href="/guidelines"
+                        className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold text-white hover:gap-2.5 transition-all"
+                    >
+                        Baca tata tertib
+                        <Icon name="arrowRight" className="w-3.5 h-3.5" />
+                    </a>
                 </div>
             </section>
         </RuangKitaLayout>

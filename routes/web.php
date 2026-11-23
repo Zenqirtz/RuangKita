@@ -7,6 +7,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PermitController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RevisionController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,9 +16,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
 
-Route::get('/rooms', function () {
-    return Inertia::render('Rooms');
-})->name('rooms.index');
+Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
 Route::get('/bookings/create', function () {
     return Inertia::render('Bookings/Create');

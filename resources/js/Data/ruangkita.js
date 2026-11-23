@@ -197,51 +197,9 @@ export const quickAccess = [
     },
 ];
 
-export const weeklyOccupancy = [
-    { label: 'Auditorium', value: 34, color: '#2563EB' },
-    { label: 'Student Center', value: 24, color: '#10B981' },
-    { label: 'Lab Multimedia', value: 18, color: '#F59E0B' },
-    { label: 'Ruang Rapat', value: 14, color: '#8B5CF6' },
-    { label: 'Amphitheater', value: 10, color: '#F43F5E' },
-];
+export const weeklyOccupancy = [];
 
-export const dashboardStats = [
-    {
-        label: 'Ruangan Tersedia',
-        value: '3',
-        suffix: 'dari 5 ruangan',
-        icon: 'door',
-        accent: 'blue',
-    },
-    {
-        label: 'Menunggu Verifikasi',
-        value: '3',
-        suffix: 'Di admin fakultas',
-        icon: 'clock',
-        accent: 'violet',
-    },
-    {
-        label: 'Menunggu TTD',
-        value: '2',
-        suffix: 'Wakil Dekan III',
-        icon: 'fileCheck',
-        accent: 'amber',
-    },
-    {
-        label: 'Izin Disetujui',
-        value: '8',
-        suffix: 'Bulan ini',
-        icon: 'check',
-        accent: 'emerald',
-    },
-    {
-        label: 'Perlu Revisi',
-        value: '1',
-        suffix: 'Tindakan diperlukan',
-        icon: 'alert',
-        accent: 'rose',
-    },
-];
+export const dashboardStats = [];
 
 /**
  * Data kalender bersumber dari database nyata melalui CalendarController.

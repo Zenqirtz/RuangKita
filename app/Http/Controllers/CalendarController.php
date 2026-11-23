@@ -90,7 +90,6 @@ class CalendarController extends Controller
         );
 
         // Compute live stats
-        $totalPermitsInWeek = $permits->count();
         $scheduledCount = $permits->where('stage', 'approved')->count();
         $pendingCount = Permit::whereIn('stage', ['submitted', 'admin', 'leadership'])->count();
         $activeRoomsCount = 5;
@@ -106,6 +105,57 @@ class CalendarController extends Controller
 
         $availableSlotPct = max(0, min(100, round((($totalSlotHours - $bookedHours) / $totalSlotHours) * 100)));
 
+        // Real Room Statuses Today
+        $todayPermits = Permit::query()
+            ->whereDate('date', $today)
+            ->where('stage', 'approved')
+            ->get();
+
+        $roomsData = [
+            ['id' => 1, 'name' => 'Auditorium Gedung Utama', 'shortName' => 'Auditorium', 'capacity' => 250],
+            ['id' => 2, 'name' => 'Student Center Hall', 'shortName' => 'Student Center', 'capacity' => 120],
+            ['id' => 3, 'name' => 'Ruang Rapat Ormawa 101', 'shortName' => 'Ruang Rapat 101', 'capacity' => 40],
+            ['id' => 4, 'name' => 'Lab Multimedia & Komputer', 'shortName' => 'Lab Multimedia', 'capacity' => 40],
+            ['id' => 5, 'name' => 'Amphitheater Terbuka', 'shortName' => 'Amphitheater', 'capacity' => 200],
+        ];
+
+        $todayRoomStatuses = array_map(function ($room) use ($todayPermits) {
+            $booked = $todayPermits->firstWhere('room_id', $room['id']);
+
+            return [
+                'id' => $room['id'],
+                'name' => $room['name'],
+                'shortName' => $room['shortName'],
+                'capacity' => $room['capacity'],
+                'hasSchedule' => (bool) $booked,
+                'statusLabel' => $booked ? 'Ada jadwal' : 'Tidak ada jadwal',
+                'eventToday' => $booked?->event,
+                'hoursToday' => $booked ? "{$booked->start} - {$booked->end}" : null,
+            ];
+        }, $roomsData);
+
+        // Compute empty slots available
+        $availableSlots = [];
+        foreach ($roomsData as $room) {
+            $isBookedToday = $todayPermits->contains('room_id', $room['id']);
+            if (! $isBookedToday) {
+                $availableSlots[] = [
+                    'roomId' => $room['id'],
+                    'room' => $room['shortName'],
+                    'time' => 'Hari ini, 08.00 - 21.00',
+                    'tone' => 'emerald',
+                ];
+            } else {
+                $availableSlots[] = [
+                    'roomId' => $room['id'],
+                    'room' => $room['shortName'],
+                    'time' => 'Besok, 08.00 - 17.00',
+                    'tone' => 'blue',
+                ];
+            }
+        }
+        $availableSlots = array_slice($availableSlots, 0, 3);
+
         return Inertia::render('Calendar', [
             'events' => $events,
             'days' => $days,
@@ -120,6 +170,8 @@ class CalendarController extends Controller
                 'pendingCount' => $pendingCount,
                 'activeRoomsCount' => $activeRoomsCount,
             ],
+            'todayRoomStatuses' => $todayRoomStatuses,
+            'availableSlots' => $availableSlots,
         ]);
     }
 }
