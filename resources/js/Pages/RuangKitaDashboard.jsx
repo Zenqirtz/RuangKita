@@ -9,13 +9,7 @@ import DonutChart from '@/Components/RuangKita/DonutChart';
 import StatusBadge from '@/Components/RuangKita/StatusBadge';
 import HeroIllustration from '@/Components/RuangKita/HeroIllustration';
 import { accentStyles } from '@/Components/RuangKita/accent';
-import {
-    dashboardStats,
-    notices,
-    permits,
-    quickAccess,
-    weeklyOccupancy,
-} from '@/Data/ruangkita';
+import { quickAccess } from '@/Data/ruangkita';
 
 const statIcons = {
     door: 'door',
@@ -25,17 +19,44 @@ const statIcons = {
     alert: 'alert',
 };
 
-const noticeIconStyles = {
-    revision: { tile: 'bg-blue-50 text-blue-600', icon: 'megaphone' },
-    info: { tile: 'bg-blue-50 text-blue-600', icon: 'megaphone' },
-    success: { tile: 'bg-blue-50 text-blue-600', icon: 'megaphone' },
-};
+const now = new Date();
+const thisYear = now.getFullYear();
+const thisMonth = now.getMonth(); // 0-based
+const thisDay = now.getDate();
 
-export default function RuangKitaDashboard() {
+export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
     const { auth } = usePage().props;
     const isAdmin = auth?.user?.role === 'admin';
-    const userName = auth?.user?.name ?? 'Daffa Ahmad Al Attas';
-    const recentPermits = permits.slice(0, 4);
+    const user = auth?.user;
+    const firstName = user?.name?.split(' ')[0] ?? null;
+    const greeting = isAdmin ? 'Selamat datang kembali,' : firstName ? `Halo, ${firstName}!` : 'Selamat datang di RuangKita!';
+    const heroName = isAdmin ? 'Admin RuangKita!' : user?.name ?? 'Civitas Universitas Brawijaya';
+
+    const liveStats = isAdmin
+        ? [
+            { label: 'Total Pengajuan', value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
+            { label: 'Menunggu Verifikasi', value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
+            { label: 'Tahap Pimpinan', value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
+            { label: 'Izin Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'green', icon: 'check' },
+            { label: 'Perlu Revisi', value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
+        ]
+        : [
+            { label: 'Pengajuan Aktif', value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
+            { label: 'Menunggu Verifikasi', value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
+            { label: 'Tahap Pimpinan', value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
+            { label: 'Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'green', icon: 'check' },
+            { label: 'Perlu Revisi', value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
+        ];
+
+    const occupancyRate = stats.occupancyRate ?? 0;
+
+    const donutSegments = [
+        { label: 'Disetujui', value: stats.approved ?? 0, color: '#10B981' },
+        { label: 'Proses Verifikasi', value: (stats.adminReview ?? 0) + (stats.leadership ?? 0), color: '#2563EB' },
+        { label: 'Perlu Revisi', value: stats.revision ?? 0, color: '#F59E0B' },
+    ].filter((s) => s.value > 0);
+
+    const hasDonut = donutSegments.length > 0;
 
     return (
         <RuangKitaLayout activeTab="dashboard">
@@ -47,10 +68,9 @@ export default function RuangKitaDashboard() {
 
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                     <div className="max-w-xl">
-
                         <h2 className="text-2xl md:text-[28px] font-extrabold tracking-tight leading-tight">
-                            {isAdmin ? 'Selamat datang kembali,' : 'Selamat pagi, 👋'}<br />
-                            <span className="text-blue-200">{isAdmin ? 'Admin RuangKita!' : `${userName}!`}</span>
+                            {isAdmin ? 'Selamat datang kembali,' : greeting}<br />
+                            <span className="text-blue-200">{heroName}</span>
                         </h2>
                         <p className="text-[13px] text-blue-100 mt-2.5 leading-relaxed max-w-md">
                             {isAdmin
@@ -89,9 +109,9 @@ export default function RuangKitaDashboard() {
                 </div>
             </section>
 
-            {/* Statistic cards */}
+            {/* Statistic cards (live from DB) */}
             <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
-                {dashboardStats.map((stat) => (
+                {liveStats.map((stat) => (
                     <StatCard
                         key={stat.label}
                         label={stat.label}
@@ -103,97 +123,137 @@ export default function RuangKitaDashboard() {
                 ))}
             </section>
 
-            {/* Recent permits + notices */}
+            {/* Recent permits (live from DB) + occupancy */}
             <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <SectionCard
                     className="lg:col-span-2"
                     title="Pengajuan Terkini"
-                    subtitle="Pemantauan 4 tahap verifikasi izin secara real-time"
+                    subtitle="Data langsung dari database — diperbarui setiap submit"
                     action="Lihat Semua"
                     actionHref="/permits"
                     bodyClassName="px-5 pb-2"
                 >
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left min-w-[560px]">
-                            <thead>
-                                <tr className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                                    <th className="py-2.5 px-2 font-bold rounded-l-lg">Kegiatan</th>
-                                    <th className="py-2.5 px-2 font-bold">Ruangan</th>
-                                    <th className="py-2.5 px-2 font-bold">Tahap</th>
-                                    <th className="py-2.5 px-2 font-bold text-right rounded-r-lg">Jadwal</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {recentPermits.map((permit) => (
-                                    <tr key={permit.id} className="hover:bg-slate-50/60 transition-colors border-b border-slate-50 last:border-b-0">
-                                        <td className="py-3 px-2">
-                                            <a
-                                                href={`/permits/${permit.id}`}
-                                                className="text-[12px] font-bold text-slate-800 hover:text-blue-600 leading-snug transition-colors"
-                                            >
-                                                {permit.event}
-                                            </a>
-                                            <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                                                {permit.id} • {permit.ormawa}
-                                            </p>
-                                        </td>
-                                        <td className="py-3 px-2">
-                                            <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
-                                                <Icon name="mapPin" className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                                {permit.room}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-2">
-                                            <StatusBadge stage={permit.stage} />
-                                        </td>
-                                        <td className="py-3 px-2 text-right">
-                                            <p className="text-[11px] font-semibold text-slate-700">{permit.date}</p>
-                                            <p className="text-[10px] text-slate-400">{permit.time} WIB</p>
-                                        </td>
+                    {recentPermits.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mb-3">
+                                <Icon name="file" className="w-7 h-7" />
+                            </div>
+                            <p className="text-sm font-bold text-slate-500">Belum ada pengajuan</p>
+                            <p className="text-xs text-slate-400 mt-1">
+                                Ajukan peminjaman ruangan pertama untuk memulai.
+                            </p>
+                            <a
+                                href="/bookings/create"
+                                className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors"
+                            >
+                                <Icon name="plus" className="w-3.5 h-3.5" />
+                                Ajukan Sekarang
+                            </a>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left min-w-[560px]">
+                                <thead>
+                                    <tr className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                                        <th className="py-2.5 px-2 font-bold rounded-l-lg">Kegiatan</th>
+                                        <th className="py-2.5 px-2 font-bold">Ruangan</th>
+                                        <th className="py-2.5 px-2 font-bold">Tahap</th>
+                                        <th className="py-2.5 px-2 font-bold text-right rounded-r-lg">Jadwal</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {recentPermits.map((permit) => (
+                                        <tr key={permit.id} className="hover:bg-slate-50/60 transition-colors border-b border-slate-50 last:border-b-0">
+                                            <td className="py-3 px-2">
+                                                <a
+                                                    href={`/permits/${permit.id}`}
+                                                    className="text-[12px] font-bold text-slate-800 hover:text-blue-600 leading-snug transition-colors"
+                                                >
+                                                    {permit.event}
+                                                </a>
+                                                <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                                                    {permit.id} • {permit.ormawa}
+                                                </p>
+                                            </td>
+                                            <td className="py-3 px-2">
+                                                <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-600 font-medium">
+                                                    <Icon name="mapPin" className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                                    {permit.room}
+                                                </span>
+                                            </td>
+                                            <td className="py-3 px-2">
+                                                <StatusBadge stage={permit.stage} />
+                                            </td>
+                                            <td className="py-3 px-2 text-right">
+                                                <p className="text-[11px] font-semibold text-slate-700">{permit.date}</p>
+                                                <p className="text-[10px] text-slate-400">{permit.time} WIB</p>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </SectionCard>
 
+                {/* Performance overview from live stats */}
                 <SectionCard
-                    title="Papan Pengumuman"
+                    title="Performance Overview"
+                    subtitle="Tingkat kelancaran izin ormawa"
                     action="Lihat Semua"
-                    actionHref="/revisions"
+                    actionHref="/permits"
                     bodyClassName="px-5 pb-5"
                 >
-                    <div className="space-y-4">
-                        {notices.map((notice) => {
-                            const style = noticeIconStyles[notice.type];
+                    {hasDonut ? (
+                        <>
+                            <div className="flex items-center gap-4">
+                                <DonutChart
+                                    segments={donutSegments}
+                                    centerValue={`${occupancyRate}%`}
+                                    centerLabel="Disetujui"
+                                    size={128}
+                                    strokeWidth={14}
+                                />
 
-                            return (
-                                <a key={notice.id} href={notice.href} className="flex gap-3 group">
-                                    <div
-                                        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.tile}`}
-                                    >
-                                        <Icon name={style.icon} className="w-[18px] h-[18px]" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[11.5px] font-bold text-slate-800 leading-snug group-hover:text-blue-600 transition-colors">
-                                            {notice.title}
-                                        </p>
-                                        <p className="text-[10.5px] text-slate-500 leading-relaxed mt-1 line-clamp-2">
-                                            {notice.description}
-                                        </p>
-                                        <p className="text-[10px] text-blue-600 font-semibold mt-1">
-                                            {notice.date}
-                                        </p>
-                                    </div>
-                                </a>
-                            );
-                        })}
-                    </div>
+                                <div className="space-y-2 min-w-0 flex-1">
+                                    {donutSegments.map((item) => (
+                                        <div key={item.label} className="flex items-center justify-between gap-2">
+                                            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 min-w-0">
+                                                <span
+                                                    className="w-2 h-2 rounded-full shrink-0"
+                                                    style={{ backgroundColor: item.color }}
+                                                />
+                                                <span className="truncate">{item.label}</span>
+                                            </span>
+                                            <span className="text-[11px] font-bold text-slate-700">{item.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mt-4 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100 flex items-start gap-2">
+                                <Icon name="shield" className="w-3.5 h-3.5 text-blue-600 mt-0.5 shrink-0" />
+                                <p className="text-[9.5px] font-semibold text-blue-800 leading-snug">
+                                    Auto conflict check aktif. Mencegah double-booking saat ormawa submit berkas.
+                                </p>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <div className="w-16 h-16 rounded-full bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center mb-3">
+                                <Icon name="trending" className="w-6 h-6 text-slate-300" />
+                            </div>
+                            <p className="text-xs font-bold text-slate-500">Belum ada data statistik</p>
+                            <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                                Chart akan muncul setelah ada pengajuan masuk.
+                            </p>
+                        </div>
+                    )}
                 </SectionCard>
             </section>
 
-            {/* Calendar + quick access + occupancy */}
-            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {/* Calendar + quick access */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <SectionCard
                     title="Kalender Ketersediaan"
                     action="Lihat Kalender"
@@ -201,18 +261,23 @@ export default function RuangKitaDashboard() {
                     bodyClassName="px-5 pb-5"
                 >
                     <MiniCalendar
-                        year={2026}
-                        month={10}
-                        monthLabel="November 2026"
-                        today={23}
-                        markedDays={[20, 22, 28, 30]}
+                        year={thisYear}
+                        month={thisMonth}
+                        monthLabel={new Date(thisYear, thisMonth, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                        today={thisDay}
+                        markedDays={recentPermits
+                            .filter((p) => {
+                                const d = new Date(p.isoDate);
+                                return d.getFullYear() === thisYear && d.getMonth() === thisMonth;
+                            })
+                            .map((p) => new Date(p.isoDate).getDate())}
                     />
                     <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-100 text-[10px] font-medium text-slate-500">
                         <span className="inline-flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-blue-500" /> Hari ini
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-rose-400" /> Ada kegiatan
+                            <span className="w-2 h-2 rounded-full bg-rose-400" /> Ada pengajuan
                         </span>
                     </div>
                 </SectionCard>
@@ -242,52 +307,6 @@ export default function RuangKitaDashboard() {
                                 </a>
                             );
                         })}
-                    </div>
-                </SectionCard>
-
-                <SectionCard
-                    className="md:col-span-2 xl:col-span-1"
-                    title="Performance Overview"
-                    subtitle="Tingkat kelancaran izin ormawa"
-                    action="Lihat Detail"
-                    actionHref="/rooms"
-                    bodyClassName="px-5 pb-5"
-                >
-                    <div className="flex items-center gap-4">
-                        <DonutChart
-                            segments={weeklyOccupancy}
-                            centerValue="84%"
-                            centerLabel="Overall"
-                            size={128}
-                            strokeWidth={14}
-                        />
-
-                        <div className="space-y-2 min-w-0 flex-1">
-                            {[
-                                { label: 'Disetujui', value: 60, color: '#10B981' },
-                                { label: 'Proses Review', value: 20, color: '#2563EB' },
-                                { label: 'Perlu Revisi', value: 12, color: '#F59E0B' },
-                                { label: 'Ditolak/Batal', value: 8, color: '#F43F5E' },
-                            ].map((item) => (
-                                <div key={item.label} className="flex items-center justify-between gap-2">
-                                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 min-w-0">
-                                        <span
-                                            className="w-2 h-2 rounded-full shrink-0"
-                                            style={{ backgroundColor: item.color }}
-                                        />
-                                        <span className="truncate">{item.label}</span>
-                                    </span>
-                                    <span className="text-[11px] font-bold text-slate-700">{item.value}%</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="mt-4 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100 flex items-start gap-2">
-                        <Icon name="shield" className="w-3.5 h-3.5 text-blue-600 mt-0.5 shrink-0" />
-                        <p className="text-[9.5px] font-semibold text-blue-800 leading-snug">
-                            Auto conflict check aktif. Mencegah double-booking saat ormawa submit berkas.
-                        </p>
                     </div>
                 </SectionCard>
             </section>

@@ -49,7 +49,7 @@ export default function Register() {
                             name="name"
                             value={data.name}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="Daffa Ahmad Al Attas"
+                            placeholder="Nama Lengkap Mahasiswa"
                             autoComplete="name"
                             isFocused={true}
                             onChange={(e) => setData('name', e.target.value)}

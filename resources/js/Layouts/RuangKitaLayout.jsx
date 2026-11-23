@@ -45,15 +45,17 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
     const { auth } = usePage().props;
 
     const user = auth?.user;
-    const userName = user?.name ?? 'Daffa Ahmad Al Attas';
-    const userEmail = user?.email ?? 'daffa.ahmad@student.ub.ac.id';
-    const initials = userName
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part) => part[0])
-        .join('')
-        .toUpperCase();
+    const userName = user?.name ?? 'Tamu Civitas UB';
+    const userEmail = user?.email ?? 'Belum masuk akun';
+    const initials = user?.name
+        ? user.name
+            .split(' ')
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0])
+            .join('')
+            .toUpperCase()
+        : 'UB';
 
     const pageTitle = title ?? pageTitles[activeTab] ?? 'Dashboard';
 
@@ -138,16 +140,26 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                 </div>
 
                 <div className="px-4 pb-5 pt-3 border-t border-slate-100">
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        type="button"
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left"
-                    >
-                        <Icon name="logout" className="w-[18px] h-[18px]" />
-                        <span>Logout</span>
-                    </Link>
+                    {user ? (
+                        <Link
+                            href={route('logout')}
+                            method="post"
+                            as="button"
+                            type="button"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left"
+                        >
+                            <Icon name="logout" className="w-[18px] h-[18px]" />
+                            <span>Logout</span>
+                        </Link>
+                    ) : (
+                        <Link
+                            href={route('login')}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+                        >
+                            <Icon name="user" className="w-[18px] h-[18px]" />
+                            <span>Masuk Akun</span>
+                        </Link>
+                    )}
                     <p className="text-[9px] text-slate-300 font-medium text-center mt-3">
                         RuangKita v1.0 • Tim Yakusa
                     </p>

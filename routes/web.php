@@ -1,18 +1,16 @@
 <?php
 
 use App\Http\Controllers\AdminPermitController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PermitController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RevisionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('RuangKitaDashboard');
-})->name('home');
-
-Route::get('/dashboard', function () {
-    return Inertia::render('RuangKitaDashboard');
-})->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/calendar', function () {
     return Inertia::render('Calendar');
@@ -29,6 +27,13 @@ Route::post('/bookings', [PermitController::class, 'store'])->name('bookings.sto
 
 Route::get('/permits', [PermitController::class, 'index'])->name('permits.index');
 Route::get('/permits/{permit}', [PermitController::class, 'show'])->name('permits.show');
+
+Route::get('/revisions', [RevisionController::class, 'index'])->name('revisions.index');
+Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+
+Route::get('/guidelines', function () {
+    return Inertia::render('Guidelines');
+})->name('guidelines.index');
 
 Route::middleware('auth')->group(function () {
     Route::post('/admin/permits/{permit}/review', [AdminPermitController::class, 'updateStatus'])

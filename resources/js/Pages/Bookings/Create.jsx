@@ -1,29 +1,16 @@
 import React, { useMemo, useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
 import { permits, rooms } from '@/Data/ruangkita';
 
-const initialForm = {
-    event: 'Workshop Desain UI/UX untuk Ormawa',
-    ormawa: 'Ormawa Yakusa',
-    pic: 'Daffa Ahmad Al Attas',
-    phone: '0812-3456-7890',
-    roomId: '3',
-    date: '2026-11-28',
-    start: '09:00',
-    end: '12:00',
-    participants: '40',
-    notes: 'Membutuhkan proyektor, sound system, dan meja registrasi di depan ruangan.',
-};
-
 const ormawaOptions = [
-    'Ormawa Yakusa',
-    'Badan Eksekutif Mahasiswa',
-    'Teater Brawijaya',
-    'Himpunan Mahasiswa Teknologi Pendidikan',
-    'Komunitas Fotografi Kampus',
+    'Badan Eksekutif Mahasiswa (BEM)',
+    'Dewan Perwakilan Mahasiswa (DPM)',
+    'Himpunan Mahasiswa Program Studi',
+    'Unit Aktivitas Mahasiswa (UKM)',
+    'Komunitas / Panitia Kegiatan Kampus',
 ];
 
 function formatDate(isoDate) {
@@ -86,11 +73,27 @@ function UploadBox({ id, title, description, fileName, onFileChange }) {
 }
 
 export default function BookingCreate() {
-    const [form, setForm] = useState(initialForm);
-    const [proposalFile, setProposalFile] = useState('Proposal_Workshop_UIUX.pdf');
-    const [letterFile, setLetterFile] = useState('Surat_Permohonan_Ruangan.pdf');
-    const [agreed, setAgreed] = useState(true);
+    const { auth } = usePage().props;
+    const user = auth?.user;
+
+    const [form, setForm] = useState({
+        event: '',
+        ormawa: ormawaOptions[0],
+        pic: user?.name ?? '',
+        phone: '',
+        roomId: '1',
+        date: '',
+        start: '08:00',
+        end: '12:00',
+        participants: '30',
+        notes: '',
+    });
+
+    const [proposalFile, setProposalFile] = useState('');
+    const [letterFile, setLetterFile] = useState('');
+    const [agreed, setAgreed] = useState(false);
     const [submitted] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const update = (field) => (event) => {
         setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -125,8 +128,6 @@ export default function BookingCreate() {
 
     const isValidDuration = duration > 0;
     const canSubmit = Boolean(form.event && form.pic && proposalFile && letterFile && agreed && !conflict && isValidDuration);
-
-    const [loading, setLoading] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
