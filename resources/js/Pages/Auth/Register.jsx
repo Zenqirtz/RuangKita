@@ -25,18 +25,14 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <Head title="Registrasi Akun Ormawa - RuangKita" />
+            <Head title="Registrasi Akun - RuangKita" />
 
             <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider mb-2">
-                    <Icon name="shield" className="w-3.5 h-3.5 text-blue-600" />
-                    SSO Universitas Brawijaya
-                </div>
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                    Registrasi Akun Ormawa
+                    Registrasi Akun
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                    Daftarkan pengurus ormawa dengan email resmi <span className="font-semibold text-blue-600">@student.ub.ac.id</span>.
+                    Daftar dengan email resmi <span className="font-semibold text-blue-600">@student.ub.ac.id</span> Anda.
                 </p>
             </div>
 
@@ -88,7 +84,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="Kata Sandi SSO" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="password" value="Kata Sandi" className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -153,7 +149,7 @@ export default function Register() {
             </form>
 
             <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-                <span>Sudah punya akun SSO UB?</span>
+                <span>Sudah punya akun?</span>
                 <Link
                     href={route('login')}
                     className="font-bold text-blue-600 hover:text-blue-700"

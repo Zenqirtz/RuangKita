@@ -23,28 +23,16 @@ export default function Login({ status, canResetPassword }) {
         });
     };
 
-    const handleDemoFill = () => {
-        setData({
-            email: 'daffa.ahmad@student.ub.ac.id',
-            password: 'password',
-            remember: true,
-        });
-    };
-
     return (
         <GuestLayout>
-            <Head title="Masuk SSO UB - RuangKita" />
+            <Head title="Masuk - RuangKita" />
 
             <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider mb-2">
-                    <Icon name="shield" className="w-3.5 h-3.5 text-blue-600" />
-                    SSO Universitas Brawijaya
-                </div>
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
                     Masuk ke RuangKita
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                    Gunakan email resmi <span className="font-semibold text-blue-600">@student.ub.ac.id</span> ormawa Anda.
+                    Gunakan email resmi <span className="font-semibold text-blue-600">@student.ub.ac.id</span>.
                 </p>
             </div>
 
@@ -131,21 +119,10 @@ export default function Login({ status, canResetPassword }) {
                         className="w-full justify-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all"
                         disabled={processing}
                     >
-                        Masuk dengan SSO UB
+                        Masuk
                     </PrimaryButton>
                 </div>
 
-                {/* Demo Quick Fill for Competition Evaluators */}
-                <div className="pt-2">
-                    <button
-                        type="button"
-                        onClick={handleDemoFill}
-                        className="w-full py-2 px-3 rounded-xl border border-dashed border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-[11px] font-semibold text-blue-700 flex items-center justify-center gap-1.5 transition-colors"
-                    >
-                        <Icon name="sparkles" className="w-3.5 h-3.5 text-blue-600" />
-                        Isi Cepat Akun Demo (Ketua Ormawa)
-                    </button>
-                </div>
             </form>
 
             <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">

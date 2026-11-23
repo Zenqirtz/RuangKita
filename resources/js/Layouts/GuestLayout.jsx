@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/RuangKita/Icon';
 
-export default function GuestLayout({ children, title = 'SSO Universitas Brawijaya', subtitle = 'Sistem Terpadu Peminjaman Ruang & Tracking Izin Ormawa' }) {
+export default function GuestLayout({ children }) {
     return (
         <div className="min-h-screen bg-[#F5F7FB] flex flex-col justify-center font-sans antialiased text-slate-800 p-4 sm:p-6 lg:p-8">
             <div className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[620px]">
@@ -31,10 +31,6 @@ export default function GuestLayout({ children, title = 'SSO Universitas Brawija
                         </Link>
 
                         <div className="mt-8">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-[11px] font-semibold text-blue-100 mb-3">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                Single Sign-On (SSO) UB
-                            </div>
                             <h2 className="text-xl lg:text-2xl font-extrabold text-white leading-tight">
                                 Akses Terpusat Ormawa Universitas Brawijaya
                             </h2>
