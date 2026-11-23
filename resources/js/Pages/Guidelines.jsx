@@ -36,10 +36,6 @@ export default function Guidelines() {
                 <div className="absolute right-24 -bottom-14 w-32 h-32 rounded-full bg-white/10" />
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
                     <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-[9.5px] font-bold border border-white/20">
-                            <Icon name="shield" className="w-3 h-3" />
-                            Panduan Resmi RuangKita
-                        </div>
                         <h2 className="text-xl md:text-2xl font-extrabold mt-2.5 leading-tight">
                             Empat langkah, izin ruangan tanpa antre.
                         </h2>
