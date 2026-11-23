@@ -166,13 +166,12 @@ export default function Register() {
                 </div>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-                <span>Sudah punya akun?</span>
+            <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
                 <Link
                     href={route('login')}
-                    className="font-bold text-blue-600 hover:text-blue-700"
+                    className="font-semibold text-slate-500 hover:text-blue-600 transition-colors"
                 >
-                    Masuk ke Sistem
+                    Sudah punya akun?
                 </Link>
             </div>
         </GuestLayout>
