@@ -10,4 +10,24 @@ export default defineConfig({
         }),
         react(),
     ],
+    customLogger: {
+        warn(msg, options) {
+            // Filter warning deprecation dari internal plugin react babel di Vite 8
+            if (msg.includes('esbuild') || msg.includes('rollupOptions') || msg.includes('@vitejs/plugin-react-oxc')) {
+                return;
+            }
+            console.warn(msg, options);
+        },
+        info(msg, options) {
+            console.info(msg, options);
+        },
+        error(msg, options) {
+            console.error(msg, options);
+        },
+        clearScreen() {},
+        hasErrorLogged() {
+            return false;
+        },
+        hasWarned: false,
+    },
 });
