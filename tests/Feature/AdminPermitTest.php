@@ -122,4 +122,62 @@ class AdminPermitTest extends TestCase
         $this->assertEquals('revision', $permit->stage);
         $this->assertEquals('Perbaiki lampiran daftar peserta.', $permit->admin_notes);
     }
+
+    public function test_admin_can_approve_leadership_stage_to_approved(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $permit = Permit::create([
+            'code' => 'RK-TEST-005',
+            'event' => 'Test Event',
+            'ormawa' => 'Ormawa Test',
+            'pic' => 'John',
+            'room_id' => 1,
+            'room_name' => 'Auditorium',
+            'date' => '2026-11-25',
+            'start' => '09:00',
+            'end' => '12:00',
+            'stage' => 'leadership',
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('admin.permits.review', $permit->code), [
+            'action' => 'approve',
+        ]);
+
+        $response->assertSessionHas('status');
+
+        $permit->refresh();
+        $this->assertEquals('approved', $permit->stage);
+    }
+
+    public function test_approving_an_approved_permit_does_not_revert_to_leadership(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $permit = Permit::create([
+            'code' => 'RK-TEST-006',
+            'event' => 'Already Approved Event',
+            'ormawa' => 'Ormawa Test',
+            'pic' => 'John',
+            'room_id' => 1,
+            'room_name' => 'Auditorium',
+            'date' => '2026-11-25',
+            'start' => '09:00',
+            'end' => '12:00',
+            'stage' => 'approved',
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('admin.permits.review', $permit->code), [
+            'action' => 'approve',
+        ]);
+
+        $response->assertSessionHas('status');
+
+        $permit->refresh();
+        $this->assertEquals('approved', $permit->stage);
+    }
 }

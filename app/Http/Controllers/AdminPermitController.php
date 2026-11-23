@@ -22,18 +22,22 @@ class AdminPermitController extends Controller
 
         $validated = $request->validate([
             'action' => ['required', 'string', 'in:approve,revision,reject'],
+            'target' => ['nullable', 'string', 'in:leadership,approved'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $prevStage = $permitModel->stage;
-        $notes = $validated['notes'];
+        $notes = $validated['notes'] ?? null;
 
         if ($validated['action'] === 'approve') {
-            // If at 'admin', advance to 'leadership' or if already leadership, to 'approved'
-            $nextStage = $prevStage === 'leadership' ? 'approved' : 'leadership';
-            $defaultNotes = $nextStage === 'approved'
-                ? 'Izin peminjaman ruangan telah disetujui lengkap dan surat siap diunduh.'
-                : 'Verifikasi berkas lolos oleh Admin Kemahasiswaan. Berkas diteruskan ke Pimpinan/WD III.';
+            $target = $validated['target'] ?? null;
+            if ($target === 'approved' || $prevStage === 'leadership' || $prevStage === 'approved') {
+                $nextStage = 'approved';
+                $defaultNotes = 'Izin peminjaman ruangan telah disetujui lengkap oleh pihak fakultas dan surat izin siap diunduh.';
+            } else {
+                $nextStage = 'leadership';
+                $defaultNotes = 'Verifikasi berkas lolos oleh Admin Kemahasiswaan. Berkas diteruskan ke Pimpinan/WD III.';
+            }
             $actionLabel = 'approved';
         } elseif ($validated['action'] === 'revision') {
             $nextStage = 'revision';

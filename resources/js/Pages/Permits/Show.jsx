@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
-import StatusBadge from '@/Components/RuangKita/StatusBadge';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
 import { approvalStages } from '@/Data/ruangkita';
 
@@ -18,13 +17,18 @@ export default function PermitShow({ permit: serverPermit = {} }) {
 
     const { data, setData, post, processing, reset } = useForm({
         action: 'approve',
+        target: '',
         notes: '',
     });
 
     const [activeModal, setActiveModal] = useState(null);
 
-    const handleActionClick = (actionType) => {
-        setData('action', actionType);
+    const handleActionClick = (actionType, targetStage = '') => {
+        setData((current) => ({
+            ...current,
+            action: actionType,
+            target: targetStage,
+        }));
         setActiveModal(actionType);
     };
 
@@ -67,12 +71,6 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                     Kembali ke Tracking Izin
                 </a>
 
-                {isAdmin && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[10.5px] font-bold border border-blue-100">
-                        <Icon name="shield" className="w-3.5 h-3.5 text-blue-600" />
-                        Mode Verifikator Admin Kemahasiswaan
-                    </span>
-                )}
             </div>
 
             {/* Header section */}
@@ -91,12 +89,9 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                             <Icon name={isRevision || isRejected ? 'alert' : 'file'} className="w-6 h-6" />
                         </div>
                         <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                                <h1 className="text-base md:text-lg font-extrabold text-slate-900 leading-snug">
-                                    {permit.event}
-                                </h1>
-                                <StatusBadge stage={permit.stage} />
-                            </div>
+                            <h1 className="text-base md:text-lg font-extrabold text-slate-900 leading-snug">
+                                {permit.event}
+                            </h1>
                             <p className="text-[10.5px] text-slate-400 font-medium mt-1">
                                 {permit.id} • {permit.ormawa} • Diajukan {permit.submittedAt}
                             </p>
@@ -124,7 +119,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                 </div>
 
                 {/* Admin Action Panel */}
-                {isAdmin && (
+                {isAdmin && !isApproved && !isRejected && (
                     <div className="mt-5 pt-5 border-t border-slate-100 bg-slate-50/80 -mx-5 -mb-5 md:-mx-6 md:-mb-6 p-5 md:p-6 rounded-b-2xl">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                             <div>
@@ -144,7 +139,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                         <div className="flex flex-wrap items-center gap-2.5">
                             <button
                                 type="button"
-                                onClick={() => handleActionClick('approve')}
+                                onClick={() => handleActionClick('approve', permit.stage === 'leadership' ? 'approved' : 'leadership')}
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/20 active:scale-[0.98] transition-all"
                             >
                                 <Icon name="check" className="w-4 h-4" />

@@ -3,6 +3,7 @@ import Icon from './Icon';
 import { approvalStages } from '@/Data/ruangkita';
 
 export default function ApprovalStepper({ stage = 'submitted', compact = false }) {
+    const isApproved = stage === 'approved';
     const currentIndex = stage === 'revision' ? 1 : Math.max(approvalStages.findIndex((item) => item.key === stage), 0);
     const isRevision = stage === 'revision';
 
@@ -19,9 +20,9 @@ export default function ApprovalStepper({ stage = 'submitted', compact = false }
 
                 <div className="relative grid grid-cols-4">
                     {approvalStages.map((item, index) => {
-                        const isDone = index < currentIndex;
-                        const isCurrent = index === currentIndex;
-                        const isPending = index > currentIndex;
+                        const isDone = isApproved ? true : index < currentIndex;
+                        const isCurrent = !isApproved && index === currentIndex;
+                        const isPending = !isApproved && index > currentIndex;
 
                         let circleClass = 'bg-white border-2 border-slate-200 text-slate-300';
                         if (isDone) {
