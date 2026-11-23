@@ -4,8 +4,10 @@ import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
 import { approvalStages } from '@/Data/ruangkita';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function PermitShow({ permit: serverPermit = {} }) {
+    const { t } = useLanguage();
     const { auth } = usePage().props;
     const isAdmin = auth?.user?.role === 'admin';
 
@@ -107,7 +109,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white text-[10.5px] font-bold hover:bg-blue-700 transition-colors shadow-sm"
                             >
                                 <Icon name="download" className="w-3.5 h-3.5" />
-                                Unduh Surat Izin
+                                {t('common.download_permit', 'Unduh Surat Izin')}
                             </a>
                         )}
                         <a
@@ -115,7 +117,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                             className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 text-[10.5px] font-bold text-slate-600 hover:bg-slate-50 transition-colors"
                         >
                             <Icon name="help" className="w-3.5 h-3.5" />
-                            Bantuan
+                            {t('common.help', 'Bantuan')}
                         </a>
                     </div>
                 </div>

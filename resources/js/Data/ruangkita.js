@@ -148,6 +148,8 @@ export const quickAccess = [
     {
         label: 'Ajukan Ruangan',
         description: 'Upload proposal',
+        translationKey: 'qa.book_room',
+        descriptionKey: 'qa.book_room_desc',
         icon: 'fileUp',
         href: '/bookings/create',
         accent: 'blue',
@@ -155,6 +157,8 @@ export const quickAccess = [
     {
         label: 'Kalender Live',
         description: 'Cek slot kosong',
+        translationKey: 'qa.live_calendar',
+        descriptionKey: 'qa.live_calendar_desc',
         icon: 'calendar',
         href: '/calendar',
         accent: 'emerald',
@@ -162,6 +166,8 @@ export const quickAccess = [
     {
         label: 'Lacak Izin',
         description: '4 tahap approval',
+        translationKey: 'qa.track_permit',
+        descriptionKey: 'qa.track_permit_desc',
         icon: 'clock',
         href: '/permits',
         accent: 'violet',
@@ -169,6 +175,8 @@ export const quickAccess = [
     {
         label: 'Daftar Ruangan',
         description: '5 ruang fakultas',
+        translationKey: 'qa.manage_rooms',
+        descriptionKey: 'qa.manage_rooms_desc',
         icon: 'door',
         href: '/rooms',
         accent: 'amber',
@@ -176,6 +184,8 @@ export const quickAccess = [
     {
         label: 'Riwayat',
         description: 'Peminjaman selesai',
+        translationKey: 'qa.history',
+        descriptionKey: 'qa.history_desc',
         icon: 'history',
         href: '/history',
         accent: 'sky',
@@ -183,6 +193,8 @@ export const quickAccess = [
     {
         label: 'Tata Tertib',
         description: 'Aturan peminjaman',
+        translationKey: 'qa.guidelines',
+        descriptionKey: 'qa.guidelines_desc',
         icon: 'book',
         href: '/guidelines',
         accent: 'rose',

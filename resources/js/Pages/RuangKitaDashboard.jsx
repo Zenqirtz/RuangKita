@@ -10,6 +10,7 @@ import StatusBadge from '@/Components/RuangKita/StatusBadge';
 import HeroIllustration from '@/Components/RuangKita/HeroIllustration';
 import { accentStyles } from '@/Components/RuangKita/accent';
 import { quickAccess } from '@/Data/ruangkita';
+import { useLanguage } from '@/Context/LanguageContext';
 
 const statIcons = {
     door: 'door',
@@ -25,34 +26,35 @@ const thisMonth = now.getMonth(); // 0-based
 const thisDay = now.getDate();
 
 export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
+    const { t } = useLanguage();
     const { auth } = usePage().props;
     const isAdmin = auth?.user?.role === 'admin';
     const user = auth?.user;
-    const heroTitle = isAdmin ? 'Selamat datang kembali,' : user ? 'Selamat datang kembali, 👋' : 'Selamat datang di RuangKita, 👋';
+    const heroTitle = isAdmin ? t('dash.welcome', 'Selamat datang kembali,') : user ? `${t('dash.welcome', 'Selamat datang kembali,')} 👋` : t('dash.welcome_guest', 'Selamat datang di RuangKita, 👋');
     const heroName = isAdmin ? 'Admin RuangKita!' : user?.name ? `${user.name}!` : 'Civitas Akademika UB!';
 
     const liveStats = isAdmin
         ? [
-            { label: 'Total Pengajuan', value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
-            { label: 'Menunggu Verifikasi', value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
-            { label: 'Tahap Pimpinan', value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
-            { label: 'Izin Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'emerald', icon: 'check' },
-            { label: 'Perlu Revisi', value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
+            { label: t('dash.total_permits', 'Total Pengajuan'), value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
+            { label: t('dash.awaiting_verification', 'Menunggu Verifikasi'), value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
+            { label: t('dash.leadership_stage', 'Tahap Pimpinan'), value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
+            { label: t('dash.permits_approved', 'Izin Disetujui'), value: String(stats.approved ?? 0), suffix: null, accent: 'emerald', icon: 'check' },
+            { label: t('dash.revision_needed', 'Perlu Revisi'), value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
         ]
         : [
-            { label: 'Pengajuan Aktif', value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
-            { label: 'Menunggu Verifikasi', value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
-            { label: 'Tahap Pimpinan', value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
-            { label: 'Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'emerald', icon: 'check' },
-            { label: 'Perlu Revisi', value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
+            { label: t('dash.active_permits', 'Pengajuan Aktif'), value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
+            { label: t('dash.awaiting_verification', 'Menunggu Verifikasi'), value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
+            { label: t('dash.leadership_stage', 'Tahap Pimpinan'), value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
+            { label: t('dash.approved', 'Disetujui'), value: String(stats.approved ?? 0), suffix: null, accent: 'emerald', icon: 'check' },
+            { label: t('dash.revision_needed', 'Perlu Revisi'), value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
         ];
 
     const occupancyRate = stats.occupancyRate ?? 0;
 
     const donutSegments = [
-        { label: 'Disetujui', value: stats.approved ?? 0, color: '#10B981' },
-        { label: 'Proses Verifikasi', value: (stats.adminReview ?? 0) + (stats.leadership ?? 0), color: '#2563EB' },
-        { label: 'Perlu Revisi', value: stats.revision ?? 0, color: '#F59E0B' },
+        { label: t('dash.approved', 'Disetujui'), value: stats.approved ?? 0, color: '#10B981' },
+        { label: t('dash.awaiting_verification', 'Proses Verifikasi'), value: (stats.adminReview ?? 0) + (stats.leadership ?? 0), color: '#2563EB' },
+        { label: t('dash.revision_needed', 'Perlu Revisi'), value: stats.revision ?? 0, color: '#F59E0B' },
     ].filter((s) => s.value > 0);
 
     const hasDonut = donutSegments.length > 0;
@@ -73,8 +75,8 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                         </h2>
                         <p className="text-[13px] text-blue-100 mt-2.5 leading-relaxed max-w-md">
                             {isAdmin
-                                ? 'Kelola ketersediaan ruang, verifikasi permohonan izin ormawa, dan pantau persetujuan pimpinan.'
-                                : 'Pantau peminjaman ruang & progres tanda tangan izin kampusmu dalam satu tempat.'}
+                                ? t('dash.admin_subtitle', 'Kelola ketersediaan ruang, verifikasi permohonan izin ormawa, dan pantau persetujuan pimpinan.')
+                                : t('dash.user_subtitle', 'Pantau peminjaman ruang & progres tanda tangan izin kampusmu dalam satu tempat.')}
                         </p>
 
                         <div className="flex flex-wrap items-center gap-2.5 mt-5">
@@ -83,21 +85,21 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-blue-700 text-xs font-bold shadow-lg hover:bg-blue-50 transition-all active:scale-[0.98]"
                             >
                                 <Icon name={isAdmin ? 'fileCheck' : 'plus'} className="w-4 h-4" />
-                                {isAdmin ? 'Verifikasi Izin Masuk' : 'Ajukan Ruangan'}
+                                {isAdmin ? t('dash.verify_permits', 'Verifikasi Izin Masuk') : t('dash.book_room', 'Ajukan Ruangan')}
                             </a>
                             <a
                                 href={isAdmin ? '/rooms' : '/calendar'}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold hover:bg-white/20 transition-all"
                             >
                                 <Icon name={isAdmin ? 'door' : 'calendar'} className="w-4 h-4" />
-                                {isAdmin ? 'Kelola Ruangan' : 'Kalender Live'}
+                                {isAdmin ? t('dash.manage_rooms', 'Kelola Ruangan') : t('dash.live_calendar', 'Kalender Live')}
                             </a>
                             <a
                                 href={isAdmin ? '/calendar' : '/permits'}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold hover:bg-white/20 transition-all"
                             >
                                 <Icon name={isAdmin ? 'calendar' : 'clock'} className="w-4 h-4" />
-                                {isAdmin ? 'Kalender Live' : 'Lacak Izin'}
+                                {isAdmin ? t('dash.live_calendar', 'Kalender Live') : t('dash.track_permits', 'Lacak Izin')}
                             </a>
                         </div>
                     </div>
@@ -126,9 +128,9 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
             <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <SectionCard
                     className="lg:col-span-2"
-                    title="Pengajuan Terkini"
-                    subtitle="Data langsung dari database — diperbarui setiap submit"
-                    action="Lihat Semua"
+                    title={t('dash.recent_permits', 'Pengajuan Terkini')}
+                    subtitle={t('dash.recent_subtitle', 'Data langsung dari database — diperbarui setiap submit')}
+                    action={t('dash.see_all', 'Lihat Semua')}
                     actionHref="/permits"
                     bodyClassName="px-5 pb-2"
                 >
@@ -137,16 +139,16 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                             <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mb-3">
                                 <Icon name="file" className="w-7 h-7" />
                             </div>
-                            <p className="text-sm font-bold text-slate-500">Belum ada pengajuan</p>
+                            <p className="text-sm font-bold text-slate-500">{t('dash.empty_permits', 'Belum ada pengajuan')}</p>
                             <p className="text-xs text-slate-400 mt-1">
-                                Ajukan peminjaman ruangan pertama untuk memulai.
+                                {t('dash.empty_permits_desc', 'Ajukan peminjaman ruangan pertama untuk memulai.')}
                             </p>
                             <a
                                 href="/bookings/create"
                                 className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors"
                             >
                                 <Icon name="plus" className="w-3.5 h-3.5" />
-                                Ajukan Sekarang
+                                {t('dash.apply_now', 'Ajukan Sekarang')}
                             </a>
                         </div>
                     ) : (
@@ -154,10 +156,10 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                             <table className="w-full text-left min-w-[560px]">
                                 <thead>
                                     <tr className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                                        <th className="py-2.5 px-2 font-bold rounded-l-lg">Kegiatan</th>
-                                        <th className="py-2.5 px-2 font-bold">Ruangan</th>
-                                        <th className="py-2.5 px-2 font-bold">Tahap</th>
-                                        <th className="py-2.5 px-2 font-bold text-right rounded-r-lg">Jadwal</th>
+                                        <th className="py-2.5 px-2 font-bold rounded-l-lg">{t('dash.table_event', 'Kegiatan')}</th>
+                                        <th className="py-2.5 px-2 font-bold">{t('dash.table_room', 'Ruangan')}</th>
+                                        <th className="py-2.5 px-2 font-bold">{t('dash.table_stage', 'Tahap')}</th>
+                                        <th className="py-2.5 px-2 font-bold text-right rounded-r-lg">{t('dash.table_schedule', 'Jadwal')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
@@ -197,9 +199,9 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
 
                 {/* Performance overview from live stats */}
                 <SectionCard
-                    title="Performance Overview"
-                    subtitle="Tingkat kelancaran izin ormawa"
-                    action="Lihat Semua"
+                    title={t('dash.performance_overview', 'Performance Overview')}
+                    subtitle={t('dash.performance_subtitle', 'Tingkat kelancaran izin ormawa')}
+                    action={t('dash.see_all', 'Lihat Semua')}
                     actionHref="/permits"
                     bodyClassName="px-5 pb-5"
                 >
@@ -209,7 +211,7 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                                 <DonutChart
                                     segments={donutSegments}
                                     centerValue={`${occupancyRate}%`}
-                                    centerLabel="Disetujui"
+                                    centerLabel={t('dash.approved', 'Disetujui')}
                                     size={128}
                                     strokeWidth={14}
                                 />
@@ -254,8 +256,8 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
             {/* Calendar + quick access */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <SectionCard
-                    title="Kalender Ketersediaan"
-                    action="Lihat Kalender"
+                    title={t('dash.availability_calendar', 'Kalender Ketersediaan')}
+                    action={t('dash.view_calendar', 'Lihat Kalender')}
                     actionHref="/calendar"
                     divider
                     bodyClassName="px-5 pt-4 pb-5"
@@ -263,7 +265,6 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                     <MiniCalendar
                         year={thisYear}
                         month={thisMonth}
-                        monthLabel={new Date(thisYear, thisMonth, 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
                         today={thisDay}
                         markedDays={recentPermits
                             .filter((p) => {
@@ -275,8 +276,8 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                 </SectionCard>
 
                 <SectionCard
-                    title="Akses Cepat"
-                    subtitle="Menu yang sering digunakan"
+                    title={t('dash.quick_access', 'Akses Cepat')}
+                    subtitle={t('dash.quick_subtitle', 'Menu yang sering digunakan')}
                     className="h-full flex flex-col"
                     bodyClassName="px-5 pb-5 flex-1 flex flex-col"
                 >
@@ -286,7 +287,7 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
 
                             return (
                                 <a
-                                    key={item.label}
+                                    key={item.href}
                                     href={item.href}
                                     className={`rounded-2xl border ${accent.soft} p-3 sm:p-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:-translate-y-0.5 transition-all group`}
                                 >
@@ -296,10 +297,10 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                                         <Icon name={item.icon} className="w-5 h-5" />
                                     </div>
                                     <span className="text-[11.5px] font-bold text-slate-700 mt-2.5 leading-tight">
-                                        {item.label}
+                                        {t(item.translationKey, item.label)}
                                     </span>
                                     <span className="text-[10px] text-slate-400 mt-1 leading-tight line-clamp-1">
-                                        {item.description}
+                                        {t(item.descriptionKey, item.description)}
                                     </span>
                                 </a>
                             );

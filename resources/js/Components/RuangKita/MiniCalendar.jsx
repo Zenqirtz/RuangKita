@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -35,6 +36,7 @@ export default function MiniCalendar({
     markedDays = [],
     className = '',
 }) {
+    const { lang, t } = useLanguage();
     const [viewDate, setViewDate] = useState(() => new Date(year, month, 1));
     const currentYear = viewDate.getFullYear();
     const currentMonth = viewDate.getMonth();
@@ -48,9 +50,8 @@ export default function MiniCalendar({
         if (isOriginalMonth && defaultMonthLabel) {
             return defaultMonthLabel;
         }
-        const str = viewDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }, [viewDate, isOriginalMonth, defaultMonthLabel]);
+        return viewDate.toLocaleDateString(lang === 'en' ? 'en-US' : 'id-ID', { month: 'long', year: 'numeric' });
+    }, [viewDate, isOriginalMonth, defaultMonthLabel, lang]);
 
     const handlePrevMonth = () => {
         setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));

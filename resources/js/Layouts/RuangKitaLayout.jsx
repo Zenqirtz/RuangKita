@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/RuangKita/Icon';
+import LanguageSwitcher from '@/Components/RuangKita/LanguageSwitcher';
+import { useLanguage } from '@/Context/LanguageContext';
 
 const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', href: '/dashboard' },
@@ -38,6 +40,7 @@ const noticeIcons = {
 };
 
 export default function RuangKitaLayout({ children, activeTab = 'dashboard', title }) {
+    const { t } = useLanguage();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -56,7 +59,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
             .toUpperCase()
         : 'UB';
 
-    const pageTitle = title ?? pageTitles[activeTab] ?? 'Dashboard';
+    const pageTitle = title ?? t(`nav.${activeTab}`, pageTitles[activeTab] ?? 'Dashboard');
 
     return (
         <div className="min-h-screen bg-[#F5F7FB] flex font-sans antialiased text-slate-800">
@@ -111,7 +114,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                             name={item.icon}
                                             className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`}
                                         />
-                                        <span className="truncate">{item.label}</span>
+                                        <span className="truncate">{t(`nav.${item.id}`, item.label)}</span>
                                     </span>
 
                                     {showBadge && (
@@ -145,7 +148,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left"
                         >
                             <Icon name="logout" className="w-[18px] h-[18px]" />
-                            <span>Logout</span>
+                            <span>{t('nav.logout', 'Logout')}</span>
                         </Link>
                     ) : (
                         <Link
@@ -153,7 +156,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
                         >
                             <Icon name="user" className="w-[18px] h-[18px]" />
-                            <span>Masuk Akun</span>
+                            <span>{t('nav.login', 'Masuk Akun')}</span>
                         </Link>
                     )}
                     <p className="text-[9px] text-slate-300 font-medium text-center mt-3">
@@ -178,25 +181,27 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                         </h2>
                     </div>
 
-                    <div className="flex items-center gap-2.5 md:gap-4">
-                        <div className="relative hidden md:block w-64 xl:w-72">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="relative hidden md:block w-56 lg:w-64">
                             <Icon
                                 name="search"
                                 className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
                             />
                             <input
                                 type="text"
-                                placeholder="Cari ruangan, kegiatan, ID izin..."
-                                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200/70 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-slate-400"
+                                placeholder={t('common.search_placeholder', 'Cari ruangan, kegiatan, ID izin...')}
+                                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200/70 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-slate-400"
                             />
                         </div>
+
+                        <LanguageSwitcher />
 
                         <div className="relative">
                             <button
                                 type="button"
                                 onClick={() => setNotificationsOpen(!notificationsOpen)}
                                 className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 transition-colors relative"
-                                aria-label="Notifikasi"
+                                aria-label={t('nav.notifications', 'Notifikasi')}
                             >
                                 <Icon name="bell" className="w-[18px] h-[18px]" />
                                 {notifications.length > 0 && (
@@ -209,19 +214,19 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                     <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
                                     <div className="absolute right-0 top-12 z-50 w-80 bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-900/10 overflow-hidden">
                                         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                                            <p className="text-xs font-bold text-slate-800">Notifikasi</p>
+                                            <p className="text-xs font-bold text-slate-800">{t('nav.notifications', 'Notifikasi')}</p>
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                                                 notifications.length > 0
                                                     ? 'text-blue-600 bg-blue-50'
                                                     : 'text-slate-400 bg-slate-100'
                                             }`}>
-                                                {notifications.length} baru
+                                                {notifications.length} {t('nav.new_badge', 'baru')}
                                             </span>
                                         </div>
                                         <div className="max-h-80 overflow-y-auto">
                                             {notifications.length === 0 ? (
                                                 <div className="py-8 px-4 text-center">
-                                                    <p className="text-xs font-semibold text-slate-600">Tidak ada notifikasi baru</p>
+                                                    <p className="text-xs font-semibold text-slate-600">{t('nav.no_notifications', 'Tidak ada notifikasi baru')}</p>
                                                     <p className="text-[10px] text-slate-400 mt-1">
                                                         Pembaruan pengajuan izin akan muncul di sini.
                                                     </p>

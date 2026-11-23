@@ -1,8 +1,10 @@
 import React from 'react';
 import Icon from './Icon';
 import { approvalStages } from '@/Data/ruangkita';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function ApprovalStepper({ stage = 'submitted', compact = false }) {
+    const { t } = useLanguage();
     const isApproved = stage === 'approved';
     const currentIndex = stage === 'revision' ? 1 : Math.max(approvalStages.findIndex((item) => item.key === stage), 0);
     const isRevision = stage === 'revision';
@@ -56,11 +58,17 @@ export default function ApprovalStepper({ stage = 'submitted', compact = false }
                                               : 'text-slate-400'
                                     }`}
                                 >
-                                    {item.label}
+                                    {t(`stage.${item.key}`, item.label)}
                                 </p>
                                 {!compact && (
                                     <p className="hidden sm:block text-[9px] text-slate-400 leading-snug mt-0.5">
-                                        {isPending ? 'Menunggu' : isDone ? 'Selesai' : isRevision ? 'Perlu revisi' : 'Sedang diproses'}
+                                        {isPending
+                                            ? t('stepper.pending', 'Menunggu')
+                                            : isDone
+                                              ? t('stepper.done', 'Selesai')
+                                              : isRevision
+                                                ? t('stepper.needs_revision', 'Perlu revisi')
+                                                : t('stepper.in_progress', 'Sedang diproses')}
                                     </p>
                                 )}
                             </div>
