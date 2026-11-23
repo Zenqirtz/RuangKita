@@ -43,10 +43,7 @@ export default function RuangKitaDashboard() {
 
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                     <div className="max-w-xl">
-                        <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 px-3 py-1.5 rounded-full mb-4">
-                            <Icon name="sparkles" className="w-3.5 h-3.5 text-blue-200" />
-                            <span className="text-[11px] font-semibold text-blue-100">Platform Peminjaman Ruang & Izin Kampus</span>
-                        </div>
+
                         <h2 className="text-2xl md:text-[28px] font-extrabold tracking-tight leading-tight">
                             Selamat pagi, 👋<br />
                             <span className="text-blue-200">Daffa Ahmad Al Attas!</span>
