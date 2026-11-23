@@ -1,91 +1,130 @@
 import React, { useState } from 'react';
-import { 
-    LayoutDashboard, 
-    Calendar, 
-    DoorOpen, 
-    FileText, 
-    Clock, 
-    AlertCircle, 
-    History, 
-    HelpCircle, 
-    LogOut, 
-    Menu, 
-    Search, 
-    Bell, 
-    Building2,
-    CheckCircle2
-} from 'lucide-react';
+import { usePage } from '@inertiajs/react';
+import Icon from '@/Components/RuangKita/Icon';
+import { notices } from '@/Data/ruangkita';
 
-export default function RuangKitaLayout({ children, activeTab = 'dashboard' }) {
+const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', href: '/dashboard' },
+    { id: 'calendar', label: 'Kalender Live', icon: 'calendar', href: '/calendar' },
+    { id: 'rooms', label: 'Daftar Ruangan', icon: 'door', href: '/rooms' },
+    { id: 'permits', label: 'Tracking Izin', icon: 'clock', href: '/permits', badge: '3' },
+    { id: 'booking', label: 'Pengajuan Baru', icon: 'fileUp', href: '/bookings/create' },
+    { id: 'revisions', label: 'Catatan Revisi', icon: 'alert', href: '/revisions', badgeAlert: '1' },
+    { id: 'history', label: 'Riwayat Peminjaman', icon: 'history', href: '/history' },
+    { id: 'guidelines', label: 'Tata Tertib', icon: 'book', href: '/guidelines' },
+];
+
+const pageTitles = {
+    dashboard: 'Dashboard',
+    calendar: 'Kalender Live',
+    rooms: 'Daftar Ruangan',
+    permits: 'Tracking Izin',
+    permitDetail: 'Detail Pengajuan',
+    booking: 'Pengajuan Baru',
+    revisions: 'Catatan Revisi',
+    history: 'Riwayat Peminjaman',
+    guidelines: 'Tata Tertib',
+};
+
+const noticeIconStyles = {
+    revision: 'bg-rose-50 text-rose-600',
+    info: 'bg-blue-50 text-blue-600',
+    success: 'bg-emerald-50 text-emerald-600',
+};
+
+const noticeIcons = {
+    revision: 'alert',
+    info: 'info',
+    success: 'check',
+};
+
+export default function RuangKitaLayout({ children, activeTab = 'dashboard', title }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const { auth } = usePage().props;
 
-    const navItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-        { id: 'calendar', label: 'Live Calendar', icon: Calendar, href: '#calendar' },
-        { id: 'rooms', label: 'Daftar Ruangan', icon: DoorOpen, href: '#rooms' },
-        { id: 'permit-tracker', label: 'Tracking Izin', icon: Clock, href: '#tracker', badge: '3' },
-        { id: 'bookings', label: 'Pengajuan Baru', icon: FileText, href: '#booking' },
-        { id: 'revisions', label: 'Catatan Revisi', icon: AlertCircle, href: '#revisions', badgeAlert: '1' },
-        { id: 'history', label: 'Riwayat Peminjaman', icon: History, href: '#history' },
-        { id: 'guidelines', label: 'Tata Tertib', icon: HelpCircle, href: '#guidelines' },
-    ];
+    const user = auth?.user;
+    const userName = user?.name ?? 'Daffa Ahmad Al Attas';
+    const userEmail = user?.email ?? 'daffa.ahmad@student.ub.ac.id';
+    const initials = userName
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join('')
+        .toUpperCase();
+
+    const pageTitle = title ?? pageTitles[activeTab] ?? 'Dashboard';
 
     return (
-        <div className="min-h-screen bg-[#F4F7FB] flex font-sans antialiased text-slate-800">
-            {/* Sidebar Overlay for Mobile */}
+        <div className="min-h-screen bg-[#F5F7FB] flex font-sans antialiased text-slate-800">
             {sidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
 
-            {/* Left Sidebar */}
-            <aside className={`
-                fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r border-slate-100 flex flex-col justify-between transition-transform duration-300 ease-in-out
-                lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-            `}>
-                <div>
-                    {/* Top Branding Block */}
-                    <div className="m-4 p-5 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 text-center relative overflow-hidden">
-                        <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-sm" />
-                        <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20">
-                            <Building2 className="w-7 h-7 text-white" />
+            <aside
+                className={`
+                    fixed top-0 bottom-0 left-0 z-50 w-[248px] bg-white border-r border-slate-100 flex flex-col justify-between transition-transform duration-300 ease-in-out
+                    lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}
+            >
+                <div className="flex flex-col min-h-0">
+                    <a href="/dashboard" className="flex flex-col items-center gap-2.5 bg-blue-600 px-5 pt-6 pb-7 text-center text-white">
+                        <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center ring-1 ring-white/20">
+                            <Icon name="graduation" className="w-7 h-7 text-white" strokeWidth={2.2} />
                         </div>
-                        <h1 className="text-xl font-black tracking-wide">RUANGKITA</h1>
-                        <p className="text-[11px] font-medium text-blue-100 uppercase tracking-wider mt-0.5">
-                            Fakultas • Universitas Brawijaya
-                        </p>
-                    </div>
+                        <div className="min-w-0">
+                            <h1 className="text-xl font-extrabold tracking-tight leading-none">RuangKita</h1>
+                            <p className="text-[9px] font-semibold text-blue-100 uppercase tracking-[0.14em] mt-1.5">
+                                Campus Room & Permit
+                            </p>
+                        </div>
+                    </a>
 
-                    {/* Navigation Items */}
-                    <nav className="px-3.5 space-y-1.5 mt-2">
+                    <nav className="px-3.5 pt-4 space-y-1 overflow-y-auto pb-4">
                         {navItems.map((item) => {
-                            const Icon = item.icon;
                             const isActive = activeTab === item.id;
+
                             return (
                                 <a
                                     key={item.id}
                                     href={item.href}
+                                    onClick={() => setSidebarOpen(false)}
                                     className={`
-                                        flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
-                                        ${isActive 
-                                            ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25 translate-x-1' 
-                                            : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'
+                                        flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
+                                        ${
+                                            isActive
+                                                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                                                : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600'
                                         }
                                     `}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
-                                        <span>{item.label}</span>
-                                    </div>
+                                    <span className="flex items-center gap-3 min-w-0">
+                                        <Icon
+                                            name={item.icon}
+                                            className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`}
+                                        />
+                                        <span className="truncate">{item.label}</span>
+                                    </span>
+
                                     {item.badge && (
-                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-700'}`}>
+                                        <span
+                                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                                isActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
+                                            }`}
+                                        >
                                             {item.badge}
                                         </span>
                                     )}
                                     {item.badgeAlert && (
-                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive ? 'bg-red-400 text-white' : 'bg-rose-100 text-rose-600'}`}>
+                                        <span
+                                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                                isActive ? 'bg-white text-rose-600' : 'bg-rose-50 text-rose-600'
+                                            }`}
+                                        >
                                             {item.badgeAlert}
                                         </span>
                                     )}
@@ -95,72 +134,126 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard' }) {
                     </nav>
                 </div>
 
-                {/* Bottom Logout */}
-                <div className="p-4 border-t border-slate-100">
-                    <button 
-                        onClick={() => {}}
-                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                <div className="px-4 pb-5 pt-3 border-t border-slate-100">
+                    <a
+                        href="/"
+                        className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                     >
-                        <LogOut className="w-4 h-4" />
+                        <Icon name="logout" className="w-[18px] h-[18px]" />
                         <span>Logout</span>
-                    </button>
+                    </a>
+                    <p className="text-[9px] text-slate-300 font-medium text-center mt-3">
+                        RuangKita v1.0 • Tim Yakusa
+                    </p>
                 </div>
             </aside>
 
-            {/* Main Content Area */}
-            <div className="flex-1 lg:pl-64 flex flex-col min-h-screen">
-                {/* Top Header Navbar */}
-                <header className="sticky top-0 z-30 h-16 bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <button 
+            <div className="flex-1 lg:pl-[248px] flex flex-col min-h-screen min-w-0">
+                <header className="sticky top-0 z-30 h-[68px] bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-7 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <button
+                            type="button"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 lg:hidden"
+                            aria-label="Buka menu"
                         >
-                            <Menu className="w-5 h-5" />
+                            <Icon name="menu" className="w-5 h-5" />
                         </button>
-                        <h2 className="text-xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
+                        <h2 className="text-lg md:text-xl font-extrabold text-slate-900 tracking-tight truncate">
+                            {pageTitle}
+                        </h2>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        {/* Search Input Bar */}
-                        <div className="relative hidden md:block w-72">
-                            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <input 
+                    <div className="flex items-center gap-2.5 md:gap-4">
+                        <div className="relative hidden md:block w-64 xl:w-72">
+                            <Icon
+                                name="search"
+                                className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                            />
+                            <input
                                 type="text"
-                                placeholder="Cari ruangan, event, id surat..."
-                                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                                placeholder="Cari ruangan, kegiatan, ID izin..."
+                                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200/70 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-slate-400"
                             />
                         </div>
 
-                        {/* Notification Icon */}
                         <div className="relative">
-                            <button className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors relative">
-                                <Bell className="w-4 h-4" />
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
+                            <button
+                                type="button"
+                                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 transition-colors relative"
+                                aria-label="Notifikasi"
+                            >
+                                <Icon name="bell" className="w-[18px] h-[18px]" />
+                                <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
                             </button>
+
+                            {notificationsOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setNotificationsOpen(false)} />
+                                    <div className="absolute right-0 top-12 z-50 w-80 bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-900/10 overflow-hidden">
+                                        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                                            <p className="text-xs font-bold text-slate-800">Notifikasi</p>
+                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                                3 baru
+                                            </span>
+                                        </div>
+                                        <div className="max-h-80 overflow-y-auto">
+                                            {notices.map((notice) => (
+                                                <a
+                                                    key={notice.id}
+                                                    href={notice.href}
+                                                    className="flex gap-3 px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
+                                                >
+                                                    <div
+                                                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${noticeIconStyles[notice.type]}`}
+                                                    >
+                                                        <Icon
+                                                            name={noticeIcons[notice.type]}
+                                                            className="w-4 h-4"
+                                                        />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-[11px] font-bold text-slate-800 leading-snug">
+                                                            {notice.title}
+                                                        </p>
+                                                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">
+                                                            {notice.description}
+                                                        </p>
+                                                        <p className="text-[9px] text-slate-400 mt-1">{notice.time}</p>
+                                                    </div>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
-                        {/* User Profile Pill */}
-                        <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-blue-500/20">
-                                DA
+                        <div className="flex items-center gap-2.5 pl-2.5 md:pl-4 border-l border-slate-200">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-[11px] shadow-sm ring-2 ring-blue-500/15">
+                                {initials}
                             </div>
                             <div className="hidden sm:block text-left">
-                                <p className="text-xs font-bold text-slate-800 leading-tight">Daffa Ahmad Al Attas</p>
-                                <p className="text-[10px] font-medium text-slate-400 leading-tight">Ormawa Yakusa • @student.ub.ac.id</p>
+                                <p className="text-[11px] font-bold text-slate-800 leading-tight truncate max-w-[160px]">
+                                    {userName}
+                                </p>
+                                <p className="text-[9px] font-medium text-slate-400 leading-tight truncate max-w-[160px]">
+                                    {userEmail}
+                                </p>
                             </div>
+                            <Icon name="chevronDown" className="hidden sm:block w-3.5 h-3.5 text-slate-400" />
                         </div>
                     </div>
                 </header>
 
-                {/* Main Dynamic View */}
-                <main className="flex-1 p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
-                    {children}
-                </main>
+                <main className="flex-1 p-4 md:p-7 space-y-5 w-full max-w-[1440px] mx-auto">{children}</main>
 
-                {/* Footer */}
-                <footer className="py-4 px-8 text-center text-xs text-slate-400 border-t border-slate-100 bg-white/50">
-                    © 2026 RuangKita • Tim Yakusa (Universitas Brawijaya). Built for Smarter Campus & Learning.
+                <footer className="py-4 px-6 text-center md:text-left md:flex md:items-center md:justify-between gap-3 text-[10px] text-slate-400 border-t border-slate-100 bg-white/60">
+                    <span>© 2026 RuangKita • Tim Yakusa, Universitas Brawijaya. All rights reserved.</span>
+                    <span className="block md:inline mt-1 md:mt-0">
+                        Built for <span className="font-semibold text-slate-500">Smarter Campus & Learning</span>
+                    </span>
                 </footer>
             </div>
         </div>

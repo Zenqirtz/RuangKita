@@ -1,0 +1,107 @@
+import React, { useMemo, useState } from 'react';
+
+const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+function buildCells(year, month) {
+    const firstDay = new Date(year, month, 1);
+    const offset = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+    const cells = [];
+
+    for (let i = offset - 1; i >= 0; i -= 1) {
+        cells.push({ day: daysInPrevMonth - i, muted: true });
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+        cells.push({ day, muted: false });
+    }
+
+    let nextDay = 1;
+    while (cells.length % 7 !== 0) {
+        cells.push({ day: nextDay, muted: true });
+        nextDay += 1;
+    }
+
+    return cells;
+}
+
+export default function MiniCalendar({
+    year = 2026,
+    month = 10,
+    monthLabel = 'November 2026',
+    today = 23,
+    markedDays = [],
+    className = '',
+}) {
+    const cells = useMemo(() => buildCells(year, month), [year, month]);
+    const [selected, setSelected] = useState(today);
+
+    return (
+        <div className={className}>
+            <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold text-slate-700">{monthLabel}</span>
+                <div className="flex items-center gap-1">
+                    <button
+                        type="button"
+                        className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                        aria-label="Bulan sebelumnya"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                        aria-label="Bulan berikutnya"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="m9 18 6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-7 gap-y-1">
+                {WEEKDAYS.map((day) => (
+                    <div key={day} className="text-[10px] font-semibold text-slate-400 text-center py-1">
+                        {day}
+                    </div>
+                ))}
+
+                {cells.map((cell, index) => {
+                    const isToday = !cell.muted && cell.day === today;
+                    const isSelected = !cell.muted && cell.day === selected;
+                    const isMarked = !cell.muted && markedDays.includes(cell.day);
+
+                    return (
+                        <button
+                            key={`${cell.day}-${index}`}
+                            type="button"
+                            onClick={() => !cell.muted && setSelected(cell.day)}
+                            className={[
+                                'relative h-7 w-7 mx-auto rounded-lg text-[11px] font-semibold flex items-center justify-center transition-colors',
+                                cell.muted ? 'text-slate-300 cursor-default' : 'hover:bg-slate-100',
+                                isSelected
+                                    ? 'bg-blue-600 text-white hover:bg-blue-600 shadow-sm shadow-blue-600/25'
+                                    : isMarked
+                                      ? 'text-rose-500'
+                                      : 'text-slate-600',
+                            ].join(' ')}
+                        >
+                            {cell.day}
+                            {isMarked && !isSelected && (
+                                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-rose-400" />
+                            )}
+                            {isToday && !isSelected && (
+                                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-blue-500" />
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
