@@ -8,6 +8,8 @@
 
         <meta name="description" content="RuangKita - Integrated Campus Room Booking and Permit Tracking. Peminjaman ruang dan pelacakan izin kampus dalam satu platform." />
         <meta name="theme-color" content="#2563EB" />
+        <link rel="icon" type="image/svg+xml" href="/images/logo-mark.svg">
+        <link rel="alternate icon" href="/images/logo-mark.png">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

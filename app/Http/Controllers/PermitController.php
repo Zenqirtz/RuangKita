@@ -33,6 +33,9 @@ class PermitController extends Controller
                 'start' => $p->start,
                 'end' => $p->end,
                 'stage' => $p->stage,
+                'participants' => $p->participants,
+                'notes' => $p->admin_notes,
+                'proposalName' => $p->proposal_name,
                 'submittedAt' => $p->submitted_at?->diffForHumans() ?? 'baru saja',
             ]);
 

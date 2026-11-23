@@ -8,10 +8,7 @@ const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', href: '/dashboard' },
     { id: 'calendar', label: 'Kalender Live', icon: 'calendar', href: '/calendar' },
     { id: 'rooms', label: 'Daftar Ruangan', icon: 'door', href: '/rooms' },
-    { id: 'permits', label: 'Tracking Izin', icon: 'clock', href: '/permits', badgeKey: 'tracking' },
-    { id: 'booking', label: 'Pengajuan Baru', icon: 'fileUp', href: '/bookings/create' },
-    { id: 'revisions', label: 'Catatan Revisi', icon: 'alert', href: '/revisions', badgeKey: 'revisions', badgeAlert: true },
-    { id: 'history', label: 'Riwayat Peminjaman', icon: 'history', href: '/history' },
+    { id: 'permits', label: 'Peminjaman & Izin', icon: 'clipboardList', href: '/permits' },
     { id: 'guidelines', label: 'Tata Tertib', icon: 'book', href: '/guidelines' },
 ];
 
@@ -19,7 +16,7 @@ const pageTitles = {
     dashboard: 'Dashboard',
     calendar: 'Kalender Live',
     rooms: 'Daftar Ruangan',
-    permits: 'Tracking Izin',
+    permits: 'Peminjaman & Izin',
     permitDetail: 'Detail Pengajuan',
     booking: 'Pengajuan Baru',
     revisions: 'Catatan Revisi',
@@ -42,9 +39,25 @@ const noticeIcons = {
 export default function RuangKitaLayout({ children, activeTab = 'dashboard', title }) {
     const { t } = useLanguage();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('ruangkita_sidebar_collapsed') === 'true';
+        }
+        return false;
+    });
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const { auth, badgeCounts = {}, notifications = [] } = usePage().props;
+
+    const toggleCollapsed = () => {
+        setIsCollapsed((prev) => {
+            const next = !prev;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('ruangkita_sidebar_collapsed', String(next));
+            }
+            return next;
+        });
+    };
 
     const user = auth?.user;
     const userName = user?.name ?? 'Tamu Civitas UB';
@@ -72,27 +85,49 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
 
             <aside
                 className={`
-                    fixed top-0 bottom-0 left-0 z-50 w-[248px] bg-white border-r border-slate-100 flex flex-col justify-between transition-transform duration-300 ease-in-out
+                    fixed top-0 bottom-0 left-0 z-50 bg-white border-r border-slate-100 flex flex-col justify-between transition-all duration-300 ease-in-out
                     lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                    ${isCollapsed ? 'w-[76px]' : 'w-[248px]'}
                 `}
             >
-                <div className="flex flex-col min-h-0">
-                    <a href="/dashboard" className="flex flex-col items-center gap-2.5 bg-gradient-to-b from-blue-600 to-blue-700 px-5 pt-6 pb-9 text-center text-white">
-                        <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md ring-1 ring-white/25 flex items-center justify-center shadow-lg shadow-blue-900/20">
-                            <Icon name="graduation" className="w-7 h-7 text-white" strokeWidth={1.8} />
-                        </div>
-                        <div className="min-w-0">
-                            <h1 className="text-[22px] font-extrabold tracking-tight leading-none">RuangKita</h1>
-                            <p className="text-[11px] font-medium text-blue-100 leading-snug mt-2">
-                                Campus Room Booking<br />&amp; Permit Tracking
-                            </p>
-                        </div>
-                    </a>
+                {/* Floating collapse toggle on sidebar border edge */}
+                <button
+                    type="button"
+                    onClick={toggleCollapsed}
+                    className="hidden lg:flex absolute -right-3.5 top-7 z-50 w-7 h-7 rounded-full bg-white border border-slate-200/90 shadow-md items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-400 hover:scale-105 transition-all"
+                    title={isCollapsed ? 'Perluas Sidebar' : 'Kecilkan Sidebar'}
+                    aria-label="Toggle sidebar collapse"
+                >
+                    <Icon name={isCollapsed ? 'chevronRight' : 'chevronLeft'} className="w-3.5 h-3.5" />
+                </button>
 
-                    <nav className="relative -mt-3 flex-1 rounded-t-2xl bg-white px-3.5 pt-3.5 space-y-1 overflow-y-auto pb-4">
+                <div className="flex flex-col min-h-0">
+                    <div className={`relative bg-gradient-to-b from-blue-600 to-blue-700 transition-all ${isCollapsed ? 'px-3 pt-5 pb-6 flex flex-col items-center' : 'px-5 pt-6 pb-9 text-center'}`}>
+                        <a href="/dashboard" className={`flex flex-col items-center gap-2 text-white ${isCollapsed ? 'justify-center' : ''}`} title="RuangKita Dashboard">
+                            {isCollapsed ? (
+                                <img src="/images/logo-mark-white.svg" alt="RuangKita" className="w-9 h-9 object-contain" />
+                            ) : (
+                                <>
+                                    <img src="/images/logo-white.svg" alt="RuangKita" className="h-10 w-auto object-contain transition-all" />
+                                    <p className="text-[11px] font-medium text-blue-100 leading-snug mt-1">
+                                        Campus Room Booking<br />&amp; Permit Tracking
+                                    </p>
+                                </>
+                            )}
+                        </a>
+                    </div>
+
+                    <nav className={`relative -mt-3 flex-1 rounded-t-2xl bg-white pt-3.5 space-y-1 overflow-y-auto pb-4 transition-all ${isCollapsed ? 'px-2' : 'px-3.5'}`}>
                         {navItems.map((item) => {
-                            const isActive = activeTab === item.id;
-                            const count = item.badgeKey ? (badgeCounts[item.badgeKey] ?? 0) : 0;
+                            const isPermitTab = ['permits', 'booking', 'revisions', 'history', 'permitDetail'].includes(activeTab);
+                            const isActive = item.id === 'permits' ? isPermitTab : activeTab === item.id;
+
+                            const revisionCount = badgeCounts.revisions ?? 0;
+                            const trackingCount = badgeCounts.tracking ?? 0;
+                            const count = item.id === 'permits'
+                                ? (revisionCount > 0 ? revisionCount : trackingCount)
+                                : (item.badgeKey ? (badgeCounts[item.badgeKey] ?? 0) : 0);
+                            const isBadgeAlert = item.id === 'permits' ? revisionCount > 0 : Boolean(item.badgeAlert);
                             const showBadge = count > 0;
 
                             return (
@@ -100,8 +135,10 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                     key={item.id}
                                     href={item.href}
                                     onClick={() => setSidebarOpen(false)}
+                                    title={isCollapsed ? t(`nav.${item.id}`, item.label) : undefined}
                                     className={`
-                                        flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg text-[12px] font-semibold transition-all duration-200
+                                        relative flex items-center rounded-xl text-[12px] font-semibold transition-all duration-200
+                                        ${isCollapsed ? 'justify-center p-2.5' : 'justify-between gap-2 px-3.5 py-2.5'}
                                         ${
                                             isActive
                                                 ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
@@ -109,28 +146,37 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                         }
                                     `}
                                 >
-                                    <span className="flex items-center gap-3 min-w-0">
+                                    <span className={`flex items-center min-w-0 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
                                         <Icon
                                             name={item.icon}
                                             className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`}
                                         />
-                                        <span className="truncate">{t(`nav.${item.id}`, item.label)}</span>
+                                        {!isCollapsed && <span className="truncate">{t(`nav.${item.id}`, item.label)}</span>}
                                     </span>
 
                                     {showBadge && (
-                                        <span
-                                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                                                item.badgeAlert
-                                                    ? isActive
-                                                        ? 'bg-white text-rose-600'
-                                                        : 'bg-rose-50 text-rose-600'
-                                                    : isActive
-                                                        ? 'bg-white/20 text-white'
-                                                        : 'bg-blue-50 text-blue-600'
-                                            }`}
-                                        >
-                                            {count}
-                                        </span>
+                                        isCollapsed ? (
+                                            <span
+                                                className={`absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full ${
+                                                    isBadgeAlert ? 'bg-rose-500 ring-2 ring-white' : 'bg-blue-500 ring-2 ring-white'
+                                                }`}
+                                                title={`${count} notifikasi`}
+                                            />
+                                        ) : (
+                                            <span
+                                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                                    isBadgeAlert
+                                                        ? isActive
+                                                            ? 'bg-white text-rose-600'
+                                                            : 'bg-rose-50 text-rose-600'
+                                                        : isActive
+                                                            ? 'bg-white/20 text-white'
+                                                            : 'bg-blue-50 text-blue-600'
+                                                }`}
+                                            >
+                                                {count}
+                                            </span>
+                                        )
                                     )}
                                 </a>
                             );
@@ -138,34 +184,42 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                     </nav>
                 </div>
 
-                <div className="px-4 pb-5 pt-3 border-t border-slate-100">
+                <div className={`border-t border-slate-100 transition-all ${isCollapsed ? 'px-2 pb-4 pt-3 flex flex-col items-center' : 'px-4 pb-5 pt-3'}`}>
                     {user ? (
                         <Link
                             href={route('logout')}
                             method="post"
                             as="button"
                             type="button"
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left"
+                            title={t('nav.logout', 'Logout')}
+                            className={`w-full flex items-center text-[13px] font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors ${
+                                isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-4 py-2.5 text-left'
+                            }`}
                         >
-                            <Icon name="logout" className="w-[18px] h-[18px]" />
-                            <span>{t('nav.logout', 'Logout')}</span>
+                            <Icon name="logout" className="w-[18px] h-[18px] shrink-0" />
+                            {!isCollapsed && <span>{t('nav.logout', 'Logout')}</span>}
                         </Link>
                     ) : (
                         <Link
                             href={route('login')}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+                            title={t('nav.login', 'Masuk Akun')}
+                            className={`w-full flex items-center text-[13px] font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors ${
+                                isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-4 py-2.5'
+                            }`}
                         >
-                            <Icon name="user" className="w-[18px] h-[18px]" />
-                            <span>{t('nav.login', 'Masuk Akun')}</span>
+                            <Icon name="user" className="w-[18px] h-[18px] shrink-0" />
+                            {!isCollapsed && <span>{t('nav.login', 'Masuk Akun')}</span>}
                         </Link>
                     )}
-                    <p className="text-[9px] text-slate-300 font-medium text-center mt-3">
-                        RuangKita v1.0 • Tim Yakusa
-                    </p>
+                    {!isCollapsed && (
+                        <p className="text-[9px] text-slate-300 font-medium text-center mt-3">
+                            RuangKita v1.0 • Tim Yakusa
+                        </p>
+                    )}
                 </div>
             </aside>
 
-            <div className="flex-1 lg:pl-[248px] flex flex-col min-h-screen min-w-0">
+            <div className={`flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:pl-[76px]' : 'lg:pl-[248px]'}`}>
                 <header className="sticky top-0 z-30 h-[68px] bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-7 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
                         <button
@@ -173,6 +227,15 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 lg:hidden"
                             aria-label="Buka menu"
+                        >
+                            <Icon name="menu" className="w-5 h-5" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={toggleCollapsed}
+                            className="hidden lg:flex p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                            aria-label={isCollapsed ? 'Perluas sidebar' : 'Kecilkan sidebar'}
+                            title={isCollapsed ? 'Perluas sidebar' : 'Kecilkan sidebar'}
                         >
                             <Icon name="menu" className="w-5 h-5" />
                         </button>

@@ -1,97 +1,180 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import StatusBadge from '@/Components/RuangKita/StatusBadge';
 import { stageStyles } from '@/Data/ruangkita';
 
 const filters = [
-    { id: 'all', label: 'Semua' },
-    { id: 'admin', label: 'Verifikasi Admin' },
-    { id: 'leadership', label: 'Persetujuan Pimpinan' },
+    { id: 'all', label: 'Semua Pengajuan' },
+    { id: 'active', label: 'Sedang Berjalan' },
+    { id: 'revision', label: 'Perlu Revisi', isAlert: true },
     { id: 'approved', label: 'Disetujui' },
-    { id: 'revision', label: 'Perlu Revisi' },
+    { id: 'history', label: 'Riwayat Selesai' },
 ];
 
 export default function PermitsIndex({ permits = [], stats = {} }) {
-    const [filter, setFilter] = useState('all');
+    const [filter, setFilter] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const initial = params.get('filter');
+            if (initial && ['all', 'active', 'revision', 'approved', 'history'].includes(initial)) {
+                return initial;
+            }
+        }
+        return 'all';
+    });
     const [query, setQuery] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const f = params.get('filter');
+            if (f && ['all', 'active', 'revision', 'approved', 'history'].includes(f)) {
+                setFilter(f);
+            }
+        }
+    }, []);
 
     const filtered = useMemo(() => {
         return permits.filter((permit) => {
-            const matchesFilter = filter === 'all' || permit.stage === filter;
+            let matchesFilter = true;
+            if (filter === 'active') {
+                matchesFilter = ['submitted', 'admin', 'leadership'].includes(permit.stage);
+            } else if (filter === 'revision') {
+                matchesFilter = permit.stage === 'revision';
+            } else if (filter === 'approved') {
+                matchesFilter = permit.stage === 'approved';
+            } else if (filter === 'history') {
+                matchesFilter = ['approved', 'rejected'].includes(permit.stage);
+            }
+
             const haystack = `${permit.event} ${permit.id} ${permit.room} ${permit.ormawa}`.toLowerCase();
             const matchesQuery = haystack.includes(query.toLowerCase().trim());
 
             return matchesFilter && matchesQuery;
         });
-    }, [filter, query]);
+    }, [filter, query, permits]);
 
-    const activeCount = stats.active ?? 0;
-    const approvedCount = stats.approved ?? 0;
-    const revisionCount = stats.revision ?? 0;
+    const activeCount = stats.active ?? permits.filter((p) => ['submitted', 'admin', 'leadership'].includes(p.stage)).length;
+    const approvedCount = stats.approved ?? permits.filter((p) => p.stage === 'approved').length;
+    const revisionCount = stats.revision ?? permits.filter((p) => p.stage === 'revision').length;
+    const historyCount = permits.filter((p) => ['approved', 'rejected'].includes(p.stage)).length;
+
+    const getFilterCount = (id) => {
+        if (id === 'all') return permits.length;
+        if (id === 'active') return activeCount;
+        if (id === 'revision') return revisionCount;
+        if (id === 'approved') return approvedCount;
+        if (id === 'history') return historyCount;
+        return 0;
+    };
 
     return (
         <RuangKitaLayout activeTab="permits">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            {/* Header: Title + Primary Action Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Tracking Izin</h1>
-                    <p className="text-xs text-slate-400 mt-1">
-                        Pantau setiap tahap persetujuan tanpa perlu datang ke kantor administrasi.
+                    <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                        Pusat Peminjaman &amp; Izin
+                    </h1>
+                    <p className="text-xs text-slate-500 mt-1 max-w-xl">
+                        Satu pintu untuk membuat pengajuan baru, melacak status izin, memperbaiki berkas revisi, dan melihat riwayat peminjaman.
                     </p>
                 </div>
                 <a
                     href="/bookings/create"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/25 hover:bg-blue-700 transition-all hover:scale-[1.01] active:scale-[0.99] shrink-0"
                 >
                     <Icon name="plus" className="w-4 h-4" />
                     Pengajuan Baru
                 </a>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'Total pengajuan', value: String(stats.total ?? permits.length), icon: 'clipboardList', accent: 'text-blue-600 bg-blue-50' },
-                    { label: 'Pengajuan aktif', value: String(activeCount), icon: 'clock', accent: 'text-violet-600 bg-violet-50' },
-                    { label: 'Izin disetujui', value: String(approvedCount), icon: 'check', accent: 'text-emerald-600 bg-emerald-50' },
-                    { label: 'Perlu revisi', value: String(revisionCount), icon: 'alert', accent: 'text-rose-600 bg-rose-50' },
-                ].map((item) => (
-                    <div key={item.label} className="min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.accent}`}>
-                            <Icon name={item.icon} className="w-[18px] h-[18px]" />
+            {/* Revision Alert Banner (if any) */}
+            {revisionCount > 0 && filter !== 'revision' && (
+                <div className="p-4 rounded-2xl bg-rose-50/90 border border-rose-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                    <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <Icon name="alert" className="w-[18px] h-[18px]" />
                         </div>
                         <div>
-                            <p className="text-lg font-extrabold text-slate-900 leading-tight">{item.value}</p>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight mt-0.5">{item.label}</p>
+                            <p className="text-xs font-bold text-rose-900">
+                                {revisionCount} Pengajuan Memerlukan Tindakan Revisi
+                            </p>
+                            <p className="text-[11px] text-rose-700 mt-0.5 leading-relaxed">
+                                Verifikator memberikan catatan perbaikan. Segera perbaiki dokumen agar proses persetujuan dapat dilanjutkan.
+                            </p>
                         </div>
                     </div>
+                    <button
+                        type="button"
+                        onClick={() => setFilter('revision')}
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition-colors shrink-0 shadow-sm"
+                    >
+                        Lihat Berkas Revisi
+                        <Icon name="chevronRight" className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            )}
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+                {[
+                    { label: 'Total Pengajuan', value: String(stats.total ?? permits.length), icon: 'clipboardList', accent: 'text-blue-600 bg-blue-50', filterId: 'all' },
+                    { label: 'Sedang Berjalan', value: String(activeCount), icon: 'clock', accent: 'text-violet-600 bg-violet-50', filterId: 'active' },
+                    { label: 'Perlu Revisi', value: String(revisionCount), icon: 'alert', accent: revisionCount > 0 ? 'text-rose-600 bg-rose-100/80' : 'text-slate-500 bg-slate-100', filterId: 'revision' },
+                    { label: 'Riwayat Selesai', value: String(historyCount), icon: 'check', accent: 'text-emerald-600 bg-emerald-50', filterId: 'history' },
+                ].map((item) => (
+                    <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => setFilter(item.filterId)}
+                        className={`text-left min-w-0 bg-white rounded-2xl border transition-all p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md ${
+                            filter === item.filterId ? 'border-blue-500 ring-2 ring-blue-500/10' : 'border-slate-100 hover:border-slate-200'
+                        }`}
+                    >
+                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${item.accent}`}>
+                            <Icon name={item.icon} className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-xl font-extrabold text-slate-900 leading-tight">{item.value}</p>
+                            <p className="text-[11px] font-semibold text-slate-400 leading-tight mt-0.5 truncate">{item.label}</p>
+                        </div>
+                    </button>
                 ))}
             </div>
 
+            {/* Integrated Table/List Section */}
             <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 border-b border-slate-100">
+                {/* Filter Tabs + Search */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 border-b border-slate-100 bg-slate-50/40">
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
                         {filters.map((item) => {
-                            const count =
-                                item.id === 'all'
-                                    ? permits.length
-                                    : permits.filter((permit) => permit.stage === item.id).length;
+                            const count = getFilterCount(item.id);
                             const isActive = filter === item.id;
+                            const hasAlertBadge = item.isAlert && count > 0;
 
                             return (
                                 <button
                                     key={item.id}
                                     type="button"
                                     onClick={() => setFilter(item.id)}
-                                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10.5px] font-bold whitespace-nowrap transition-colors ${
+                                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all ${
                                         isActive
                                             ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
-                                            : 'text-slate-500 hover:bg-slate-50'
+                                            : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
                                     }`}
                                 >
                                     {item.label}
                                     <span
-                                        className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-                                            isActive ? 'bg-white/20' : 'bg-slate-100 text-slate-500'
+                                        className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold ${
+                                            hasAlertBadge
+                                                ? isActive
+                                                    ? 'bg-rose-500 text-white'
+                                                    : 'bg-rose-100 text-rose-700'
+                                                : isActive
+                                                    ? 'bg-white/20 text-white'
+                                                    : 'bg-slate-200/70 text-slate-600'
                                         }`}
                                     >
                                         {count}
@@ -101,7 +184,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                         })}
                     </div>
 
-                    <div className="relative w-full lg:w-64">
+                    <div className="relative w-full lg:w-72">
                         <Icon
                             name="search"
                             className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
@@ -110,74 +193,118 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                             type="text"
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="Cari kegiatan atau ID izin..."
-                            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-slate-400"
+                            placeholder="Cari kegiatan, ormawa, atau kode izin..."
+                            className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-slate-400 shadow-sm"
                         />
                     </div>
                 </div>
 
-                <div className="divide-y divide-slate-50">
+                {/* Permits List */}
+                <div className="divide-y divide-slate-100">
                     {filtered.map((permit) => {
-                        const style = stageStyles[permit.stage];
+                        const style = stageStyles[permit.stage] || {
+                            label: permit.stage,
+                            progress: 'bg-slate-300',
+                            progressValue: 20,
+                        };
 
                         return (
                             <div
                                 key={permit.id}
-                                className="flex flex-col md:flex-row md:items-center gap-4 px-5 py-4 hover:bg-slate-50/60 transition-colors"
+                                className="flex flex-col md:flex-row md:items-center gap-4 px-5 py-4 hover:bg-slate-50/70 transition-colors"
                             >
                                 <div
-                                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                                    className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
                                         permit.stage === 'revision'
-                                            ? 'bg-rose-50 text-rose-600'
+                                            ? 'bg-rose-50 text-rose-600 border border-rose-200/60'
                                             : permit.stage === 'approved'
-                                              ? 'bg-emerald-50 text-emerald-600'
-                                              : 'bg-blue-50 text-blue-600'
+                                              ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'
+                                              : 'bg-blue-50 text-blue-600 border border-blue-200/60'
                                     }`}
                                 >
-                                    <Icon name={permit.stage === 'revision' ? 'alert' : 'file'} className="w-[18px] h-[18px]" />
+                                    <Icon
+                                        name={permit.stage === 'revision' ? 'alert' : permit.stage === 'approved' ? 'check' : 'clipboardList'}
+                                        className="w-5 h-5"
+                                    />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <a
                                             href={`/permits/${permit.id}`}
-                                            className="text-[12.5px] font-bold text-slate-800 hover:text-blue-600 transition-colors"
+                                            className="text-[13px] font-bold text-slate-900 hover:text-blue-600 transition-colors"
                                         >
                                             {permit.event}
                                         </a>
-                                        <span className="text-[9px] font-mono text-slate-400">{permit.id}</span>
+                                        <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-semibold">
+                                            {permit.id}
+                                        </span>
+                                        {permit.ormawa && (
+                                            <span className="text-[10px] font-medium text-slate-500">
+                                                • {permit.ormawa}
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[10px] text-slate-400 font-medium">
-                                        <span className="inline-flex items-center gap-1">
-                                            <Icon name="door" className="w-3 h-3" />
+
+                                    <div className="flex flex-wrap items-center gap-x-3.5 gap-y-1 mt-1 text-[11px] text-slate-500 font-medium">
+                                        <span className="inline-flex items-center gap-1.5 text-slate-600">
+                                            <Icon name="door" className="w-3.5 h-3.5 text-slate-400" />
                                             {permit.room}
                                         </span>
-                                        <span className="inline-flex items-center gap-1">
-                                            <Icon name="calendar" className="w-3 h-3" />
+                                        <span className="inline-flex items-center gap-1.5 text-slate-600">
+                                            <Icon name="calendar" className="w-3.5 h-3.5 text-slate-400" />
                                             {permit.date} • {permit.time}
                                         </span>
-                                        <span className="inline-flex items-center gap-1">
-                                            <Icon name="users" className="w-3 h-3" />
-                                            {permit.participants} peserta
-                                        </span>
+                                        {permit.participants > 0 && (
+                                            <span className="inline-flex items-center gap-1.5 text-slate-600">
+                                                <Icon name="users" className="w-3.5 h-3.5 text-slate-400" />
+                                                {permit.participants} peserta
+                                            </span>
+                                        )}
                                     </div>
 
-                                    <div className="flex items-center gap-2 mt-2.5 max-w-md">
-                                        <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                            <div
-                                                className={`h-1.5 rounded-full ${style.progress}`}
-                                                style={{ width: `${style.progressValue}%` }}
-                                            />
+                                    {/* Revision Note Pill if applicable */}
+                                    {permit.stage === 'revision' && permit.notes && (
+                                        <div className="mt-2.5 p-2.5 rounded-xl bg-rose-50/90 border border-rose-200/80 text-[10.5px] text-rose-800 flex items-start gap-2">
+                                            <Icon name="alert" className="w-3.5 h-3.5 text-rose-600 mt-0.5 shrink-0" />
+                                            <div>
+                                                <strong className="font-semibold text-rose-900">Catatan Revisi:</strong>{' '}
+                                                <span>{permit.notes}</span>
+                                            </div>
                                         </div>
-                                        <span className="text-[9px] font-bold text-slate-400">{style.progressValue}%</span>
-                                    </div>
+                                    )}
+
+                                    {/* Progress Bar for In-Progress stages */}
+                                    {!['approved', 'rejected', 'revision'].includes(permit.stage) && (
+                                        <div className="flex items-center gap-2.5 mt-2.5 max-w-sm">
+                                            <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                                <div
+                                                    className={`h-1.5 rounded-full ${style.progress}`}
+                                                    style={{ width: `${style.progressValue}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-[9.5px] font-bold text-slate-400">{style.progressValue}%</span>
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="flex items-center justify-between md:justify-end gap-3 md:w-56 shrink-0">
+                                <div className="flex items-center justify-between md:justify-end gap-2.5 md:w-64 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-50">
                                     <StatusBadge stage={permit.stage} />
+
+                                    {permit.stage === 'approved' && (
+                                        <a
+                                            href={`/permits/${permit.id}/letter`}
+                                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10.5px] font-bold transition-colors"
+                                            title="Unduh Surat Izin Resmi"
+                                        >
+                                            <Icon name="download" className="w-3.5 h-3.5" />
+                                            Surat
+                                        </a>
+                                    )}
+
                                     <a
                                         href={`/permits/${permit.id}`}
-                                        className="inline-flex items-center gap-1 text-[10.5px] font-bold text-blue-600 hover:text-blue-700"
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-[10.5px] font-bold text-slate-700 transition-colors"
                                     >
                                         Detail
                                         <Icon name="chevronRight" className="w-3.5 h-3.5" />
@@ -188,21 +315,31 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                     })}
 
                     {filtered.length === 0 && (
-                        <div className="px-5 py-14 text-center">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center mx-auto">
-                                <Icon name="search" className="w-6 h-6" />
+                        <div className="px-5 py-16 text-center">
+                            <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center mx-auto mb-3">
+                                <Icon name="clipboardList" className="w-7 h-7" />
                             </div>
-                            <p className="text-xs font-bold text-slate-600 mt-3">Tidak ada pengajuan ditemukan</p>
-                            <p className="text-[10px] text-slate-400 mt-1">Coba ubah filter atau kata kunci pencarian.</p>
+                            <p className="text-sm font-bold text-slate-700">Tidak ada pengajuan pada kategori ini</p>
+                            <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                                Coba pilih filter lain atau buat pengajuan peminjaman ruangan baru.
+                            </p>
+                            <a
+                                href="/bookings/create"
+                                className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm"
+                            >
+                                <Icon name="plus" className="w-3.5 h-3.5" />
+                                Buat Pengajuan Baru
+                            </a>
                         </div>
                     )}
                 </div>
             </section>
 
+            {/* Bottom Guidance Info */}
             <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-start gap-3">
                 <Icon name="info" className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-                <p className="text-[10.5px] text-blue-800 leading-relaxed">
-                    Setiap perubahan status dikirim sebagai notifikasi real-time ke sistem. Pantau perkembangan izin dan catatan verifikator langsung pada detail pengajuan.
+                <p className="text-[11px] text-blue-900 leading-relaxed">
+                    Setiap peminjaman diproses bertahap mulai dari verifikasi kelengkapan berkas oleh admin hingga tanda tangan surat izin oleh pimpinan. Notifikasi perubahan status akan muncul otomatis pada dashboard Anda.
                 </p>
             </div>
         </RuangKitaLayout>
