@@ -1,17 +1,83 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
+import React from 'react';
 import { Link } from '@inertiajs/react';
+import Icon from '@/Components/RuangKita/Icon';
 
-export default function GuestLayout({ children }) {
+export default function GuestLayout({ children, title = 'SSO Universitas Brawijaya', subtitle = 'Sistem Terpadu Peminjaman Ruang & Tracking Izin Ormawa' }) {
     return (
-        <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
-                </Link>
+        <div className="min-h-screen bg-[#F5F7FB] flex flex-col justify-center font-sans antialiased text-slate-800 p-4 sm:p-6 lg:p-8">
+            <div className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[620px]">
+                {/* Left Brand Panel - SSO Universitas Brawijaya */}
+                <div className="lg:col-span-5 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 text-white p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
+                    <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+                    <div className="absolute -bottom-20 -left-16 w-60 h-60 rounded-full bg-blue-500/25 blur-3xl pointer-events-none" />
+
+                    <div className="relative z-10">
+                        <Link href="/dashboard" className="inline-flex items-center gap-3 group">
+                            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md ring-1 ring-white/25 flex items-center justify-center p-2 shadow-lg shadow-blue-900/20 group-hover:bg-white/20 transition-all">
+                                <img
+                                    src="/images/vokasi.png"
+                                    alt="Vokasi UB"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-black tracking-tight leading-none text-white">
+                                    RuangKita
+                                </h1>
+                                <p className="text-[10px] font-semibold text-blue-200 uppercase tracking-widest mt-1">
+                                    Fakultas Vokasi UB
+                                </p>
+                            </div>
+                        </Link>
+
+                        <div className="mt-8">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-[11px] font-semibold text-blue-100 mb-3">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                Single Sign-On (SSO) UB
+                            </div>
+                            <h2 className="text-xl lg:text-2xl font-extrabold text-white leading-tight">
+                                Akses Terpusat Ormawa Universitas Brawijaya
+                            </h2>
+                            <p className="text-xs text-blue-100/90 mt-2.5 leading-relaxed">
+                                Satu akun kampus untuk cek ketersediaan ruang live, upload proposal, dan pantau tanda tangan izin secara real-time.
+                            </p>
+                        </div>
+
+                        <div className="mt-8 space-y-3 pt-6 border-t border-white/15">
+                            {[
+                                { title: 'Akun Kampus Terverifikasi', desc: 'Login instan via @student.ub.ac.id' },
+                                { title: 'Anti Double-Booking', desc: 'Validasi bentrok jadwal otomatis 5 ruang' },
+                                { title: 'Transparansi 4 Tahap', desc: 'Pantau posisi berkas hingga disetujui WD III' },
+                            ].map((item, idx) => (
+                                <div key={idx} className="flex items-start gap-2.5 text-xs text-blue-100">
+                                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0 mt-0.5">
+                                        <Icon name="checkSmall" className="w-3.5 h-3.5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-white text-[11.5px] leading-tight">{item.title}</p>
+                                        <p className="text-[10px] text-blue-200 leading-tight mt-0.5">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="relative z-10 pt-6 mt-6 border-t border-white/15 text-[10.5px] text-blue-200 flex items-center justify-between">
+                        <span>Tim Yakusa • Case 1</span>
+                        <span className="font-bold text-white">Smarter Campus</span>
+                    </div>
+                </div>
+
+                {/* Right Form Panel */}
+                <div className="lg:col-span-7 p-8 sm:p-10 lg:p-12 flex flex-col justify-center bg-white">
+                    <div className="max-w-md w-full mx-auto">
+                        {children}
+                    </div>
+                </div>
             </div>
 
-            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
-                {children}
+            <div className="text-center text-[11px] text-slate-400 mt-5">
+                © 2026 RuangKita • Universitas Brawijaya. All rights reserved.
             </div>
         </div>
     );
