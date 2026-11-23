@@ -82,4 +82,48 @@ class RuangKitaPagesTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Permits/Show'));
     }
+
+    public function test_approved_permit_can_view_official_letter(): void
+    {
+        $permit = Permit::create([
+            'code' => 'RK-2026-APP',
+            'event' => 'Seminar Nasional Vokasi',
+            'ormawa' => 'BEM Vokasi UB',
+            'pic' => 'Ahmad',
+            'room_id' => 1,
+            'room_name' => 'Auditorium Vokasi',
+            'date' => '2026-12-05',
+            'start' => '08:00',
+            'end' => '16:00',
+            'stage' => 'approved',
+            'submitted_at' => now(),
+        ]);
+
+        $this->get('/permits/'.$permit->code.'/letter')
+            ->assertOk()
+            ->assertSee('IZIN PENGGUNAAN RUANGAN')
+            ->assertSee('Seminar Nasional Vokasi')
+            ->assertSee('Auditorium Vokasi')
+            ->assertSee('Fakultas Vokasi');
+    }
+
+    public function test_non_approved_permit_cannot_view_official_letter(): void
+    {
+        $permit = Permit::create([
+            'code' => 'RK-2026-PENDING',
+            'event' => 'Rapat Internal',
+            'ormawa' => 'HMPSTI',
+            'pic' => 'Budi',
+            'room_id' => 1,
+            'room_name' => 'Ruang 201',
+            'date' => '2026-12-05',
+            'start' => '08:00',
+            'end' => '10:00',
+            'stage' => 'admin',
+            'submitted_at' => now(),
+        ]);
+
+        $this->get('/permits/'.$permit->code.'/letter')
+            ->assertNotFound();
+    }
 }

@@ -100,13 +100,15 @@ export default function PermitShow({ permit: serverPermit = {} }) {
 
                     <div className="flex items-center gap-2 shrink-0">
                         {isApproved && (
-                            <button
-                                type="button"
+                            <a
+                                href={route('permits.letter', permit.id)}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white text-[10.5px] font-bold hover:bg-blue-700 transition-colors shadow-sm"
                             >
                                 <Icon name="download" className="w-3.5 h-3.5" />
                                 Unduh Surat Izin
-                            </button>
+                            </a>
                         )}
                         <a
                             href="/guidelines"
