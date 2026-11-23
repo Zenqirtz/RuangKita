@@ -18,6 +18,7 @@ const pageTitles = {
     rooms: 'Daftar Ruangan',
     permits: 'Peminjaman & Izin',
     permitDetail: 'Detail Pengajuan',
+    profile: 'Profil Akun',
     booking: 'Pengajuan Baru',
     revisions: 'Catatan Revisi',
     history: 'Riwayat Peminjaman',
@@ -363,7 +364,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                             onClick={() => setProfileDropdownOpen(false)}
                                         >
                                             <Icon name="user" className="w-4 h-4 text-slate-400" />
-                                            <span>Profil Akun</span>
+                                            <span>{t('nav.profile', 'Profil Akun')}</span>
                                         </Link>
                                         <Link
                                             href={route('logout')}
