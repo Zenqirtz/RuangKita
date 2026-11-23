@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePage } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import StatCard from '@/Components/RuangKita/StatCard';
@@ -31,6 +32,9 @@ const noticeIconStyles = {
 };
 
 export default function RuangKitaDashboard() {
+    const { auth } = usePage().props;
+    const isAdmin = auth?.user?.role === 'admin';
+    const userName = auth?.user?.name ?? 'Daffa Ahmad Al Attas';
     const recentPermits = permits.slice(0, 4);
 
     return (
@@ -45,34 +49,36 @@ export default function RuangKitaDashboard() {
                     <div className="max-w-xl">
 
                         <h2 className="text-2xl md:text-[28px] font-extrabold tracking-tight leading-tight">
-                            Selamat pagi, 👋<br />
-                            <span className="text-blue-200">Daffa Ahmad Al Attas!</span>
+                            {isAdmin ? 'Selamat datang kembali,' : 'Selamat pagi, 👋'}<br />
+                            <span className="text-blue-200">{isAdmin ? 'Admin RuangKita!' : `${userName}!`}</span>
                         </h2>
                         <p className="text-[13px] text-blue-100 mt-2.5 leading-relaxed max-w-md">
-                            Pantau peminjaman ruang & progres tanda tangan izin kampusmu dalam satu tempat.
+                            {isAdmin
+                                ? 'Kelola ketersediaan ruang, verifikasi permohonan izin ormawa, dan pantau persetujuan pimpinan.'
+                                : 'Pantau peminjaman ruang & progres tanda tangan izin kampusmu dalam satu tempat.'}
                         </p>
 
                         <div className="flex flex-wrap items-center gap-2.5 mt-5">
                             <a
-                                href="/bookings/create"
+                                href={isAdmin ? '/permits' : '/bookings/create'}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-blue-700 text-xs font-bold shadow-lg hover:bg-blue-50 transition-all active:scale-[0.98]"
                             >
-                                <Icon name="plus" className="w-4 h-4" />
-                                Ajukan Ruangan
+                                <Icon name={isAdmin ? 'fileCheck' : 'plus'} className="w-4 h-4" />
+                                {isAdmin ? 'Verifikasi Izin Masuk' : 'Ajukan Ruangan'}
                             </a>
                             <a
-                                href="/calendar"
+                                href={isAdmin ? '/rooms' : '/calendar'}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold hover:bg-white/20 transition-all"
                             >
-                                <Icon name="calendar" className="w-4 h-4" />
-                                Kalender Live
+                                <Icon name={isAdmin ? 'door' : 'calendar'} className="w-4 h-4" />
+                                {isAdmin ? 'Kelola Ruangan' : 'Kalender Live'}
                             </a>
                             <a
-                                href="/permits"
+                                href={isAdmin ? '/calendar' : '/permits'}
                                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold hover:bg-white/20 transition-all"
                             >
-                                <Icon name="clock" className="w-4 h-4" />
-                                Lacak Izin
+                                <Icon name={isAdmin ? 'calendar' : 'clock'} className="w-4 h-4" />
+                                {isAdmin ? 'Kalender Live' : 'Lacak Izin'}
                             </a>
                         </div>
                     </div>

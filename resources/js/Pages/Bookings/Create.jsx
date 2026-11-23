@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { router } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
@@ -89,7 +90,7 @@ export default function BookingCreate() {
     const [proposalFile, setProposalFile] = useState('Proposal_Workshop_UIUX.pdf');
     const [letterFile, setLetterFile] = useState('Surat_Permohonan_Ruangan.pdf');
     const [agreed, setAgreed] = useState(true);
-    const [submitted, setSubmitted] = useState(null);
+    const [submitted] = useState(null);
 
     const update = (field) => (event) => {
         setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -125,19 +126,33 @@ export default function BookingCreate() {
     const isValidDuration = duration > 0;
     const canSubmit = Boolean(form.event && form.pic && proposalFile && letterFile && agreed && !conflict && isValidDuration);
 
+    const [loading, setLoading] = useState(false);
+
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (!canSubmit) {
+        if (!canSubmit || loading) {
             return;
         }
 
-        setSubmitted({
-            id: 'RK-2026-085',
+        setLoading(true);
+
+        router.post('/bookings', {
             event: form.event,
-            room: selectedRoom?.name,
-            date: formatDate(form.date),
-            time: `${form.start} - ${form.end}`,
+            ormawa: form.ormawa,
+            pic: form.pic,
+            phone: form.phone,
+            roomId: form.roomId,
+            roomName: selectedRoom?.name ?? 'Auditorium Gedung A',
+            date: form.date,
+            start: form.start,
+            end: form.end,
+            participants: form.participants,
+            notes: form.notes,
+            proposalFile: proposalFile,
+            letterFile: letterFile,
+        }, {
+            onFinish: () => setLoading(false),
         });
     };
 
@@ -391,11 +406,11 @@ export default function BookingCreate() {
 
                         <button
                             type="submit"
-                            disabled={!canSubmit}
+                            disabled={!canSubmit || loading}
                             className="mt-4 w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 text-white text-[11.5px] font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
                         >
                             <Icon name="send" className="w-4 h-4" />
-                            Kirim Pengajuan
+                            {loading ? 'Mengirim...' : 'Kirim Pengajuan'}
                         </button>
                         <p className="text-[9px] text-slate-400 text-center mt-2">
                             Dengan mengirim, pengajuan masuk ke tahap verifikasi admin.

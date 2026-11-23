@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminPermitController;
+use App\Http\Controllers\PermitController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,30 +25,15 @@ Route::get('/rooms', function () {
 Route::get('/bookings/create', function () {
     return Inertia::render('Bookings/Create');
 })->name('bookings.create');
+Route::post('/bookings', [PermitController::class, 'store'])->name('bookings.store');
 
-Route::get('/permits', function () {
-    return Inertia::render('Permits/Index');
-})->name('permits.index');
-
-Route::get('/permits/{permit}', function (string $permit) {
-    return Inertia::render('Permits/Show', [
-        'permitId' => $permit,
-    ]);
-})->name('permits.show');
-
-Route::get('/revisions', function () {
-    return Inertia::render('Revisions');
-})->name('revisions.index');
-
-Route::get('/history', function () {
-    return Inertia::render('History');
-})->name('history.index');
-
-Route::get('/guidelines', function () {
-    return Inertia::render('Guidelines');
-})->name('guidelines.index');
+Route::get('/permits', [PermitController::class, 'index'])->name('permits.index');
+Route::get('/permits/{permit}', [PermitController::class, 'show'])->name('permits.show');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/admin/permits/{permit}/review', [AdminPermitController::class, 'updateStatus'])
+        ->name('admin.permits.review');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

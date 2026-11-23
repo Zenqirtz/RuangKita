@@ -246,9 +246,16 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                     {initials}
                                 </div>
                                 <div className="hidden sm:block text-left">
-                                    <p className="text-[11px] font-bold text-slate-800 leading-tight truncate max-w-[160px]">
-                                        {userName}
-                                    </p>
+                                    <div className="flex items-center gap-1.5">
+                                        <p className="text-[11px] font-bold text-slate-800 leading-tight truncate max-w-[140px]">
+                                            {userName}
+                                        </p>
+                                        {user?.role === 'admin' && (
+                                            <span className="text-[8px] font-black uppercase px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded">
+                                                Admin
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-[9px] font-medium text-slate-400 leading-tight truncate max-w-[160px]">
                                         {userEmail}
                                     </p>

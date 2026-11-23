@@ -65,6 +65,13 @@ export const stageStyles = {
         progress: 'bg-rose-500',
         progressValue: 25,
     },
+    rejected: {
+        label: 'Ditolak',
+        badge: 'bg-slate-100 text-slate-700 border-slate-300',
+        dot: 'bg-slate-500',
+        progress: 'bg-slate-400',
+        progressValue: 100,
+    },
 };
 
 export const rooms = [

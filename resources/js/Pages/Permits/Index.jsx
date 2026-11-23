@@ -12,7 +12,7 @@ const filters = [
     { id: 'revision', label: 'Perlu Revisi' },
 ];
 
-export default function PermitsIndex() {
+export default function PermitsIndex({ permits = [], stats = {} }) {
     const [filter, setFilter] = useState('all');
     const [query, setQuery] = useState('');
 
@@ -26,9 +26,9 @@ export default function PermitsIndex() {
         });
     }, [filter, query]);
 
-    const activeCount = permits.filter((permit) => !['approved'].includes(permit.stage)).length;
-    const approvedCount = permits.filter((permit) => permit.stage === 'approved').length;
-    const revisionCount = permits.filter((permit) => permit.stage === 'revision').length;
+    const activeCount = stats.active ?? 0;
+    const approvedCount = stats.approved ?? 0;
+    const revisionCount = stats.revision ?? 0;
 
     return (
         <RuangKitaLayout activeTab="permits">
