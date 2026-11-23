@@ -6,9 +6,9 @@ export default function StatusBadge({ stage, className = '' }) {
 
     return (
         <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border whitespace-nowrap ${style.badge} ${className}`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold border whitespace-nowrap ${style.badge} ${className}`}
         >
-            <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
+            <span className={`w-1 h-1 rounded-full ${style.dot}`} />
             {style.label}
         </span>
     );
