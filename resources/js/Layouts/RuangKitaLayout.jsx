@@ -72,19 +72,17 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                 `}
             >
                 <div className="flex flex-col min-h-0">
-                    <a href="/dashboard" className="flex flex-col items-center gap-2.5 bg-blue-600 px-5 pt-6 pb-7 text-center text-white">
-                        <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center ring-1 ring-white/20">
-                            <Icon name="graduation" className="w-7 h-7 text-white" strokeWidth={2.2} />
-                        </div>
+                    <a href="/dashboard" className="flex flex-col items-center gap-2 bg-gradient-to-b from-blue-600 to-blue-700 px-5 pt-6 pb-9 text-center text-white">
+                        <Icon name="graduation" className="w-12 h-12 text-white drop-shadow-sm" strokeWidth={1.8} />
                         <div className="min-w-0">
-                            <h1 className="text-xl font-extrabold tracking-tight leading-none">RuangKita</h1>
-                            <p className="text-[9px] font-semibold text-blue-100 uppercase tracking-[0.14em] mt-1.5">
-                                Campus Room & Permit
+                            <h1 className="text-[22px] font-extrabold tracking-tight leading-none">RuangKita</h1>
+                            <p className="text-[11px] font-medium text-blue-100 leading-snug mt-2">
+                                Campus Room Booking<br />&amp; Permit Tracking
                             </p>
                         </div>
                     </a>
 
-                    <nav className="px-3.5 pt-4 space-y-1 overflow-y-auto pb-4">
+                    <nav className="relative -mt-3 flex-1 rounded-t-2xl bg-white px-3.5 pt-3.5 space-y-1 overflow-y-auto pb-4">
                         {navItems.map((item) => {
                             const isActive = activeTab === item.id;
 
@@ -94,11 +92,11 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                     href={item.href}
                                     onClick={() => setSidebarOpen(false)}
                                     className={`
-                                        flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
+                                        flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg text-[12px] font-semibold transition-all duration-200
                                         ${
                                             isActive
-                                                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
-                                                : 'text-slate-500 hover:bg-slate-50 hover:text-blue-600'
+                                                ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
+                                                : 'text-slate-700 hover:bg-slate-50 hover:text-blue-600'
                                         }
                                     `}
                                 >
