@@ -14,18 +14,14 @@ export default function GuestLayout({ children }) {
                     <div className="relative z-10">
                         <Link href="/dashboard" className="inline-flex items-center gap-3 group">
                             <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md ring-1 ring-white/25 flex items-center justify-center p-2 shadow-lg shadow-blue-900/20 group-hover:bg-white/20 transition-all">
-                                <img
-                                    src="/images/vokasi.png"
-                                    alt="Vokasi UB"
-                                    className="w-full h-full object-contain"
-                                />
+                                <Icon name="graduation" className="w-8 h-8 text-white" strokeWidth={1.8} />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-black tracking-tight leading-none text-white">
                                     RuangKita
                                 </h1>
                                 <p className="text-[10px] font-semibold text-blue-200 uppercase tracking-widest mt-1">
-                                    Fakultas Vokasi UB
+                                    Universitas Brawijaya
                                 </p>
                             </div>
                         </Link>
