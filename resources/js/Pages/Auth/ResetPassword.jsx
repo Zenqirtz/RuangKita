@@ -25,7 +25,7 @@ export default function ResetPassword({ token, email }) {
 
     return (
         <GuestLayout>
-            <Head title="Atur Ulang Kata Sandi - RuangKita" />
+            <Head title="Atur Ulang Kata Sandi" />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">

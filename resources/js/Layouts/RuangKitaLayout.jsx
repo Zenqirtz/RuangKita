@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/RuangKita/Icon';
 import LanguageSwitcher from '@/Components/RuangKita/LanguageSwitcher';
 import { useLanguage } from '@/Context/LanguageContext';
@@ -76,6 +76,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
 
     return (
         <div className="min-h-screen bg-[#F5F7FB] flex font-sans antialiased text-slate-800">
+            <Head title={pageTitle} />
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"

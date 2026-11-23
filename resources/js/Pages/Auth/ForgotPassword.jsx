@@ -20,7 +20,7 @@ export default function ForgotPassword({ status }) {
 
     return (
         <GuestLayout>
-            <Head title="Lupa Kata Sandi - RuangKita" />
+            <Head title="Lupa Kata Sandi" />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
