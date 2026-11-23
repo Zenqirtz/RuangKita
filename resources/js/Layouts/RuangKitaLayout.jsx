@@ -230,15 +230,6 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                         >
                             <Icon name="menu" className="w-5 h-5" />
                         </button>
-                        <button
-                            type="button"
-                            onClick={toggleCollapsed}
-                            className="hidden lg:flex p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                            aria-label={isCollapsed ? 'Perluas sidebar' : 'Kecilkan sidebar'}
-                            title={isCollapsed ? 'Perluas sidebar' : 'Kecilkan sidebar'}
-                        >
-                            <Icon name="menu" className="w-5 h-5" />
-                        </button>
                         <h2 className="text-lg md:text-xl font-extrabold text-slate-900 tracking-tight truncate">
                             {pageTitle}
                         </h2>
