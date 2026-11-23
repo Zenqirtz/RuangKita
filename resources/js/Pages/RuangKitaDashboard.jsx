@@ -281,8 +281,13 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                     </div>
                 </SectionCard>
 
-                <SectionCard title="Akses Cepat" subtitle="Menu yang sering digunakan" bodyClassName="px-5 pb-5">
-                    <div className="grid grid-cols-3 gap-2.5">
+                <SectionCard
+                    title="Akses Cepat"
+                    subtitle="Menu yang sering digunakan"
+                    className="h-full flex flex-col"
+                    bodyClassName="px-5 pb-5 flex-1 flex flex-col"
+                >
+                    <div className="grid h-full flex-1 grid-cols-3 grid-rows-2 gap-3">
                         {quickAccess.map((item) => {
                             const accent = accentStyles[item.accent] ?? accentStyles.blue;
 
@@ -290,17 +295,17 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                                 <a
                                     key={item.label}
                                     href={item.href}
-                                    className={`rounded-xl border ${accent.soft} px-2 py-3 flex flex-col items-center text-center hover:shadow-sm hover:-translate-y-0.5 transition-all group`}
+                                    className={`rounded-2xl border ${accent.soft} p-3 sm:p-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:-translate-y-0.5 transition-all group`}
                                 >
                                     <div
-                                        className={`w-9 h-9 rounded-xl bg-white flex items-center justify-center ${accent.text} shadow-sm group-hover:scale-105 transition-transform`}
+                                        className={`w-11 h-11 rounded-xl bg-white flex items-center justify-center ${accent.text} shadow-sm group-hover:scale-105 transition-transform`}
                                     >
-                                        <Icon name={item.icon} className="w-[18px] h-[18px]" />
+                                        <Icon name={item.icon} className="w-5 h-5" />
                                     </div>
-                                    <span className="text-[10px] font-bold text-slate-700 mt-2 leading-tight">
+                                    <span className="text-[11.5px] font-bold text-slate-700 mt-2.5 leading-tight">
                                         {item.label}
                                     </span>
-                                    <span className="text-[8.5px] text-slate-400 mt-0.5 leading-tight">
+                                    <span className="text-[10px] text-slate-400 mt-1 leading-tight line-clamp-1">
                                         {item.description}
                                     </span>
                                 </a>
