@@ -30,40 +30,44 @@ function buildCells(year, month) {
 export default function MiniCalendar({
     year = 2026,
     month = 10,
-    monthLabel = 'November 2026',
+    monthLabel: defaultMonthLabel,
     today = 23,
     markedDays = [],
     className = '',
 }) {
-    const cells = useMemo(() => buildCells(year, month), [year, month]);
+    const [viewDate, setViewDate] = useState(() => new Date(year, month, 1));
+    const currentYear = viewDate.getFullYear();
+    const currentMonth = viewDate.getMonth();
+
+    const cells = useMemo(() => buildCells(currentYear, currentMonth), [currentYear, currentMonth]);
     const [selected, setSelected] = useState(today);
+
+    const isOriginalMonth = currentYear === year && currentMonth === month;
+
+    const displayMonthLabel = useMemo(() => {
+        if (isOriginalMonth && defaultMonthLabel) {
+            return defaultMonthLabel;
+        }
+        const str = viewDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }, [viewDate, isOriginalMonth, defaultMonthLabel]);
+
+    const handlePrevMonth = () => {
+        setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    };
+
+    const handleNextMonth = () => {
+        setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    };
 
     return (
         <div className={className}>
-            <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-slate-700">{monthLabel}</span>
-                <div className="flex items-center gap-1">
-                    <button
-                        type="button"
-                        className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                        aria-label="Bulan sebelumnya"
-                    >
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </button>
-                    <button
-                        type="button"
-                        className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                        aria-label="Bulan berikutnya"
-                    >
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path d="m9 18 6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </button>
-                </div>
+            {/* Centered Month & Year */}
+            <div className="mb-3 text-center">
+                <span className="text-xs font-bold text-slate-800">{displayMonthLabel}</span>
             </div>
 
+            {/* Weekdays and Dates Grid */}
             <div className="grid grid-cols-7 gap-y-1">
                 {WEEKDAYS.map((day) => (
                     <div key={day} className="text-[10px] font-semibold text-slate-400 text-center py-1">
@@ -72,9 +76,9 @@ export default function MiniCalendar({
                 ))}
 
                 {cells.map((cell, index) => {
-                    const isToday = !cell.muted && cell.day === today;
-                    const isSelected = !cell.muted && cell.day === selected;
-                    const isMarked = !cell.muted && markedDays.includes(cell.day);
+                    const isToday = isOriginalMonth && !cell.muted && cell.day === today;
+                    const isSelected = isOriginalMonth && !cell.muted && cell.day === selected;
+                    const isMarked = isOriginalMonth && !cell.muted && markedDays.includes(cell.day);
 
                     return (
                         <button
@@ -101,6 +105,40 @@ export default function MiniCalendar({
                         </button>
                     );
                 })}
+            </div>
+
+            {/* Footer with Legend on Left & Pagination on Right */}
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 text-[10px] font-medium text-slate-500">
+                <div className="flex items-center gap-3.5">
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Hari ini
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-rose-400" /> Ada pengajuan
+                    </span>
+                </div>
+                <div className="flex items-center gap-1">
+                    <button
+                        type="button"
+                        onClick={handlePrevMonth}
+                        className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                        aria-label="Bulan sebelumnya"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleNextMonth}
+                        className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                        aria-label="Bulan berikutnya"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="m9 18 6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     );

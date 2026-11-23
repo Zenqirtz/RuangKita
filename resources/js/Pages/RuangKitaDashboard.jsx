@@ -257,7 +257,8 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                     title="Kalender Ketersediaan"
                     action="Lihat Kalender"
                     actionHref="/calendar"
-                    bodyClassName="px-5 pb-5"
+                    divider
+                    bodyClassName="px-5 pt-4 pb-5"
                 >
                     <MiniCalendar
                         year={thisYear}
@@ -271,14 +272,6 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                             })
                             .map((p) => new Date(p.isoDate).getDate())}
                     />
-                    <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-100 text-[10px] font-medium text-slate-500">
-                        <span className="inline-flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-blue-500" /> Hari ini
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-rose-400" /> Ada pengajuan
-                        </span>
-                    </div>
                 </SectionCard>
 
                 <SectionCard
