@@ -61,7 +61,12 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Email Kampus UB" className="text-xs font-bold text-slate-700" />
+                    <div className="flex items-center justify-between">
+                        <InputLabel htmlFor="email" value="Email Kampus UB" className="text-xs font-bold text-slate-700" />
+                        <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                            Wajib @student.ub.ac.id
+                        </span>
+                    </div>
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -72,13 +77,26 @@ export default function Register() {
                             type="email"
                             name="email"
                             value={data.email}
-                            className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="daffa.ahmad@student.ub.ac.id"
+                            className={`pl-9 text-xs rounded-xl block w-full py-2.5 transition-colors ${
+                                data.email && !data.email.endsWith('@student.ub.ac.id')
+                                    ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20'
+                                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/20'
+                            }`}
+                            placeholder="nama.mahasiswa@student.ub.ac.id"
+                            pattern=".+@student\.ub\.ac\.id"
+                            title="Pendaftaran wajib menggunakan email resmi @student.ub.ac.id"
                             autoComplete="username"
                             onChange={(e) => setData('email', e.target.value)}
                             required
                         />
                     </div>
+
+                    {data.email && !data.email.endsWith('@student.ub.ac.id') && (
+                        <p className="mt-1 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
+                            <Icon name="alert" className="w-3.5 h-3.5 shrink-0" />
+                            Email harus berakhiran @student.ub.ac.id (domain @gmail.com tidak diizinkan).
+                        </p>
+                    )}
 
                     <InputError message={errors.email} className="mt-1.5 text-xs" />
                 </div>
