@@ -37,14 +37,14 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
             { label: 'Total Pengajuan', value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
             { label: 'Menunggu Verifikasi', value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
             { label: 'Tahap Pimpinan', value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
-            { label: 'Izin Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'green', icon: 'check' },
+            { label: 'Izin Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'emerald', icon: 'check' },
             { label: 'Perlu Revisi', value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
         ]
         : [
             { label: 'Pengajuan Aktif', value: String(stats.total ?? 0), suffix: null, accent: 'blue', icon: 'fileCheck' },
             { label: 'Menunggu Verifikasi', value: String(stats.adminReview ?? 0), suffix: null, accent: 'violet', icon: 'clock' },
             { label: 'Tahap Pimpinan', value: String(stats.leadership ?? 0), suffix: null, accent: 'amber', icon: 'door' },
-            { label: 'Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'green', icon: 'check' },
+            { label: 'Disetujui', value: String(stats.approved ?? 0), suffix: null, accent: 'emerald', icon: 'check' },
             { label: 'Perlu Revisi', value: String(stats.revision ?? 0), suffix: null, accent: 'rose', icon: 'alert' },
         ];
 
@@ -117,7 +117,7 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                         label={stat.label}
                         value={stat.value}
                         suffix={stat.suffix}
-                        accent={accentStyles[stat.accent]}
+                        accent={accentStyles[stat.accent] ?? accentStyles.blue}
                         icon={<Icon name={statIcons[stat.icon]} className="w-5 h-5" />}
                     />
                 ))}
@@ -285,7 +285,7 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                 <SectionCard title="Akses Cepat" subtitle="Menu yang sering digunakan" bodyClassName="px-5 pb-5">
                     <div className="grid grid-cols-3 gap-2.5">
                         {quickAccess.map((item) => {
-                            const accent = accentStyles[item.accent];
+                            const accent = accentStyles[item.accent] ?? accentStyles.blue;
 
                             return (
                                 <a

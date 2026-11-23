@@ -17,6 +17,15 @@ export const accentStyles = {
         bar: 'bg-emerald-500',
         hex: '#10B981',
     },
+    green: {
+        tile: 'bg-emerald-50 text-emerald-600',
+        solid: 'bg-emerald-600 text-white',
+        text: 'text-emerald-600',
+        soft: 'bg-gradient-to-br from-emerald-50 to-emerald-100/70 border-emerald-100',
+        ring: 'ring-emerald-500/20',
+        bar: 'bg-emerald-500',
+        hex: '#10B981',
+    },
     violet: {
         tile: 'bg-violet-50 text-violet-600',
         solid: 'bg-violet-600 text-white',
