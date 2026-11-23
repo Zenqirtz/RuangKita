@@ -150,35 +150,7 @@ export const roomStatusStyles = {
 
 export const permits = [];
 
-export const notices = [
-    {
-        id: 1,
-        type: 'revision',
-        title: 'Catatan Revisi: Proposal Poster Nasional',
-        description: 'Mohon cantumkan rincian fasilitas proyektor dan tanda tangan Dosen Pembimbing.',
-        date: '23 Nov 2026',
-        time: '2 jam lalu',
-        href: '/revisions',
-    },
-    {
-        id: 2,
-        type: 'info',
-        title: 'Pemeliharaan AC Auditorium',
-        description: 'Auditorium Gedung Utama tidak dapat dipinjam 27 Nov pukul 17.00 - 21.00 WIB.',
-        date: '22 Nov 2026',
-        time: 'Kemarin',
-        href: '/calendar',
-    },
-    {
-        id: 3,
-        type: 'success',
-        title: 'Izin Disetujui: RK-2026-083',
-        description: 'Surat izin Internal Gathering Tim Yakusa telah ditandatangani pimpinan.',
-        date: '20 Nov 2026',
-        time: '3 hari lalu',
-        href: '/permits/RK-2026-083',
-    },
-];
+export const notices = [];
 
 export const quickAccess = [
     {

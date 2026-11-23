@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/RuangKita/Icon';
-import { notices } from '@/Data/ruangkita';
 
 const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard', href: '/dashboard' },
     { id: 'calendar', label: 'Kalender Live', icon: 'calendar', href: '/calendar' },
     { id: 'rooms', label: 'Daftar Ruangan', icon: 'door', href: '/rooms' },
-    { id: 'permits', label: 'Tracking Izin', icon: 'clock', href: '/permits', badge: '3' },
+    { id: 'permits', label: 'Tracking Izin', icon: 'clock', href: '/permits', badgeKey: 'tracking' },
     { id: 'booking', label: 'Pengajuan Baru', icon: 'fileUp', href: '/bookings/create' },
-    { id: 'revisions', label: 'Catatan Revisi', icon: 'alert', href: '/revisions', badgeAlert: '1' },
+    { id: 'revisions', label: 'Catatan Revisi', icon: 'alert', href: '/revisions', badgeKey: 'revisions', badgeAlert: true },
     { id: 'history', label: 'Riwayat Peminjaman', icon: 'history', href: '/history' },
     { id: 'guidelines', label: 'Tata Tertib', icon: 'book', href: '/guidelines' },
 ];
@@ -42,7 +41,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-    const { auth } = usePage().props;
+    const { auth, badgeCounts = {}, notifications = [] } = usePage().props;
 
     const user = auth?.user;
     const userName = user?.name ?? 'Tamu Civitas UB';
@@ -90,6 +89,8 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                     <nav className="relative -mt-3 flex-1 rounded-t-2xl bg-white px-3.5 pt-3.5 space-y-1 overflow-y-auto pb-4">
                         {navItems.map((item) => {
                             const isActive = activeTab === item.id;
+                            const count = item.badgeKey ? (badgeCounts[item.badgeKey] ?? 0) : 0;
+                            const showBadge = count > 0;
 
                             return (
                                 <a
@@ -113,22 +114,19 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                         <span className="truncate">{item.label}</span>
                                     </span>
 
-                                    {item.badge && (
+                                    {showBadge && (
                                         <span
                                             className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                                                isActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
+                                                item.badgeAlert
+                                                    ? isActive
+                                                        ? 'bg-white text-rose-600'
+                                                        : 'bg-rose-50 text-rose-600'
+                                                    : isActive
+                                                        ? 'bg-white/20 text-white'
+                                                        : 'bg-blue-50 text-blue-600'
                                             }`}
                                         >
-                                            {item.badge}
-                                        </span>
-                                    )}
-                                    {item.badgeAlert && (
-                                        <span
-                                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                                                isActive ? 'bg-white text-rose-600' : 'bg-rose-50 text-rose-600'
-                                            }`}
-                                        >
-                                            {item.badgeAlert}
+                                            {count}
                                         </span>
                                     )}
                                 </a>
@@ -201,7 +199,9 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                 aria-label="Notifikasi"
                             >
                                 <Icon name="bell" className="w-[18px] h-[18px]" />
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
+                                {notifications.length > 0 && (
+                                    <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
+                                )}
                             </button>
 
                             {notificationsOpen && (
@@ -210,36 +210,49 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                     <div className="absolute right-0 top-12 z-50 w-80 bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-900/10 overflow-hidden">
                                         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
                                             <p className="text-xs font-bold text-slate-800">Notifikasi</p>
-                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                                3 baru
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                notifications.length > 0
+                                                    ? 'text-blue-600 bg-blue-50'
+                                                    : 'text-slate-400 bg-slate-100'
+                                            }`}>
+                                                {notifications.length} baru
                                             </span>
                                         </div>
                                         <div className="max-h-80 overflow-y-auto">
-                                            {notices.map((notice) => (
-                                                <a
-                                                    key={notice.id}
-                                                    href={notice.href}
-                                                    className="flex gap-3 px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
-                                                >
-                                                    <div
-                                                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${noticeIconStyles[notice.type]}`}
+                                            {notifications.length === 0 ? (
+                                                <div className="py-8 px-4 text-center">
+                                                    <p className="text-xs font-semibold text-slate-600">Tidak ada notifikasi baru</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1">
+                                                        Pembaruan pengajuan izin akan muncul di sini.
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                notifications.map((notice) => (
+                                                    <a
+                                                        key={notice.id}
+                                                        href={notice.href}
+                                                        className="flex gap-3 px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
                                                     >
-                                                        <Icon
-                                                            name={noticeIcons[notice.type]}
-                                                            className="w-4 h-4"
-                                                        />
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="text-[11px] font-bold text-slate-800 leading-snug">
-                                                            {notice.title}
-                                                        </p>
-                                                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">
-                                                            {notice.description}
-                                                        </p>
-                                                        <p className="text-[9px] text-slate-400 mt-1">{notice.time}</p>
-                                                    </div>
-                                                </a>
-                                            ))}
+                                                        <div
+                                                            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${noticeIconStyles[notice.type] ?? 'bg-blue-50 text-blue-600'}`}
+                                                        >
+                                                            <Icon
+                                                                name={noticeIcons[notice.type] ?? 'info'}
+                                                                className="w-4 h-4"
+                                                            />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-[11px] font-bold text-slate-800 leading-snug">
+                                                                {notice.title}
+                                                            </p>
+                                                            <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">
+                                                                {notice.description}
+                                                            </p>
+                                                            <p className="text-[9px] text-slate-400 mt-1">{notice.time}</p>
+                                                        </div>
+                                                    </a>
+                                                ))
+                                            )}
                                         </div>
                                     </div>
                                 </>

@@ -28,9 +28,8 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
     const { auth } = usePage().props;
     const isAdmin = auth?.user?.role === 'admin';
     const user = auth?.user;
-    const firstName = user?.name?.split(' ')[0] ?? null;
-    const greeting = isAdmin ? 'Selamat datang kembali,' : firstName ? `Halo, ${firstName}!` : 'Selamat datang di RuangKita!';
-    const heroName = isAdmin ? 'Admin RuangKita!' : user?.name ?? 'Civitas Universitas Brawijaya';
+    const heroTitle = isAdmin ? 'Selamat datang kembali,' : user ? 'Selamat datang kembali, 👋' : 'Selamat datang di RuangKita, 👋';
+    const heroName = isAdmin ? 'Admin RuangKita!' : user?.name ? `${user.name}!` : 'Civitas Akademika UB!';
 
     const liveStats = isAdmin
         ? [
@@ -69,7 +68,7 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                     <div className="max-w-xl">
                         <h2 className="text-2xl md:text-[28px] font-extrabold tracking-tight leading-tight">
-                            {isAdmin ? 'Selamat datang kembali,' : greeting}<br />
+                            {heroTitle}<br />
                             <span className="text-blue-200">{heroName}</span>
                         </h2>
                         <p className="text-[13px] text-blue-100 mt-2.5 leading-relaxed max-w-md">
