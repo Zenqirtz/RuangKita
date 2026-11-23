@@ -82,8 +82,6 @@ export const rooms = [
         code: 'AUD-01',
         capacity: 250,
         floor: 'Lantai 1, Gedung A',
-        status: 'available',
-        occupancy: 85,
         accent: 'blue',
         facilities: ['Proyektor & LED Screen', 'Sound System', 'AC', 'Panggung', 'Wi-Fi'],
         description: 'Ruang serbaguna terbesar untuk seminar, wisuda fakultas, dan acara ormawa berskala besar.',
@@ -95,8 +93,6 @@ export const rooms = [
         code: 'SCH-02',
         capacity: 120,
         floor: 'Lantai 2, Gedung B',
-        status: 'booked',
-        occupancy: 92,
         accent: 'emerald',
         facilities: ['Proyektor', 'Sound System', 'AC', 'Wi-Fi'],
         description: 'Hall fleksibel untuk latihan, gathering, dan pameran karya mahasiswa.',
@@ -104,12 +100,10 @@ export const rooms = [
     {
         id: 3,
         name: 'Ruang Rapat Ormawa 101',
-        shortName: 'Ruang Rapat',
+        shortName: 'Ruang Rapat 101',
         code: 'RPT-101',
         capacity: 40,
         floor: 'Lantai 1, Gedung B',
-        status: 'available',
-        occupancy: 70,
         accent: 'violet',
         facilities: ['TV Display', 'AC', 'Video Conference', 'Wi-Fi'],
         description: 'Ruang rapat representatif untuk koordinasi pengurus dan rapat kerja divisi.',
@@ -119,12 +113,10 @@ export const rooms = [
         name: 'Lab Multimedia & Komputer',
         shortName: 'Lab Multimedia',
         code: 'LAB-04',
-        capacity: 60,
+        capacity: 40,
         floor: 'Lantai 3, Gedung C',
-        status: 'pending',
-        occupancy: 60,
         accent: 'amber',
-        facilities: ['60 PC Workstation', 'Proyektor', 'AC', 'Wi-Fi'],
+        facilities: ['35 PC Workstation', 'Proyektor', 'AC', 'Wi-Fi'],
         description: 'Laboratorium untuk workshop desain, pelatihan software, dan kompetisi digital.',
     },
     {
@@ -132,10 +124,8 @@ export const rooms = [
         name: 'Amphitheater Terbuka',
         shortName: 'Amphitheater',
         code: 'AMP-05',
-        capacity: 180,
+        capacity: 200,
         floor: 'Area Taman Fakultas',
-        status: 'available',
-        occupancy: 45,
         accent: 'rose',
         facilities: ['Panggung Terbuka', 'Sound System', 'Area Parkir', 'Wi-Fi'],
         description: 'Ruang terbuka untuk pentas seni, bazar, dan kegiatan komunitas mahasiswa.',
@@ -147,10 +137,6 @@ export const roomStatusStyles = {
     booked: { label: 'Terpakai', badge: 'bg-rose-50 text-rose-700 border-rose-200' },
     pending: { label: 'Menunggu Verifikasi', badge: 'bg-amber-50 text-amber-700 border-amber-200' },
 };
-
-export const permits = [];
-
-export const notices = [];
 
 export const quickAccess = [
     {
@@ -196,15 +182,6 @@ export const quickAccess = [
         accent: 'rose',
     },
 ];
-
-export const weeklyOccupancy = [];
-
-export const dashboardStats = [];
-
-/**
- * Data kalender bersumber dari database nyata melalui CalendarController.
- */
-export const calendarEvents = [];
 
 export const eventStatusStyles = {
     approved: { label: 'Disetujui', block: 'bg-blue-600 text-white border-blue-600', dot: 'bg-blue-600' },

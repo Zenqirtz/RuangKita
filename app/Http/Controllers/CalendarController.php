@@ -134,22 +134,22 @@ class CalendarController extends Controller
             ];
         }, $roomsData);
 
-        // Compute empty slots available
+        // Compute empty slots available based on real day bookings
         $availableSlots = [];
         foreach ($roomsData as $room) {
-            $isBookedToday = $todayPermits->contains('room_id', $room['id']);
-            if (! $isBookedToday) {
+            $bookedToday = $todayPermits->firstWhere('room_id', $room['id']);
+            if (! $bookedToday) {
                 $availableSlots[] = [
                     'roomId' => $room['id'],
                     'room' => $room['shortName'],
-                    'time' => 'Hari ini, 08.00 - 21.00',
+                    'time' => 'Hari ini (Kosong seharian)',
                     'tone' => 'emerald',
                 ];
             } else {
                 $availableSlots[] = [
                     'roomId' => $room['id'],
                     'room' => $room['shortName'],
-                    'time' => 'Besok, 08.00 - 17.00',
+                    'time' => "Hari ini (Tersedia setelah {$bookedToday->end} WIB)",
                     'tone' => 'blue',
                 ];
             }

@@ -89,51 +89,28 @@ class RoomController extends Controller
             ],
         ];
 
-        // 30 days * 14 hours per month = 420 slot hours per room
-        $maxHoursPerMonth = 30 * 14;
-
-        $totalCapacity = 0;
         $roomsWithStatus = [];
         $occupiedCountToday = 0;
 
         foreach ($roomsData as $room) {
-            $totalCapacity += $room['capacity'];
-
             $isBookedToday = $todayApprovedPermits->contains('room_id', $room['id']);
             if ($isBookedToday) {
                 $occupiedCountToday++;
             }
 
-            // Calculate room occupancy based on booked hours this month
-            $roomBookedHours = $monthApprovedPermits
-                ->where('room_id', $room['id'])
-                ->reduce(function ($carry, $p) {
-                    $start = (int) substr($p->start, 0, 2);
-                    $end = (int) substr($p->end, 0, 2);
-
-                    return $carry + max(1, $end - $start);
-                }, 0);
-
-            $occupancyRate = round(($roomBookedHours / $maxHoursPerMonth) * 100);
-
             $roomsWithStatus[] = array_merge($room, [
                 'status' => $isBookedToday ? 'booked' : 'available',
-                'occupancy' => min(100, max(0, $occupancyRate)),
             ]);
         }
 
         $totalRooms = count($roomsData);
         $availableTodayCount = $totalRooms - $occupiedCountToday;
 
-        $avgOccupancy = round(collect($roomsWithStatus)->avg('occupancy') ?? 0);
-
         return Inertia::render('Rooms', [
             'rooms' => $roomsWithStatus,
             'stats' => [
                 'totalRooms' => $totalRooms,
                 'availableToday' => $availableTodayCount,
-                'totalCapacity' => $totalCapacity,
-                'avgOccupancy' => $avgOccupancy,
             ],
         ]);
     }

@@ -3,7 +3,7 @@ import { router, usePage } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
-import { permits, rooms } from '@/Data/ruangkita';
+import { rooms } from '@/Data/ruangkita';
 
 const ormawaOptions = [
     'HMPSTI — Himpunan Mahasiswa Program Studi Teknologi Informasi',
@@ -73,7 +73,7 @@ function UploadBox({ id, title, description, fileName, onFileChange }) {
     );
 }
 
-export default function BookingCreate() {
+export default function BookingCreate({ existingBookings = [], preselectedRoomId = null, minDate = null }) {
     const { auth } = usePage().props;
     const user = auth?.user;
 
@@ -82,7 +82,7 @@ export default function BookingCreate() {
         ormawa: ormawaOptions[0],
         pic: user?.name ?? '',
         phone: '',
-        roomId: '1',
+        roomId: String(preselectedRoomId || '1'),
         date: '',
         start: '08:00',
         end: '12:00',
@@ -107,18 +107,18 @@ export default function BookingCreate() {
             return null;
         }
 
-        return permits.find((permit) => {
+        return existingBookings.find((permit) => {
             if (permit.roomId !== Number(form.roomId) || permit.isoDate !== form.date) {
                 return false;
             }
 
-            if (permit.stage === 'revision') {
+            if (permit.stage === 'revision' || permit.stage === 'rejected') {
                 return false;
             }
 
             return form.start < permit.end && form.end > permit.start;
         });
-    }, [form.roomId, form.date, form.start, form.end]);
+    }, [form.roomId, form.date, form.start, form.end, existingBookings]);
 
     const duration = useMemo(() => {
         const [startHour, startMinute] = form.start.split(':').map(Number);
@@ -253,7 +253,7 @@ export default function BookingCreate() {
                             <Field label="Tanggal kegiatan">
                                 <input
                                     type="date"
-                                    min="2026-11-23"
+                                    min={minDate || new Date().toISOString().split('T')[0]}
                                     value={form.date}
                                     onChange={update('date')}
                                     className={inputClass}

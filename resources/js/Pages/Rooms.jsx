@@ -23,12 +23,10 @@ export default function Rooms({ rooms = [], stats = {} }) {
                 </a>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                     { label: 'Total ruangan', value: String(stats.totalRooms ?? rooms.length), icon: 'door', accent: accentStyles.blue },
                     { label: 'Tersedia hari ini', value: String(stats.availableToday ?? rooms.length), icon: 'check', accent: accentStyles.emerald },
-                    { label: 'Total kapasitas', value: String(stats.totalCapacity ?? '650'), icon: 'users', accent: accentStyles.violet },
-                    { label: 'Rata-rata okupansi', value: `${stats.avgOccupancy ?? 0}%`, icon: 'trending', accent: accentStyles.amber },
                 ].map((item) => (
                     <div key={item.label} className="min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.accent.tile}`}>
@@ -74,21 +72,10 @@ export default function Rooms({ rooms = [], stats = {} }) {
                                 </p>
 
                                 <div className="flex items-center gap-4 mt-3.5">
-                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-600">
+                                    <span className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-slate-700">
                                         <Icon name="users" className="w-3.5 h-3.5 text-slate-400" />
-                                        {room.capacity} orang
+                                        Kapasitas: {room.capacity} orang
                                     </span>
-                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-slate-600">
-                                        <Icon name="trending" className="w-3.5 h-3.5 text-slate-400" />
-                                        {room.occupancy}% terpakai
-                                    </span>
-                                </div>
-
-                                <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
-                                    <div
-                                        className={`h-1.5 rounded-full ${accent.bar}`}
-                                        style={{ width: `${room.occupancy}%` }}
-                                    />
                                 </div>
 
                                 <div className="flex flex-wrap gap-1.5 mt-3.5">

@@ -4,16 +4,6 @@ import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { eventStatusStyles, rooms } from '@/Data/ruangkita';
 
-const DEFAULT_DAYS = [
-    { day: 1, label: 'Sen', date: 23, iso: '23 Nov', isToday: true },
-    { day: 2, label: 'Sel', date: 24, iso: '24 Nov', isToday: false },
-    { day: 3, label: 'Rab', date: 25, iso: '25 Nov', isToday: false },
-    { day: 4, label: 'Kam', date: 26, iso: '26 Nov', isToday: false },
-    { day: 5, label: 'Jum', date: 27, iso: '27 Nov', isToday: false },
-    { day: 6, label: 'Sab', date: 28, iso: '28 Nov', isToday: false },
-    { day: 7, label: 'Min', date: 29, iso: '29 Nov', isToday: false },
-];
-
 const START_HOUR = 7;
 const END_HOUR = 21;
 const HOUR_HEIGHT = 56;
@@ -52,7 +42,7 @@ function layoutDay(events) {
 export default function Calendar({
     events = [],
     days = [],
-    weekLabel = '23 - 29 Nov 2026',
+    weekLabel = '',
     prevWeek = null,
     nextWeek = null,
     stats = {},
@@ -61,7 +51,7 @@ export default function Calendar({
 }) {
     const [roomFilter, setRoomFilter] = useState('all');
 
-    const activeDays = days.length > 0 ? days : DEFAULT_DAYS;
+    const activeDays = days;
 
     const filteredEvents = useMemo(() => {
         if (roomFilter === 'all') {

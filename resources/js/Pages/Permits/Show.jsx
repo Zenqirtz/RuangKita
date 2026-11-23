@@ -4,14 +4,13 @@ import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import StatusBadge from '@/Components/RuangKita/StatusBadge';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
-import { approvalStages, permits as defaultPermits } from '@/Data/ruangkita';
+import { approvalStages } from '@/Data/ruangkita';
 
-export default function PermitShow({ permit: serverPermit, permitId }) {
+export default function PermitShow({ permit: serverPermit = {} }) {
     const { auth } = usePage().props;
     const isAdmin = auth?.user?.role === 'admin';
 
-    // Fallback to static demo if not provided by server
-    const permit = serverPermit ?? (defaultPermits.find((item) => item.id === permitId) ?? defaultPermits[0]);
+    const permit = serverPermit;
     const stageInfo = approvalStages.find((stage) => stage.key === permit.stage);
     const isApproved = permit.stage === 'approved';
     const isRevision = permit.stage === 'revision';

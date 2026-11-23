@@ -18,9 +18,7 @@ Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
 
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
-Route::get('/bookings/create', function () {
-    return Inertia::render('Bookings/Create');
-})->name('bookings.create');
+Route::get('/bookings/create', [PermitController::class, 'create'])->name('bookings.create');
 Route::post('/bookings', [PermitController::class, 'store'])->name('bookings.store');
 
 Route::get('/permits', [PermitController::class, 'index'])->name('permits.index');

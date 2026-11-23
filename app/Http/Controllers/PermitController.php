@@ -37,10 +37,12 @@ class PermitController extends Controller
         $activeCount = Permit::whereNotIn('stage', ['approved', 'rejected'])->count();
         $approvedCount = Permit::where('stage', 'approved')->count();
         $revisionCount = Permit::where('stage', 'revision')->count();
+        $totalCount = Permit::count();
 
         return Inertia::render('Permits/Index', [
             'permits' => $permits,
             'stats' => [
+                'total' => $totalCount,
                 'active' => $activeCount,
                 'approved' => $approvedCount,
                 'revision' => $revisionCount,
@@ -93,6 +95,32 @@ class PermitController extends Controller
                     'time' => $h->created_at->diffForHumans(),
                 ]),
             ],
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new booking.
+     */
+    public function create(Request $request): Response
+    {
+        $existingBookings = Permit::query()
+            ->whereIn('stage', ['submitted', 'admin', 'leadership', 'approved'])
+            ->whereDate('date', '>=', now()->toDateString())
+            ->get(['id', 'code', 'room_id', 'date', 'start', 'end', 'event', 'stage'])
+            ->map(fn (Permit $p) => [
+                'id' => $p->code,
+                'roomId' => (int) $p->room_id,
+                'isoDate' => $p->date->format('Y-m-d'),
+                'start' => substr($p->start, 0, 5),
+                'end' => substr($p->end, 0, 5),
+                'event' => $p->event,
+                'stage' => $p->stage,
+            ]);
+
+        return Inertia::render('Bookings/Create', [
+            'existingBookings' => $existingBookings,
+            'preselectedRoomId' => $request->query('room_id'),
+            'minDate' => now()->toDateString(),
         ]);
     }
 

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import StatusBadge from '@/Components/RuangKita/StatusBadge';
-import { permits, stageStyles } from '@/Data/ruangkita';
+import { stageStyles } from '@/Data/ruangkita';
 
 const filters = [
     { id: 'all', label: 'Semua' },
@@ -50,8 +50,8 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
+                    { label: 'Total pengajuan', value: String(stats.total ?? permits.length), icon: 'clipboardList', accent: 'text-blue-600 bg-blue-50' },
                     { label: 'Pengajuan aktif', value: String(activeCount), icon: 'clock', accent: 'text-violet-600 bg-violet-50' },
-                    { label: 'Rata-rata persetujuan', value: '2,4 hari', icon: 'trending', accent: 'text-blue-600 bg-blue-50' },
                     { label: 'Izin disetujui', value: String(approvedCount), icon: 'check', accent: 'text-emerald-600 bg-emerald-50' },
                     { label: 'Perlu revisi', value: String(revisionCount), icon: 'alert', accent: 'text-rose-600 bg-rose-50' },
                 ].map((item) => (
@@ -202,8 +202,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
             <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-start gap-3">
                 <Icon name="info" className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
                 <p className="text-[10.5px] text-blue-800 leading-relaxed">
-                    Setiap perubahan status dikirim sebagai notifikasi. Rata-rata waktu persetujuan saat ini{' '}
-                    <span className="font-bold">2,4 hari kerja</span>, turun dari 4-5 hari pada proses manual.
+                    Setiap perubahan status dikirim sebagai notifikasi real-time ke sistem. Pantau perkembangan izin dan catatan verifikator langsung pada detail pengajuan.
                 </p>
             </div>
         </RuangKitaLayout>
