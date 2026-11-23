@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminPermitController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PermitController;
@@ -12,9 +13,7 @@ use Inertia\Inertia;
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/calendar', function () {
-    return Inertia::render('Calendar');
-})->name('calendar');
+Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
 
 Route::get('/rooms', function () {
     return Inertia::render('Rooms');

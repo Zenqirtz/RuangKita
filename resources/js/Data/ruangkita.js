@@ -244,24 +244,9 @@ export const dashboardStats = [
 ];
 
 /**
- * Ketersediaan contoh untuk halaman kalender live.
- * start/end memakai format "HH:MM" 24 jam.
+ * Data kalender bersumber dari database nyata melalui CalendarController.
  */
-export const calendarEvents = [
-    { id: 1, title: 'Grand Workshop UI/UX', roomId: 1, day: 1, start: '08:30', end: '15:30', status: 'pending' },
-    { id: 2, title: 'Latihan Teater', roomId: 2, day: 1, start: '15:00', end: '18:00', status: 'pending' },
-    { id: 3, title: 'Rapat Divisi Kreatif', roomId: 3, day: 1, start: '10:00', end: '12:00', status: 'approved' },
-    { id: 4, title: 'Kuliah Umum FIA', roomId: 1, day: 2, start: '09:00', end: '12:00', status: 'approved' },
-    { id: 5, title: 'Workshop Fotografi', roomId: 4, day: 2, start: '13:00', end: '16:00', status: 'approved' },
-    { id: 6, title: 'Gathering Yakusa', roomId: 3, day: 3, start: '13:00', end: '16:00', status: 'approved' },
-    { id: 7, title: 'Pentas Seni Kampus', roomId: 5, day: 3, start: '16:00', end: '20:00', status: 'approved' },
-    { id: 8, title: 'Seminar Karier', roomId: 1, day: 4, start: '08:00', end: '11:00', status: 'approved' },
-    { id: 9, title: 'Lomba Desain Poster', roomId: 4, day: 5, start: '09:00', end: '14:00', status: 'revision' },
-    { id: 10, title: 'Latihan Paduan Suara', roomId: 2, day: 5, start: '15:00', end: '17:00', status: 'approved' },
-    { id: 11, title: 'Bazar Kewirausahaan', roomId: 5, day: 6, start: '10:00', end: '18:00', status: 'approved' },
-    { id: 12, title: 'Rapat Koordinasi BEM', roomId: 3, day: 6, start: '09:00', end: '11:00', status: 'approved' },
-    { id: 13, title: 'Film Screening', roomId: 2, day: 7, start: '13:00', end: '16:00', status: 'approved' },
-];
+export const calendarEvents = [];
 
 export const eventStatusStyles = {
     approved: { label: 'Disetujui', block: 'bg-blue-600 text-white border-blue-600', dot: 'bg-blue-600' },

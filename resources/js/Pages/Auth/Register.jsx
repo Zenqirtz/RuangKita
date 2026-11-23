@@ -61,12 +61,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <div className="flex items-center justify-between">
-                        <InputLabel htmlFor="email" value="Email Kampus UB" className="text-xs font-bold text-slate-700" />
-                        <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                            Wajib @student.ub.ac.id
-                        </span>
-                    </div>
+                    <InputLabel htmlFor="email" value="Email Kampus UB" className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">

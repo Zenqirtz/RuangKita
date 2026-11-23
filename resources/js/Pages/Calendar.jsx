@@ -1,16 +1,17 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
-import { calendarEvents, eventStatusStyles, rooms, roomStatusStyles } from '@/Data/ruangkita';
+import { eventStatusStyles, rooms } from '@/Data/ruangkita';
 
-const DAYS = [
-    { day: 1, label: 'Sen', date: 23, iso: '23 Nov' },
-    { day: 2, label: 'Sel', date: 24, iso: '24 Nov' },
-    { day: 3, label: 'Rab', date: 25, iso: '25 Nov' },
-    { day: 4, label: 'Kam', date: 26, iso: '26 Nov' },
-    { day: 5, label: 'Jum', date: 27, iso: '27 Nov' },
-    { day: 6, label: 'Sab', date: 28, iso: '28 Nov' },
-    { day: 7, label: 'Min', date: 29, iso: '29 Nov' },
+const DEFAULT_DAYS = [
+    { day: 1, label: 'Sen', date: 23, iso: '23 Nov', isToday: true },
+    { day: 2, label: 'Sel', date: 24, iso: '24 Nov', isToday: false },
+    { day: 3, label: 'Rab', date: 25, iso: '25 Nov', isToday: false },
+    { day: 4, label: 'Kam', date: 26, iso: '26 Nov', isToday: false },
+    { day: 5, label: 'Jum', date: 27, iso: '27 Nov', isToday: false },
+    { day: 6, label: 'Sab', date: 28, iso: '28 Nov', isToday: false },
+    { day: 7, label: 'Min', date: 29, iso: '29 Nov', isToday: false },
 ];
 
 const START_HOUR = 7;
@@ -18,9 +19,12 @@ const END_HOUR = 21;
 const HOUR_HEIGHT = 56;
 
 function toMinutes(time) {
+    if (!time) {
+        return 0;
+    }
     const [hour, minute] = time.split(':').map(Number);
 
-    return hour * 60 + minute;
+    return (hour || 0) * 60 + (minute || 0);
 }
 
 function layoutDay(events) {
@@ -45,26 +49,62 @@ function layoutDay(events) {
     return { events: placed, lanes: Math.max(laneEnds.length, 1) };
 }
 
-export default function Calendar() {
+export default function Calendar({
+    events = [],
+    days = [],
+    weekLabel = '23 - 29 Nov 2026',
+    prevWeek = null,
+    nextWeek = null,
+    stats = {},
+}) {
     const [roomFilter, setRoomFilter] = useState('all');
+
+    const activeDays = days.length > 0 ? days : DEFAULT_DAYS;
 
     const filteredEvents = useMemo(() => {
         if (roomFilter === 'all') {
-            return calendarEvents;
+            return events;
         }
 
-        return calendarEvents.filter((event) => event.roomId === Number(roomFilter));
-    }, [roomFilter]);
+        return events.filter((event) => Number(event.roomId) === Number(roomFilter));
+    }, [events, roomFilter]);
 
     const eventsByDay = useMemo(() => {
         const map = {};
 
         for (let day = 1; day <= 7; day += 1) {
-            map[day] = layoutDay(filteredEvents.filter((event) => event.day === day));
+            map[day] = layoutDay(filteredEvents.filter((event) => Number(event.day) === day));
         }
 
         return map;
     }, [filteredEvents]);
+
+    const statCards = [
+        {
+            label: 'Slot tersedia minggu ini',
+            value: `${stats.availableSlotPct ?? 100}%`,
+            icon: 'calendar',
+            accent: 'text-blue-600 bg-blue-50',
+        },
+        {
+            label: 'Kegiatan terjadwal',
+            value: String(stats.scheduledCount ?? 0),
+            icon: 'clipboardList',
+            accent: 'text-violet-600 bg-violet-50',
+        },
+        {
+            label: 'Menunggu persetujuan',
+            value: String(stats.pendingCount ?? 0),
+            icon: 'clock',
+            accent: 'text-amber-600 bg-amber-50',
+        },
+        {
+            label: 'Ruangan aktif',
+            value: String(stats.activeRoomsCount ?? 5),
+            icon: 'door',
+            accent: 'text-emerald-600 bg-emerald-50',
+        },
+    ];
 
     return (
         <RuangKitaLayout activeTab="calendar">
@@ -72,7 +112,7 @@ export default function Calendar() {
                 <div>
                     <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Kalender Ketersediaan</h1>
                     <p className="text-xs text-slate-400 mt-1">
-                        Cek slot kosong 5 ruangan fakultas sebelum mengajukan izin.
+                        Cek slot jadwal 5 ruangan fakultas secara real-time dari database sebelum mengajukan izin.
                     </p>
                 </div>
                 <a
@@ -85,13 +125,11 @@ export default function Calendar() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: 'Slot tersedia minggu ini', value: '68%', icon: 'calendar', accent: 'text-blue-600 bg-blue-50' },
-                    { label: 'Kegiatan terjadwal', value: '13', icon: 'clipboardList', accent: 'text-violet-600 bg-violet-50' },
-                    { label: 'Menunggu persetujuan', value: '2', icon: 'clock', accent: 'text-amber-600 bg-amber-50' },
-                    { label: 'Ruangan aktif', value: '5', icon: 'door', accent: 'text-emerald-600 bg-emerald-50' },
-                ].map((item) => (
-                    <div key={item.label} className="min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
+                {statCards.map((item) => (
+                    <div
+                        key={item.label}
+                        className="min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3"
+                    >
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.accent}`}>
                             <Icon name={item.icon} className="w-[18px] h-[18px]" />
                         </div>
@@ -130,31 +168,43 @@ export default function Calendar() {
                         </div>
 
                         <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1">
-                            <button
-                                type="button"
-                                className="p-1.5 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm transition-all"
-                                aria-label="Minggu sebelumnya"
-                            >
-                                <Icon name="chevronLeft" className="w-3.5 h-3.5" />
-                            </button>
+                            {prevWeek ? (
+                                <Link
+                                    href={`/calendar?start=${prevWeek}`}
+                                    className="p-1.5 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                                    aria-label="Minggu sebelumnya"
+                                >
+                                    <Icon name="chevronLeft" className="w-3.5 h-3.5" />
+                                </Link>
+                            ) : (
+                                <span className="p-1.5 opacity-30 text-slate-400">
+                                    <Icon name="chevronLeft" className="w-3.5 h-3.5" />
+                                </span>
+                            )}
                             <span className="px-2 text-[11px] font-bold text-slate-700 whitespace-nowrap">
-                                23 - 29 Nov 2026
+                                {weekLabel}
                             </span>
-                            <button
-                                type="button"
-                                className="p-1.5 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm transition-all"
-                                aria-label="Minggu berikutnya"
-                            >
-                                <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                            </button>
+                            {nextWeek ? (
+                                <Link
+                                    href={`/calendar?start=${nextWeek}`}
+                                    className="p-1.5 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                                    aria-label="Minggu berikutnya"
+                                >
+                                    <Icon name="chevronRight" className="w-3.5 h-3.5" />
+                                </Link>
+                            ) : (
+                                <span className="p-1.5 opacity-30 text-slate-400">
+                                    <Icon name="chevronRight" className="w-3.5 h-3.5" />
+                                </span>
+                            )}
                         </div>
 
-                        <button
-                            type="button"
+                        <Link
+                            href="/calendar"
                             className="px-3 py-2 rounded-xl text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
                         >
                             Hari Ini
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4 text-[10px] font-medium text-slate-500">
@@ -171,15 +221,17 @@ export default function Calendar() {
                     <div className="min-w-[900px] px-4 pb-5">
                         <div className="flex pt-4">
                             <div className="w-14 shrink-0" />
-                            {DAYS.map((day) => {
-                                const isToday = day.date === 23;
+                            {activeDays.map((day) => {
+                                const isToday = Boolean(day.isToday);
 
                                 return (
                                     <div key={day.date} className="flex-1 text-center px-1">
                                         <p className="text-[10px] font-semibold text-slate-400 uppercase">{day.label}</p>
                                         <p
                                             className={`text-sm font-extrabold mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-lg ${
-                                                isToday ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/25' : 'text-slate-700'
+                                                isToday
+                                                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/25'
+                                                    : 'text-slate-700'
                                             }`}
                                         >
                                             {day.date}
@@ -205,9 +257,10 @@ export default function Calendar() {
                                 ))}
                             </div>
 
-                            {DAYS.map((day) => {
-                                const { events, lanes } = eventsByDay[day.day];
-                                const isToday = day.date === 23;
+                            {activeDays.map((day) => {
+                                const dayData = eventsByDay[day.day] ?? { events: [], lanes: 1 };
+                                const { events: dayEvents, lanes } = dayData;
+                                const isToday = Boolean(day.isToday);
 
                                 return (
                                     <div
@@ -225,19 +278,9 @@ export default function Calendar() {
                                             />
                                         ))}
 
-                                        {isToday && (
-                                            <div
-                                                className="absolute left-0 right-0 z-20 flex items-center"
-                                                style={{ top: (9.7 - START_HOUR) * HOUR_HEIGHT }}
-                                            >
-                                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 -ml-0.5" />
-                                                <span className="flex-1 h-px bg-rose-400" />
-                                            </div>
-                                        )}
-
-                                        {events.map((event) => {
-                                            const style = eventStatusStyles[event.status];
-                                            const room = rooms.find((item) => item.id === event.roomId);
+                                        {dayEvents.map((event) => {
+                                            const style = eventStatusStyles[event.status] ?? eventStatusStyles.pending;
+                                            const room = rooms.find((item) => item.id === Number(event.roomId));
                                             const top = ((event.startMinutes - START_HOUR * 60) / 60) * HOUR_HEIGHT;
                                             const height = ((event.endMinutes - event.startMinutes) / 60) * HOUR_HEIGHT;
                                             const width = 100 / lanes;
@@ -245,15 +288,15 @@ export default function Calendar() {
                                             return (
                                                 <a
                                                     key={event.id}
-                                                    href="/permits"
+                                                    href={event.code ? `/permits/${event.code}` : '/permits'}
                                                     className={`absolute z-10 rounded-lg border px-1.5 py-1 overflow-hidden hover:brightness-95 hover:z-20 transition-all ${style.block}`}
                                                     style={{
-                                                        top: top + 1,
+                                                        top: Math.max(0, top + 1),
                                                         height: Math.max(height - 3, 26),
                                                         left: `calc(${event.lane * width}% + 2px)`,
                                                         width: `calc(${width}% - 4px)`,
                                                     }}
-                                                    title={`${event.title} • ${room?.shortName} • ${event.start} - ${event.end}`}
+                                                    title={`${event.title} • ${room?.shortName ?? event.roomName} • ${event.start} - ${event.end}`}
                                                 >
                                                     <p className="text-[9px] font-bold leading-tight truncate">
                                                         {event.title}
@@ -263,7 +306,7 @@ export default function Calendar() {
                                                     </p>
                                                     {height > 44 && (
                                                         <p className="text-[8px] opacity-75 leading-tight truncate">
-                                                            {room?.shortName}
+                                                            {room?.shortName ?? event.roomName}
                                                         </p>
                                                     )}
                                                 </a>
@@ -274,76 +317,6 @@ export default function Calendar() {
                             })}
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                <div className="md:col-span-2 xl:col-span-1 bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                    <h3 className="text-sm font-bold text-slate-900">Status Ruangan Hari Ini</h3>
-                    <div className="mt-4 space-y-3">
-                        {rooms.map((room) => {
-                            const status = roomStatusStyles[room.status];
-
-                            return (
-                                <div key={room.id} className="flex items-center justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <p className="text-[11px] font-bold text-slate-700 truncate">{room.shortName}</p>
-                                        <p className="text-[9px] text-slate-400">{room.capacity} orang</p>
-                                    </div>
-                                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${status.badge}`}>
-                                        {status.label}
-                                    </span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                    <h3 className="text-sm font-bold text-slate-900">Slot Kosong Terdekat</h3>
-                    <div className="mt-4 space-y-2.5">
-                        {[
-                            { room: 'Auditorium', time: 'Hari ini, 16.00 - 21.00', tone: 'emerald' },
-                            { room: 'Ruang Rapat 101', time: 'Hari ini, 13.00 - 21.00', tone: 'emerald' },
-                            { room: 'Lab Multimedia', time: 'Besok, 08.00 - 12.00', tone: 'blue' },
-                        ].map((slot) => (
-                            <div
-                                key={slot.room}
-                                className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100"
-                            >
-                                <div>
-                                    <p className="text-[11px] font-bold text-slate-700">{slot.room}</p>
-                                    <p className="text-[9.5px] text-slate-400 mt-0.5">{slot.time}</p>
-                                </div>
-                                <a
-                                    href="/bookings/create"
-                                    className="text-[9.5px] font-bold text-blue-600 bg-white border border-blue-100 px-2.5 py-1.5 rounded-lg hover:bg-blue-50"
-                                >
-                                    Pilih
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg shadow-blue-600/15 flex flex-col justify-between">
-                    <div>
-                        <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center mb-3">
-                            <Icon name="shield" className="w-5 h-5 text-white" />
-                        </div>
-                        <h3 className="text-sm font-bold">Anti Double-Booking</h3>
-                        <p className="text-[11px] text-blue-100/90 leading-relaxed mt-2">
-                            Setiap pengajuan dicek otomatis terhadap jadwal yang sudah disetujui. Slot bentrok tidak
-                            dapat dipilih.
-                        </p>
-                    </div>
-                    <a
-                        href="/guidelines"
-                        className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold text-white hover:gap-2.5 transition-all"
-                    >
-                        Baca tata tertib
-                        <Icon name="arrowRight" className="w-3.5 h-3.5" />
-                    </a>
                 </div>
             </section>
         </RuangKitaLayout>
