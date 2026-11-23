@@ -6,11 +6,12 @@ import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
 import { permits, rooms } from '@/Data/ruangkita';
 
 const ormawaOptions = [
-    'Badan Eksekutif Mahasiswa (BEM)',
-    'Dewan Perwakilan Mahasiswa (DPM)',
-    'Himpunan Mahasiswa Program Studi',
-    'Unit Aktivitas Mahasiswa (UKM)',
-    'Komunitas / Panitia Kegiatan Kampus',
+    'HMPSTI — Himpunan Mahasiswa Program Studi Teknologi Informasi',
+    'HMPD / HMPDG — Himpunan Mahasiswa Program Studi Desain Grafis',
+    'HIMA Administrasi Bisnis — Himpunan Mahasiswa Program Studi D-III Administrasi Bisnis',
+    'HIMA Keuangan dan Perbankan — Himpunan Mahasiswa Program Studi D-III Keuangan dan Perbankan',
+    'HIMA Manajemen Perhotelan — Himpunan Mahasiswa Program Studi D-IV Manajemen Perhotelan',
+    'Badan Eksekutif Mahasiswa (BEM) Vokasi UB',
 ];
 
 function formatDate(isoDate) {
