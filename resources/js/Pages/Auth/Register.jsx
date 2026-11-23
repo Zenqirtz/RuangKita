@@ -25,7 +25,7 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <Head title="Registrasi Akun - RuangKita" />
+            <Head title="Registrasi Akun" />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
