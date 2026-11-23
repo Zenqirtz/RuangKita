@@ -73,7 +73,11 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
             >
                 <div className="flex flex-col min-h-0">
                     <a href="/dashboard" className="flex flex-col items-center gap-2 bg-gradient-to-b from-blue-600 to-blue-700 px-5 pt-6 pb-9 text-center text-white">
-                        <Icon name="graduation" className="w-12 h-12 text-white drop-shadow-sm" strokeWidth={1.8} />
+                        <img
+                            src="/images/vokasi.png"
+                            alt="Vokasi UB"
+                            className="w-16 h-16 object-contain drop-shadow-sm"
+                        />
                         <div className="min-w-0">
                             <h1 className="text-[22px] font-extrabold tracking-tight leading-none">RuangKita</h1>
                             <p className="text-[11px] font-medium text-blue-100 leading-snug mt-2">
