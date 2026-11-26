@@ -64,7 +64,7 @@ const config = {
             label: 'Tata Tertib & Panduan',
           },
           {
-            href: '/dashboard',
+            href: 'pathname:///dashboard',
             label: '← Kembali ke Aplikasi',
             position: 'right',
             target: '_self',
