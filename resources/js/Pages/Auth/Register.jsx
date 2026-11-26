@@ -6,8 +6,10 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function Register() {
+    const { t } = useLanguage();
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         nim: '',
@@ -26,20 +28,20 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <Head title="Registrasi Akun" />
+            <Head title={t('auth.register_title', 'Registrasi Akun')} />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                    Registrasi Akun
+                    {t('auth.register_title', 'Registrasi Akun')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                    Daftar dengan email resmi <span className="font-semibold text-blue-600">@student.ub.ac.id</span> Anda.
+                    {t('auth.register_sub', 'Daftar dengan email resmi @student.ub.ac.id Anda.')}
                 </p>
             </div>
 
             <form onSubmit={submit} className="space-y-3.5">
                 <div>
-                    <InputLabel htmlFor="name" value="Nama Lengkap" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="name" value={t('auth.full_name', 'Nama Lengkap')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -50,7 +52,7 @@ export default function Register() {
                             name="name"
                             value={data.name}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="Nama Lengkap Mahasiswa"
+                            placeholder={t('auth.full_name_placeholder', 'Nama Lengkap Mahasiswa')}
                             autoComplete="name"
                             isFocused={true}
                             onChange={(e) => setData('name', e.target.value)}
@@ -62,7 +64,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="nim" value="NIM" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="nim" value={t('auth.nim', 'NIM')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -84,7 +86,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Email Kampus UB" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="email" value={t('auth.email', 'Email Kampus UB')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -120,7 +122,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="Kata Sandi" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="password" value={t('auth.password', 'Kata Sandi')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -145,7 +147,7 @@ export default function Register() {
                 <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Konfirmasi Kata Sandi"
+                        value={t('auth.confirm_password', 'Konfirmasi Kata Sandi')}
                         className="text-xs font-bold text-slate-700"
                     />
 
@@ -179,19 +181,19 @@ export default function Register() {
                         className="w-full justify-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all"
                         disabled={processing}
                     >
-                        Daftarkan Akun Ormawa
+                        {t('auth.register_btn', 'Daftarkan Akun Ormawa')}
                     </PrimaryButton>
                 </div>
             </form>
 
             <div className="mt-6 pt-5 border-t border-slate-100 text-center">
                 <p className="text-xs text-slate-500">
-                    Sudah punya akun?{' '}
+                    {t('auth.has_account', 'Sudah punya akun?')}{' '}
                     <Link
                         href={route('login')}
                         className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
                     >
-                        Masuk di sini
+                        {t('auth.login_here', 'Masuk di sini')}
                     </Link>
                 </p>
             </div>

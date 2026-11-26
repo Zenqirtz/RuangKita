@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { eventStatusStyles, rooms } from '@/Data/ruangkita';
+import { useLanguage } from '@/Context/LanguageContext';
 
 const START_HOUR = 7;
 const END_HOUR = 21;
@@ -49,6 +50,7 @@ export default function Calendar({
     todayRoomStatuses = [],
     availableSlots = [],
 }) {
+    const { t } = useLanguage();
     const [roomFilter, setRoomFilter] = useState('all');
 
     const activeDays = days;
@@ -73,25 +75,25 @@ export default function Calendar({
 
     const statCards = [
         {
-            label: 'Slot tersedia minggu ini',
+            label: t('cal.scheduled_week', 'Slot tersedia minggu ini'),
             value: `${stats.availableSlotPct ?? 100}%`,
             icon: 'calendar',
             accent: 'text-blue-600 bg-blue-50',
         },
         {
-            label: 'Kegiatan terjadwal',
+            label: t('cal.approved', 'Kegiatan terjadwal'),
             value: String(stats.scheduledCount ?? 0),
             icon: 'clipboardList',
             accent: 'text-violet-600 bg-violet-50',
         },
         {
-            label: 'Menunggu persetujuan',
+            label: t('cal.in_process', 'Menunggu persetujuan'),
             value: String(stats.pendingCount ?? 0),
             icon: 'clock',
             accent: 'text-amber-600 bg-amber-50',
         },
         {
-            label: 'Ruangan aktif',
+            label: t('cal.available_rooms', 'Ruangan aktif'),
             value: String(stats.activeRoomsCount ?? 5),
             icon: 'door',
             accent: 'text-emerald-600 bg-emerald-50',
@@ -102,9 +104,9 @@ export default function Calendar({
         <RuangKitaLayout activeTab="calendar">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Kalender Ketersediaan</h1>
+                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{t('cal.title', 'Kalender Live')}</h1>
                     <p className="text-xs text-slate-400 mt-1">
-                        Cek slot jadwal 5 ruangan fakultas secara real-time dari database sebelum mengajukan izin.
+                        {t('cal.subtitle', 'Cek slot jadwal 5 ruangan fakultas secara real-time dari database sebelum mengajukan izin.')}
                     </p>
                 </div>
                 <a
@@ -112,7 +114,7 @@ export default function Calendar({
                     className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors"
                 >
                     <Icon name="plus" className="w-4 h-4" />
-                    Ajukan Ruangan
+                    {t('cal.book_room', 'Ajukan Ruangan')}
                 </a>
             </div>
 
@@ -142,7 +144,7 @@ export default function Calendar({
                                 onChange={(event) => setRoomFilter(event.target.value)}
                                 className="appearance-none pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 cursor-pointer"
                             >
-                                <option value="all">Semua ruangan</option>
+                                <option value="all">{t('cal.all_rooms', 'Semua ruangan')}</option>
                                 {rooms.map((room) => (
                                     <option key={room.id} value={room.id}>
                                         {room.shortName}
@@ -195,7 +197,7 @@ export default function Calendar({
                             href="/calendar"
                             className="px-3 py-2 rounded-xl text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
                         >
-                            Hari Ini
+                            {t('cal.today', 'Hari Ini')}
                         </Link>
                     </div>
 
@@ -314,16 +316,16 @@ export default function Calendar({
 
             <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch">
                 <div className="md:col-span-2 xl:col-span-1 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col">
-                    <h3 className="text-sm font-bold text-slate-900">Status Ruangan Hari Ini</h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Status dari pengajuan yang sudah disetujui.</p>
+                    <h3 className="text-sm font-bold text-slate-900">{t('cal.room_status_today', 'Status Ruangan Hari Ini')}</h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{t('cal.room_status_sub', 'Status dari pengajuan yang sudah disetujui.')}</p>
                     <div className="mt-4 space-y-3 flex-1">
                         {todayRoomStatuses.length === 0 ? (
-                            <p className="text-[11px] text-slate-400">Data status ruangan belum tersedia.</p>
+                            <p className="text-[11px] text-slate-400">{t('cal.no_schedule', 'Data status ruangan belum tersedia.')}</p>
                         ) : todayRoomStatuses.map((room) => (
                             <div key={room.id} className="flex items-center justify-between gap-3">
                                 <div className="min-w-0">
                                     <p className="text-[11px] font-bold text-slate-700 truncate">{room.shortName}</p>
-                                    <p className="text-[9px] text-slate-400">Kapasitas {room.capacity} orang</p>
+                                    <p className="text-[9px] text-slate-400">{t('cal.capacity_people', 'Kapasitas {count} orang').replace('{count}', room.capacity)}</p>
                                     {room.eventToday && (
                                         <p className="text-[9px] text-slate-400 truncate">{room.eventToday} · {room.hoursToday}</p>
                                     )}
@@ -333,7 +335,7 @@ export default function Calendar({
                                         ? 'bg-blue-50 text-blue-700 border-blue-200'
                                         : 'bg-slate-50 text-slate-600 border-slate-200'
                                 }`}>
-                                    {room.statusLabel}
+                                    {room.hasSchedule ? t('cal.booked_today', 'Terjadwal hari ini') : t('cal.no_schedule', 'Tidak ada jadwal')}
                                 </span>
                             </div>
                         ))}
@@ -341,11 +343,11 @@ export default function Calendar({
                 </div>
 
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col">
-                    <h3 className="text-sm font-bold text-slate-900">Jadwal Ruangan</h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Jadwal tersedia dari database minggu ini.</p>
+                    <h3 className="text-sm font-bold text-slate-900">{t('cal.room_schedule', 'Jadwal Ruangan')}</h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{t('cal.room_schedule_sub', 'Jadwal tersedia dari database minggu ini.')}</p>
                     <div className="mt-4 space-y-2.5 flex-1">
                         {availableSlots.length === 0 ? (
-                            <p className="text-[11px] text-slate-400">Belum ada jadwal pengajuan di minggu ini.</p>
+                            <p className="text-[11px] text-slate-400">{t('cal.no_schedule', 'Belum ada jadwal pengajuan di minggu ini.')}</p>
                         ) : availableSlots.map((slot) => (
                             <div
                                 key={slot.roomId}
@@ -359,7 +361,7 @@ export default function Calendar({
                                     href="/bookings/create"
                                     className="text-[9.5px] font-bold text-blue-600 bg-white border border-blue-100 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 shrink-0"
                                 >
-                                    Ajukan
+                                    {t('cal.apply', 'Ajukan')}
                                 </a>
                             </div>
                         ))}
@@ -370,8 +372,8 @@ export default function Calendar({
                     <div>
                         <div className="flex items-center justify-between gap-2">
                             <div>
-                                <h3 className="text-sm font-bold text-slate-900">Pemeriksaan Jadwal</h3>
-                                <p className="text-[10px] text-slate-400 mt-0.5">Panduan &amp; verifikasi ketersediaan ruang.</p>
+                                <h3 className="text-sm font-bold text-slate-900">{t('cal.schedule_check_title', 'Pemeriksaan Jadwal')}</h3>
+                                <p className="text-[10px] text-slate-400 mt-0.5">{t('cal.schedule_check_sub', 'Panduan & verifikasi ketersediaan ruang.')}</p>
                             </div>
                             <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                                 <Icon name="shield" className="w-4 h-4" />
@@ -384,8 +386,8 @@ export default function Calendar({
                                     <Icon name="clock" className="w-3.5 h-3.5" />
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-[11px] font-bold text-slate-700">Waktu Pengajuan</p>
-                                    <p className="text-[9.5px] text-slate-500 mt-0.5 leading-snug">Ajukan minimal H-3 hari kerja sebelum kegiatan.</p>
+                                    <p className="text-[11px] font-bold text-slate-700">{t('cal.check_3_title', 'Waktu Pengajuan')}</p>
+                                    <p className="text-[9.5px] text-slate-500 mt-0.5 leading-snug">{t('cal.check_3_desc', 'Ajukan minimal H-3 hari kerja sebelum kegiatan.')}</p>
                                 </div>
                             </div>
 
@@ -394,8 +396,8 @@ export default function Calendar({
                                     <Icon name="users" className="w-3.5 h-3.5" />
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-[11px] font-bold text-slate-700">Kapasitas &amp; Fasilitas</p>
-                                    <p className="text-[9.5px] text-slate-500 mt-0.5 leading-snug">Wajib menjaga sarana dan kebersihan ruangan.</p>
+                                    <p className="text-[11px] font-bold text-slate-700">{t('cal.check_2_title', 'Cegah Double-Booking')}</p>
+                                    <p className="text-[9.5px] text-slate-500 mt-0.5 leading-snug">{t('cal.check_2_desc', 'Sistem otomatis menolak pengajuan pada waktu yang bentrok.')}</p>
                                 </div>
                             </div>
 
@@ -404,18 +406,18 @@ export default function Calendar({
                                     <Icon name="fileCheck" className="w-3.5 h-3.5" />
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-[11px] font-bold text-slate-700">Validasi Berkas</p>
-                                    <p className="text-[9.5px] text-slate-500 mt-0.5 leading-snug">Proposal bertandatangan pembina ormawa.</p>
+                                    <p className="text-[11px] font-bold text-slate-700">{t('cal.check_1_title', 'Data Pengajuan Aktual')}</p>
+                                    <p className="text-[9.5px] text-slate-500 mt-0.5 leading-snug">{t('cal.check_1_desc', 'Slot menampilkan jadwal disetujui & sedang diproses.')}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <a
-                        href="/guidelines"
+                        href="/docs/"
                         className="mt-4 inline-flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl bg-blue-50/70 hover:bg-blue-100/70 text-blue-700 text-[10.5px] font-bold transition-all group"
                     >
-                        <span>Baca Tata Tertib Lengkap</span>
+                        <span>{t('cal.read_guidelines', 'Baca Tata Tertib Lengkap')}</span>
                         <Icon name="arrowRight" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </a>
                 </div>

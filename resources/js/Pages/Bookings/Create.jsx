@@ -4,6 +4,7 @@ import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import ApprovalStepper from '@/Components/RuangKita/ApprovalStepper';
 import { rooms } from '@/Data/ruangkita';
+import { useLanguage } from '@/Context/LanguageContext';
 
 const ormawaOptions = [
     'HMPSTI — Himpunan Mahasiswa Program Studi Teknologi Informasi',
@@ -76,6 +77,7 @@ function UploadBox({ id, title, description, fileName, onFileChange }) {
 }
 
 export default function BookingCreate({ existingBookings = [], preselectedRoomId = null, minDate = null }) {
+    const { t } = useLanguage();
     const { auth } = usePage().props;
     const user = auth?.user;
 
@@ -164,14 +166,14 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
         <RuangKitaLayout activeTab="booking">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Pengajuan Ruangan Baru</h1>
+                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{t('booking.title', 'Pengajuan Ruangan Baru')}</h1>
                     <p className="text-xs text-slate-400 mt-1">
-                        Lengkapi formulir, unggah dokumen, dan pantau persetujuan dalam satu alur.
+                        {t('booking.subtitle', 'Lengkapi formulir, unggah dokumen, dan pantau persetujuan dalam satu alur.')}
                     </p>
                 </div>
                 <div className="inline-flex items-center gap-2 text-[10px] font-semibold text-slate-500 bg-white border border-slate-100 rounded-xl px-3 py-2 shadow-sm">
                     <Icon name="shield" className="w-3.5 h-3.5 text-emerald-500" />
-                    Pengecekan bentrok otomatis aktif
+                    {t('booking.step_schedule_sub', 'Pengecekan bentrok otomatis aktif')}
                 </div>
             </div>
 
@@ -183,24 +185,24 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 <Icon name="file" className="w-4 h-4" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-slate-900">Informasi Kegiatan</h3>
-                                <p className="text-[10px] text-slate-400">Data ini akan tampil pada surat izin.</p>
+                                <h3 className="text-sm font-bold text-slate-900">{t('booking.step_event', 'Informasi Kegiatan')}</h3>
+                                <p className="text-[10px] text-slate-400">{t('booking.step_event_sub', 'Data ini akan tampil pada surat izin.')}</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field label="Nama kegiatan" className="sm:col-span-2">
+                            <Field label={t('booking.event_name', 'Nama kegiatan')} className="sm:col-span-2">
                                 <input
                                     type="text"
                                     value={form.event}
                                     onChange={update('event')}
                                     className={inputClass}
-                                    placeholder="Contoh: Workshop Desain UI/UX"
+                                    placeholder={t('booking.event_placeholder', 'Contoh: Workshop Desain UI/UX')}
                                     required
                                 />
                             </Field>
 
-                            <Field label="Organisasi mahasiswa">
+                            <Field label={t('booking.ormawa', 'Organisasi mahasiswa')}>
                                 <select value={form.ormawa} onChange={update('ormawa')} className={selectClass}>
                                     {ormawaOptions.map((option) => (
                                         <option key={option} value={option}>
@@ -210,7 +212,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 </select>
                             </Field>
 
-                            <Field label="Jumlah peserta">
+                            <Field label={t('booking.participants', 'Jumlah peserta')}>
                                 <input
                                     type="number"
                                     min="1"
@@ -220,11 +222,11 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 />
                             </Field>
 
-                            <Field label="Penanggung jawab">
+                            <Field label={t('booking.pic', 'Penanggung jawab')}>
                                 <input type="text" value={form.pic} onChange={update('pic')} className={inputClass} required />
                             </Field>
 
-                            <Field label="Nomor WhatsApp">
+                            <Field label={t('booking.phone', 'Nomor WhatsApp')}>
                                 <input type="tel" value={form.phone} onChange={update('phone')} className={inputClass} />
                             </Field>
                         </div>
@@ -236,13 +238,13 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 <Icon name="calendar" className="w-4 h-4" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-slate-900">Jadwal & Ruangan</h3>
-                                <p className="text-[10px] text-slate-400">Sistem akan memeriksa bentrok jadwal secara langsung.</p>
+                                <h3 className="text-sm font-bold text-slate-900">{t('booking.step_schedule', 'Jadwal & Ruangan')}</h3>
+                                <p className="text-[10px] text-slate-400">{t('booking.step_schedule_sub', 'Sistem akan memeriksa bentrok jadwal secara langsung.')}</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field label="Ruangan" className="sm:col-span-2">
+                            <Field label={t('booking.room', 'Ruangan')} className="sm:col-span-2">
                                 <select value={form.roomId} onChange={update('roomId')} className={selectClass}>
                                     {rooms.map((room) => (
                                         <option key={room.id} value={room.id}>
@@ -303,23 +305,23 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 <Icon name="upload" className="w-4 h-4" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold text-slate-900">Dokumen Pendukung</h3>
-                                <p className="text-[10px] text-slate-400">Format PDF, maksimal 5 MB per dokumen.</p>
+                                <h3 className="text-sm font-bold text-slate-900">{t('booking.step_docs', 'Dokumen Pendukung')}</h3>
+                                <p className="text-[10px] text-slate-400">{t('booking.step_docs_sub', 'Format PDF, maksimal 5 MB per dokumen.')}</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <UploadBox
                                 id="proposal"
-                                title="Proposal kegiatan"
-                                description="Wajib • PDF maks. 5 MB"
+                                title={t('booking.doc_proposal', 'Proposal kegiatan')}
+                                description={t('booking.doc_proposal_desc', 'Wajib • PDF maks. 5 MB')}
                                 fileName={proposalFile}
                                 onFileChange={setProposalFile}
                             />
                             <UploadBox
                                 id="letter"
-                                title="Surat permohonan ruangan"
-                                description="Wajib • sudah ditandatangani"
+                                title={t('booking.doc_letter', 'Surat permohonan ruangan')}
+                                description={t('booking.doc_letter_desc', 'Wajib • sudah ditandatangani')}
                                 fileName={letterFile}
                                 onFileChange={setLetterFile}
                             />
@@ -342,26 +344,26 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
 
                 <aside className="lg:sticky lg:top-24 space-y-5">
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                        <h3 className="text-sm font-bold text-slate-900">Ringkasan Pengajuan</h3>
+                        <h3 className="text-sm font-bold text-slate-900">{t('booking.summary_title', 'Ringkasan Pengajuan')}</h3>
 
                         <div className="mt-4 space-y-3">
                             <div className="flex items-start justify-between gap-3">
-                                <span className="text-[10px] font-medium text-slate-400">Ruangan</span>
+                                <span className="text-[10px] font-medium text-slate-400">{t('booking.summary_room', 'Ruangan')}</span>
                                 <span className="text-[10.5px] font-bold text-slate-700 text-right">{selectedRoom?.name}</span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
-                                <span className="text-[10px] font-medium text-slate-400">Tanggal</span>
+                                <span className="text-[10px] font-medium text-slate-400">{t('common.date', 'Tanggal')}</span>
                                 <span className="text-[10.5px] font-bold text-slate-700">{formatDate(form.date)}</span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
-                                <span className="text-[10px] font-medium text-slate-400">Waktu</span>
+                                <span className="text-[10px] font-medium text-slate-400">{t('common.time', 'Waktu')}</span>
                                 <span className="text-[10.5px] font-bold text-slate-700">
                                     {form.start} - {form.end} ({duration > 0 ? duration : 0} jam)
                                 </span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
-                                <span className="text-[10px] font-medium text-slate-400">Peserta</span>
-                                <span className="text-[10.5px] font-bold text-slate-700">{form.participants} orang</span>
+                                <span className="text-[10px] font-medium text-slate-400">{t('booking.summary_participants', 'Peserta')}</span>
+                                <span className="text-[10.5px] font-bold text-slate-700">{form.participants} {t('common.participants', 'peserta')}</span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
                                 <span className="text-[10px] font-medium text-slate-400">Dokumen</span>
@@ -414,7 +416,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             className="mt-4 w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-600 text-white text-[11.5px] font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
                         >
                             <Icon name="send" className="w-4 h-4" />
-                            {loading ? 'Mengirim...' : 'Kirim Pengajuan'}
+                            {loading ? t('booking.submitting', 'Mengirim...') : t('booking.submit', 'Kirim Pengajuan')}
                         </button>
                         <p className="text-[9px] text-slate-400 text-center mt-2">
                             Dengan mengirim, pengajuan masuk ke tahap verifikasi admin.

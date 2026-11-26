@@ -3,16 +3,18 @@ import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import StatusBadge from '@/Components/RuangKita/StatusBadge';
 import { stageStyles } from '@/Data/ruangkita';
+import { useLanguage } from '@/Context/LanguageContext';
 
-const filters = [
-    { id: 'all', label: 'Semua Pengajuan' },
-    { id: 'active', label: 'Sedang Berjalan' },
-    { id: 'revision', label: 'Perlu Revisi', isAlert: true },
-    { id: 'approved', label: 'Disetujui' },
-    { id: 'history', label: 'Riwayat Selesai' },
+const filterConfigs = [
+    { id: 'all', key: 'permits.filter_all', fallback: 'Semua Pengajuan' },
+    { id: 'active', key: 'permits.filter_active', fallback: 'Sedang Berjalan' },
+    { id: 'revision', key: 'permits.filter_revision', fallback: 'Perlu Revisi', isAlert: true },
+    { id: 'approved', key: 'permits.filter_approved', fallback: 'Disetujui' },
+    { id: 'history', key: 'permits.filter_history', fallback: 'Riwayat Selesai' },
 ];
 
 export default function PermitsIndex({ permits = [], stats = {} }) {
+    const { t } = useLanguage();
     const [filter, setFilter] = useState(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
@@ -75,10 +77,10 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-                        Pusat Peminjaman &amp; Izin
+                        {t('permits.title', 'Pusat Peminjaman & Izin')}
                     </h1>
                     <p className="text-xs text-slate-500 mt-1 max-w-xl">
-                        Satu pintu untuk membuat pengajuan baru, melacak status izin, memperbaiki berkas revisi, dan melihat riwayat peminjaman.
+                        {t('permits.subtitle', 'Satu pintu untuk membuat pengajuan baru, melacak status izin, memperbaiki berkas revisi, dan melihat riwayat peminjaman.')}
                     </p>
                 </div>
                 <a
@@ -86,7 +88,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                     className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/25 hover:bg-blue-700 transition-all hover:scale-[1.01] active:scale-[0.99] shrink-0"
                 >
                     <Icon name="plus" className="w-4 h-4" />
-                    Pengajuan Baru
+                    {t('permits.new_booking', 'Pengajuan Baru')}
                 </a>
             </div>
 
@@ -99,10 +101,10 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-rose-900">
-                                {revisionCount} Pengajuan Memerlukan Tindakan Revisi
+                                {t('permits.revision_alert_title', '{count} Pengajuan Memerlukan Tindakan Revisi').replace('{count}', revisionCount)}
                             </p>
                             <p className="text-[11px] text-rose-700 mt-0.5 leading-relaxed">
-                                Verifikator memberikan catatan perbaikan. Segera perbaiki dokumen agar proses persetujuan dapat dilanjutkan.
+                                {t('permits.revision_alert_desc', 'Verifikator memberikan catatan perbaikan. Segera perbaiki dokumen agar proses persetujuan dapat dilanjutkan.')}
                             </p>
                         </div>
                     </div>
@@ -111,7 +113,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                         onClick={() => setFilter('revision')}
                         className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition-colors shrink-0 shadow-sm"
                     >
-                        Lihat Berkas Revisi
+                        {t('permits.view_revisions', 'Lihat Berkas Revisi')}
                         <Icon name="chevronRight" className="w-3.5 h-3.5" />
                     </button>
                 </div>
@@ -120,10 +122,10 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
                 {[
-                    { label: 'Total Pengajuan', value: String(stats.total ?? permits.length), icon: 'clipboardList', accent: 'text-blue-600 bg-blue-50', filterId: 'all' },
-                    { label: 'Sedang Berjalan', value: String(activeCount), icon: 'clock', accent: 'text-violet-600 bg-violet-50', filterId: 'active' },
-                    { label: 'Perlu Revisi', value: String(revisionCount), icon: 'alert', accent: revisionCount > 0 ? 'text-rose-600 bg-rose-100/80' : 'text-slate-500 bg-slate-100', filterId: 'revision' },
-                    { label: 'Riwayat Selesai', value: String(historyCount), icon: 'check', accent: 'text-emerald-600 bg-emerald-50', filterId: 'history' },
+                    { label: t('permits.stat_total', 'Total Pengajuan'), value: String(stats.total ?? permits.length), icon: 'clipboardList', accent: 'text-blue-600 bg-blue-50', filterId: 'all' },
+                    { label: t('permits.stat_active', 'Sedang Berjalan'), value: String(activeCount), icon: 'clock', accent: 'text-violet-600 bg-violet-50', filterId: 'active' },
+                    { label: t('permits.stat_revision', 'Perlu Revisi'), value: String(revisionCount), icon: 'alert', accent: revisionCount > 0 ? 'text-rose-600 bg-rose-100/80' : 'text-slate-500 bg-slate-100', filterId: 'revision' },
+                    { label: t('permits.stat_history', 'Riwayat Selesai'), value: String(historyCount), icon: 'check', accent: 'text-emerald-600 bg-emerald-50', filterId: 'history' },
                 ].map((item) => (
                     <button
                         key={item.label}
@@ -149,7 +151,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                 {/* Filter Tabs + Search */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 border-b border-slate-100 bg-slate-50/40">
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
-                        {filters.map((item) => {
+                        {filterConfigs.map((item) => {
                             const count = getFilterCount(item.id);
                             const isActive = filter === item.id;
                             const hasAlertBadge = item.isAlert && count > 0;
@@ -165,7 +167,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                                             : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
                                     }`}
                                 >
-                                    {item.label}
+                                    {t(item.key, item.fallback)}
                                     <span
                                         className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold ${
                                             hasAlertBadge
@@ -193,7 +195,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                             type="text"
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="Cari kegiatan, ormawa, atau kode izin..."
+                            placeholder={t('permits.search_placeholder', 'Cari kegiatan, ormawa, atau kode izin...')}
                             className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-slate-400 shadow-sm"
                         />
                     </div>
@@ -258,7 +260,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                                         {permit.participants > 0 && (
                                             <span className="inline-flex items-center gap-1.5 text-slate-600">
                                                 <Icon name="users" className="w-3.5 h-3.5 text-slate-400" />
-                                                {permit.participants} peserta
+                                                {permit.participants} {t('common.participants', 'peserta')}
                                             </span>
                                         )}
                                     </div>
@@ -268,7 +270,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                                         <div className="mt-2.5 p-2.5 rounded-xl bg-rose-50/90 border border-rose-200/80 text-[10.5px] text-rose-800 flex items-start gap-2">
                                             <Icon name="alert" className="w-3.5 h-3.5 text-rose-600 mt-0.5 shrink-0" />
                                             <div>
-                                                <strong className="font-semibold text-rose-900">Catatan Revisi:</strong>{' '}
+                                                <strong className="font-semibold text-rose-900">{t('permits.revision_note_label', 'Catatan Revisi:')}</strong>{' '}
                                                 <span>{permit.notes}</span>
                                             </div>
                                         </div>
@@ -295,10 +297,10 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                                         <a
                                             href={`/permits/${permit.id}/letter`}
                                             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10.5px] font-bold transition-colors"
-                                            title="Unduh Surat Izin Resmi"
+                                            title={t('permits.download_letter_title', 'Unduh Surat Izin Resmi')}
                                         >
                                             <Icon name="download" className="w-3.5 h-3.5" />
-                                            Surat
+                                            {t('permits.download_letter', 'Surat')}
                                         </a>
                                     )}
 
@@ -306,7 +308,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                                         href={`/permits/${permit.id}`}
                                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-[10.5px] font-bold text-slate-700 transition-colors"
                                     >
-                                        Detail
+                                        {t('common.detail', 'Detail')}
                                         <Icon name="chevronRight" className="w-3.5 h-3.5" />
                                     </a>
                                 </div>
@@ -319,16 +321,16 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                             <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center mx-auto mb-3">
                                 <Icon name="clipboardList" className="w-7 h-7" />
                             </div>
-                            <p className="text-sm font-bold text-slate-700">Tidak ada pengajuan pada kategori ini</p>
+                            <p className="text-sm font-bold text-slate-700">{t('permits.empty_title', 'Tidak ada pengajuan pada kategori ini')}</p>
                             <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-                                Coba pilih filter lain atau buat pengajuan peminjaman ruangan baru.
+                                {t('permits.empty_desc', 'Coba pilih filter lain atau buat pengajuan peminjaman ruangan baru.')}
                             </p>
                             <a
                                 href="/bookings/create"
                                 className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm"
                             >
                                 <Icon name="plus" className="w-3.5 h-3.5" />
-                                Buat Pengajuan Baru
+                                {t('permits.new_booking', 'Pengajuan Baru')}
                             </a>
                         </div>
                     )}

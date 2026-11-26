@@ -7,8 +7,10 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function Login({ status, canResetPassword }) {
+    const { t } = useLanguage();
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -25,14 +27,14 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <GuestLayout>
-            <Head title="Masuk" />
+            <Head title={t('auth.login_btn', 'Masuk')} />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                    Masuk ke RuangKita
+                    {t('auth.login_title', 'Masuk ke RuangKita')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                    Gunakan email resmi <span className="font-semibold text-blue-600">@student.ub.ac.id</span>.
+                    {t('auth.login_sub_prefix', 'Gunakan email resmi')} <span className="font-semibold text-blue-600">@student.ub.ac.id</span>.
                 </p>
             </div>
 
@@ -44,7 +46,7 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <InputLabel htmlFor="email" value="Email Kampus (@student.ub.ac.id)" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="email" value={t('auth.email', 'Email Kampus (@student.ub.ac.id)')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -69,13 +71,13 @@ export default function Login({ status, canResetPassword }) {
 
                 <div>
                     <div className="flex items-center justify-between">
-                        <InputLabel htmlFor="password" value="Kata Sandi Akun" className="text-xs font-bold text-slate-700" />
+                        <InputLabel htmlFor="password" value={t('auth.password', 'Kata Sandi Akun')} className="text-xs font-bold text-slate-700" />
                         {canResetPassword && (
                             <Link
                                 href={route('password.request')}
                                 className="text-[11px] font-semibold text-blue-600 hover:text-blue-700"
                             >
-                                Lupa sandi?
+                                {t('auth.forgot_password', 'Lupa sandi?')}
                             </Link>
                         )}
                     </div>
@@ -109,7 +111,7 @@ export default function Login({ status, canResetPassword }) {
                             className="rounded text-blue-600 focus:ring-blue-500"
                         />
                         <span className="ms-2 text-xs font-medium text-slate-600">
-                            Ingat sesi saya
+                            {t('auth.remember', 'Ingat sesi saya')}
                         </span>
                     </label>
                 </div>
@@ -119,7 +121,7 @@ export default function Login({ status, canResetPassword }) {
                         className="w-full justify-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all"
                         disabled={processing}
                     >
-                        Masuk
+                        {t('auth.login_btn', 'Masuk')}
                     </PrimaryButton>
                 </div>
 
@@ -127,12 +129,12 @@ export default function Login({ status, canResetPassword }) {
 
             <div className="mt-6 pt-5 border-t border-slate-100 text-center">
                 <p className="text-xs text-slate-500">
-                    Belum memiliki akun ormawa?{' '}
+                    {t('auth.no_account', 'Belum memiliki akun ormawa?')}{' '}
                     <Link
                         href={route('register')}
                         className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
                     >
-                        Daftar sekarang
+                        {t('auth.register_now', 'Daftar sekarang')}
                     </Link>
                 </p>
             </div>

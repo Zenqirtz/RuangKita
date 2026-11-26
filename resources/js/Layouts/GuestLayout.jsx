@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/RuangKita/Icon';
+import LanguageSwitcher from '@/Components/RuangKita/LanguageSwitcher';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function GuestLayout({ children }) {
+    const { t } = useLanguage();
+
     return (
         <div className="min-h-screen bg-[#F5F7FB] flex flex-col justify-center font-sans antialiased text-slate-800 p-4 sm:p-6 lg:p-8">
             <div className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[620px]">
@@ -15,24 +19,24 @@ export default function GuestLayout({ children }) {
                         <Link href="/" className="inline-flex flex-col items-start gap-1.5 group">
                             <img src="/images/logo-white.svg" alt="RuangKita" className="h-11 w-auto object-contain" />
                             <p className="text-xs font-semibold text-blue-200 uppercase tracking-widest mt-1">
-                                Universitas Brawijaya
+                                {t('guest.university', 'Universitas Brawijaya')}
                             </p>
                         </Link>
 
                         <div className="mt-9">
                             <h2 className="text-2xl lg:text-[28px] font-extrabold text-white leading-tight tracking-tight">
-                                Akses Terpusat Ormawa Universitas Brawijaya
+                                {t('guest.headline', 'Akses Terpusat Ormawa Universitas Brawijaya')}
                             </h2>
                             <p className="text-sm text-blue-100/90 mt-3.5 leading-relaxed">
-                                Satu akun kampus untuk cek ketersediaan ruang live, upload proposal, dan pantau tanda tangan izin secara real-time.
+                                {t('guest.subheadline', 'Satu akun kampus untuk cek ketersediaan ruang live, upload proposal, dan pantau tanda tangan izin secara real-time.')}
                             </p>
                         </div>
 
                         <div className="mt-9 space-y-5 pt-7 border-t border-white/15">
                             {[
-                                { title: 'Akun Kampus Terverifikasi', desc: 'Login instan via @student.ub.ac.id' },
-                                { title: 'Anti Double-Booking', desc: 'Validasi bentrok jadwal otomatis 5 ruang' },
-                                { title: 'Transparansi 4 Tahap', desc: 'Pantau posisi berkas hingga disetujui WD III' },
+                                { title: t('guest.feat1_title', 'Akun Kampus Terverifikasi'), desc: t('guest.feat1_desc', 'Login instan via @student.ub.ac.id') },
+                                { title: t('guest.feat2_title', 'Anti Double-Booking'), desc: t('guest.feat2_desc', 'Validasi bentrok jadwal otomatis 5 ruang') },
+                                { title: t('guest.feat3_title', 'Transparansi 4 Tahap'), desc: t('guest.feat3_desc', 'Pantau posisi berkas hingga disetujui WD III') },
                             ].map((item, idx) => (
                                 <div key={idx} className="flex items-start gap-3.5 text-sm text-blue-100">
                                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0 mt-0.5">
@@ -49,7 +53,10 @@ export default function GuestLayout({ children }) {
                 </div>
 
                 {/* Right Form Panel */}
-                <div className="lg:col-span-7 p-8 sm:p-10 lg:p-12 flex flex-col justify-center bg-white">
+                <div className="lg:col-span-7 p-8 sm:p-10 lg:p-12 flex flex-col justify-center bg-white relative">
+                    <div className="absolute top-5 right-5 sm:top-6 sm:right-6">
+                        <LanguageSwitcher />
+                    </div>
                     <div className="max-w-md w-full mx-auto">
                         {children}
                     </div>

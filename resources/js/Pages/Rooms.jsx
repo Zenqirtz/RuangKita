@@ -3,15 +3,18 @@ import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { roomStatusStyles } from '@/Data/ruangkita';
 import { accentStyles } from '@/Components/RuangKita/accent';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function Rooms({ rooms = [], stats = {} }) {
+    const { t } = useLanguage();
+
     return (
         <RuangKitaLayout activeTab="rooms">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Daftar Ruangan</h1>
+                    <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{t('rooms.title', 'Daftar Ruangan')}</h1>
                     <p className="text-xs text-slate-400 mt-1">
-                        Satu gedung fakultas, lima ruangan utama untuk kegiatan ormawa.
+                        {t('rooms.subtitle', 'Satu gedung fakultas, lima ruangan utama untuk kegiatan ormawa.')}
                     </p>
                 </div>
                 <a
@@ -19,14 +22,14 @@ export default function Rooms({ rooms = [], stats = {} }) {
                     className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors"
                 >
                     <Icon name="plus" className="w-4 h-4" />
-                    Ajukan Ruangan
+                    {t('rooms.apply_room', 'Ajukan Ruangan')}
                 </a>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                    { label: 'Total ruangan', value: String(stats.totalRooms ?? rooms.length), icon: 'door', accent: accentStyles.blue },
-                    { label: 'Tersedia hari ini', value: String(stats.availableToday ?? rooms.length), icon: 'check', accent: accentStyles.emerald },
+                    { label: t('rooms.total_rooms', 'Total ruangan'), value: String(stats.totalRooms ?? rooms.length), icon: 'door', accent: accentStyles.blue },
+                    { label: t('rooms.available_today', 'Tersedia hari ini'), value: String(stats.availableToday ?? rooms.length), icon: 'check', accent: accentStyles.emerald },
                 ].map((item) => (
                     <div key={item.label} className="min-w-0 bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.accent.tile}`}>
@@ -60,7 +63,7 @@ export default function Rooms({ rooms = [], stats = {} }) {
                                     {room.code}
                                 </span>
                                 <span className={`absolute top-3 right-3 text-[9px] font-bold px-2 py-1 rounded-full border bg-white/90 ${status.badge}`}>
-                                    {status.label}
+                                    {room.status === 'available' ? t('rooms.status_available', 'Tersedia') : t('rooms.status_booked', 'Terjadwal')}
                                 </span>
                             </div>
 
@@ -74,7 +77,7 @@ export default function Rooms({ rooms = [], stats = {} }) {
                                 <div className="flex items-center gap-4 mt-3.5">
                                     <span className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-slate-700">
                                         <Icon name="users" className="w-3.5 h-3.5 text-slate-400" />
-                                        Kapasitas: {room.capacity} orang
+                                        {t('rooms.capacity', 'Kapasitas:')} {room.capacity} {t('rooms.people', 'orang')}
                                     </span>
                                 </div>
 
@@ -100,14 +103,14 @@ export default function Rooms({ rooms = [], stats = {} }) {
                                         className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-xl border border-slate-200 text-[10.5px] font-bold text-slate-600 hover:bg-slate-50 transition-colors"
                                     >
                                         <Icon name="calendar" className="w-3.5 h-3.5" />
-                                        Lihat Jadwal
+                                        {t('rooms.view_schedule', 'Lihat Jadwal')}
                                     </a>
                                     <a
                                         href="/bookings/create"
                                         className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-600 text-white text-[10.5px] font-bold hover:bg-blue-700 transition-colors"
                                     >
                                         <Icon name="plus" className="w-3.5 h-3.5" />
-                                        Ajukan
+                                        {t('rooms.apply', 'Ajukan')}
                                     </a>
                                 </div>
                             </div>
@@ -119,16 +122,15 @@ export default function Rooms({ rooms = [], stats = {} }) {
                     <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center">
                         <Icon name="help" className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xs font-bold text-slate-700 mt-3">Butuh ruangan lain?</h3>
+                    <h3 className="text-xs font-bold text-slate-700 mt-3">{t('rooms.need_other_title', 'Butuh ruangan lain?')}</h3>
                     <p className="text-[10px] text-slate-400 leading-relaxed mt-1 max-w-[200px]">
-                        Versi pertama RuangKita mencakup satu gedung dan lima ruangan utama. Hubungi admin untuk
-                        kebutuhan khusus.
+                        {t('rooms.need_other_desc', 'Versi pertama RuangKita mencakup satu gedung dan lima ruangan utama. Hubungi admin untuk kebutuhan khusus.')}
                     </p>
                     <a
-                        href="/guidelines"
+                        href="/docs/"
                         className="mt-3 text-[10px] font-bold text-blue-600 hover:text-blue-700"
                     >
-                        Hubungi admin fakultas
+                        {t('rooms.contact_admin', 'Hubungi admin fakultas')}
                     </a>
                 </article>
             </section>

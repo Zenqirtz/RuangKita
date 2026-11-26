@@ -105,9 +105,9 @@ export default function Edit({ mustVerifyEmail, status }) {
                                 <Icon name="file" className="h-5 w-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-extrabold text-slate-900">Ketentuan &amp; Privasi</h2>
+                                <h2 className="text-sm font-extrabold text-slate-900">{t('profile.terms_title', 'Ketentuan & Privasi')}</h2>
                                 <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                                    Pelajari syarat penggunaan layanan dan kebijakan privasi pengelolaan data di RuangKita.
+                                    {t('profile.terms_desc', 'Pelajari syarat penggunaan layanan dan kebijakan privasi pengelolaan data di RuangKita.')}
                                 </p>
                             </div>
                         </div>
@@ -116,7 +116,7 @@ export default function Edit({ mustVerifyEmail, status }) {
                                 href={route('terms-privacy')}
                                 className="inline-flex w-full items-center justify-between gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-700"
                             >
-                                <span>Baca Ketentuan &amp; Privasi</span>
+                                <span>{t('profile.terms_btn', 'Baca Ketentuan & Privasi')}</span>
                                 <Icon name="chevronRight" className="h-4 w-4 shrink-0" />
                             </Link>
                         </div>
