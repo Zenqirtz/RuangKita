@@ -61,9 +61,10 @@ const config = {
           },
           {
             href: 'pathname:///dashboard',
-            label: '← Kembali ke Aplikasi',
+            label: 'Kembali ke Aplikasi',
             position: 'right',
             target: '_self',
+            className: 'navbar-back-link',
           },
         ],
       },

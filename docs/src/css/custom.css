@@ -24,3 +24,7 @@
   --ifm-color-primary-lightest: #dbeafe;
   --docusaurus-highlighted-code-line-bg: rgba(96, 165, 250, 0.15);
 }
+
+.navbar-back-link svg {
+  display: none;
+}
