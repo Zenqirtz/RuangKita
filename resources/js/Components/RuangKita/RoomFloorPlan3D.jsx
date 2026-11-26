@@ -1,160 +1,145 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Icon from '@/Components/RuangKita/Icon';
 import { useLanguage } from '@/Context/LanguageContext';
-
-// Standard 2:1 isometric projection helper
-function iso(x, y, z, originX = 360, originY = 470) {
-    return {
-        x: originX + (x - y) * 0.88,
-        y: originY + (x + y) * 0.44 - z,
-    };
-}
-
-function pts(points) {
-    return points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-}
-
-function IsoBox({ x, y, z, w, d, h, topFill, leftFill, rightFill, stroke, strokeWidth = 1, onClick, onMouseEnter, onMouseLeave, className = '', originX, originY, children }) {
-    const pTop = [
-        iso(x, y, z + h, originX, originY),
-        iso(x + w, y, z + h, originX, originY),
-        iso(x + w, y + d, z + h, originX, originY),
-        iso(x, y + d, z + h, originX, originY),
-    ];
-    const pLeft = [
-        iso(x, y + d, z + h, originX, originY),
-        iso(x + w, y + d, z + h, originX, originY),
-        iso(x + w, y + d, z, originX, originY),
-        iso(x, y + d, z, originX, originY),
-    ];
-    const pRight = [
-        iso(x + w, y, z + h, originX, originY),
-        iso(x + w, y + d, z + h, originX, originY),
-        iso(x + w, y + d, z, originX, originY),
-        iso(x + w, y, z, originX, originY),
-    ];
-
-    const center = iso(x + w / 2, y + d / 2, z + h, originX, originY);
-
-    return (
-        <g
-            onClick={onClick}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            className={className}
-        >
-            <polygon points={pts(pLeft)} fill={leftFill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
-            <polygon points={pts(pRight)} fill={rightFill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
-            <polygon points={pts(pTop)} fill={topFill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
-            {children ? children(center) : null}
-        </g>
-    );
-}
 
 const VETERAN_FLOORS = [
     {
         floor: 1,
         label: 'Lt. 1',
-        title: 'Lantai 1 • Kelas & Seminar',
-        z: 0,
+        yBase: 0.35,
         rooms: [
-            { id: 1, x: 14, y: 14, w: 72, d: 78 },
-            { id: 2, x: 96, y: 14, w: 72, d: 78 },
-            { id: 19, x: 178, y: 14, w: 78, d: 78 },
-            { id: 4, x: 14, y: 118, w: 138, d: 76 },
-            { id: 21, x: 162, y: 118, w: 94, d: 76 },
+            { id: 1, x: -4.2, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 2, x: 0.0, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 19, x: 4.2, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 4, x: -2.4, z: 2.3, w: 6.8, d: 3.4 },
+            { id: 21, x: 3.6, z: 2.3, w: 4.6, d: 3.4 },
         ],
     },
     {
         floor: 2,
         label: 'Lt. 2',
-        title: 'Lantai 2 • Studio & Meeting',
-        z: 118,
+        yBase: 3.65,
         rooms: [
-            { id: 8, x: 14, y: 14, w: 74, d: 78 },
-            { id: 9, x: 98, y: 14, w: 74, d: 78 },
-            { id: 10, x: 182, y: 14, w: 74, d: 78 },
-            { id: 15, x: 14, y: 118, w: 74, d: 76 },
-            { id: 18, x: 98, y: 118, w: 74, d: 76 },
-            { id: 17, x: 182, y: 118, w: 74, d: 76 },
+            { id: 8, x: -4.2, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 9, x: 0.0, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 10, x: 4.2, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 15, x: -4.2, z: 2.3, w: 3.6, d: 3.4 },
+            { id: 18, x: 0.0, z: 2.3, w: 3.6, d: 3.4 },
+            { id: 17, x: 4.2, z: 2.3, w: 3.6, d: 3.4 },
         ],
     },
     {
         floor: 3,
         label: 'Lt. 3',
-        title: 'Lantai 3 • Lab Komputer & Riset',
-        z: 236,
+        yBase: 6.95,
         rooms: [
-            { id: 5, x: 14, y: 14, w: 74, d: 78 },
-            { id: 6, x: 98, y: 14, w: 74, d: 78 },
-            { id: 7, x: 182, y: 14, w: 74, d: 78 },
-            { id: 3, x: 14, y: 118, w: 54, d: 76 },
-            { id: 11, x: 76, y: 118, w: 54, d: 76 },
-            { id: 12, x: 138, y: 118, w: 54, d: 76 },
-            { id: 16, x: 200, y: 118, w: 56, d: 76 },
+            { id: 5, x: -4.2, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 6, x: 0.0, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 7, x: 4.2, z: -2.6, w: 3.6, d: 3.4 },
+            { id: 3, x: -4.5, z: 2.3, w: 2.7, d: 3.4 },
+            { id: 11, x: -1.5, z: 2.3, w: 2.7, d: 3.4 },
+            { id: 12, x: 1.5, z: 2.3, w: 2.7, d: 3.4 },
+            { id: 16, x: 4.5, z: 2.3, w: 2.7, d: 3.4 },
         ],
     },
 ];
 
-const DIENG_FLOOR = {
-    floor: 1,
-    label: 'Dieng',
-    title: 'Kampus Vokasi Dieng',
-    z: 40,
-    rooms: [
-        { id: 13, x: 16, y: 20, w: 74, d: 160 },
-        { id: 14, x: 100, y: 20, w: 74, d: 160 },
-        { id: 20, x: 184, y: 20, w: 72, d: 160 },
-    ],
-};
+const DIENG_FLOORS = [
+    {
+        floor: 1,
+        label: 'Dieng',
+        yBase: 0.35,
+        rooms: [
+            { id: 13, x: -4.2, z: 0.0, w: 3.6, d: 6.8 },
+            { id: 14, x: 0.0, z: 0.0, w: 3.6, d: 6.8 },
+            { id: 20, x: 4.2, z: 0.0, w: 3.6, d: 6.8 },
+        ],
+    },
+];
 
-function getRoomPalette(isSelected, isHovered, isBooked) {
+function createLabelTexture(code, name, bgHex, textHex) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 384;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = bgHex;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Subtle inner border
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
+
+    // Code pill
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.14)';
+    ctx.fillRect(40, 44, 210, 48);
+    ctx.fillStyle = textHex;
+    ctx.font = 'bold 26px monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(code, 54, 68);
+
+    // Room Name (wrapped)
+    ctx.fillStyle = textHex;
+    ctx.font = 'bold 42px sans-serif';
+    ctx.textAlign = 'center';
+    const words = name.split(' ');
+    const lines = [];
+    let current = '';
+    for (const word of words) {
+        const test = current ? `${current} ${word}` : word;
+        if (ctx.measureText(test).width > 420 && current) {
+            lines.push(current);
+            current = word;
+        } else {
+            current = test;
+        }
+    }
+    if (current) lines.push(current);
+
+    const startY = 200 - ((lines.length - 1) * 26);
+    lines.slice(0, 3).forEach((line, idx) => {
+        ctx.fillText(line, canvas.width / 2, startY + idx * 52);
+    });
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.anisotropy = 4;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+}
+
+function getColors(isSelected, isHovered, isBooked) {
     if (isSelected) {
-        return {
-            top: '#2563EB',
-            left: '#1D4ED8',
-            right: '#1E40AF',
-            stroke: '#1E3A8A',
-            text: '#FFFFFF',
-            subText: '#DBEAFE',
-        };
+        return { side: 0x1d4ed8, topHex: '#2563EB', textHex: '#FFFFFF' };
     }
     if (isHovered) {
-        return {
-            top: '#60A5FA',
-            left: '#3B82F6',
-            right: '#2563EB',
-            stroke: '#1D4ED8',
-            text: '#FFFFFF',
-            subText: '#EFF6FF',
-        };
+        return { side: 0x3b82f6, topHex: '#60A5FA', textHex: '#FFFFFF' };
     }
     if (isBooked) {
-        return {
-            top: '#FDE68A',
-            left: '#F59E0B',
-            right: '#D97706',
-            stroke: '#B45309',
-            text: '#78350F',
-            subText: '#92400E',
-        };
+        return { side: 0xd97706, topHex: '#FCD34D', textHex: '#78350F' };
     }
-    return {
-        top: '#D1FAE5',
-        left: '#34D399',
-        right: '#10B981',
-        stroke: '#059669',
-        text: '#064E3B',
-        subText: '#047857',
-    };
+    return { side: 0x10b981, topHex: '#A7F3D0', textHex: '#064E3B' };
 }
 
 export default function RoomFloorPlan3D({ rooms = [] }) {
     const { t } = useLanguage();
-    const [campus, setCampus] = useState('veteran'); // 'veteran' | 'dieng'
-    const [focusFloor, setFocusFloor] = useState('all'); // 'all' | 1 | 2 | 3
+    const mountRef = useRef(null);
+    const controlsRef = useRef(null);
+    const cameraRef = useRef(null);
+    const roomMeshesRef = useRef([]);
+    const selectedIdRef = useRef(1);
+    const hoveredIdRef = useRef(null);
+
+    const [campus, setCampus] = useState('veteran');
+    const [focusFloor, setFocusFloor] = useState('all');
     const [selectedRoomId, setSelectedRoomId] = useState(1);
     const [hoveredRoomId, setHoveredRoomId] = useState(null);
+
+    selectedIdRef.current = selectedRoomId;
+    hoveredIdRef.current = hoveredRoomId;
 
     const roomMap = useMemo(() => {
         const map = {};
@@ -164,22 +149,25 @@ export default function RoomFloorPlan3D({ rooms = [] }) {
         return map;
     }, [rooms]);
 
-    const visibleFloors = useMemo(() => {
-        if (campus === 'dieng') {
-            return [DIENG_FLOOR];
-        }
-        if (focusFloor === 'all') {
-            return VETERAN_FLOORS;
-        }
-        return VETERAN_FLOORS.filter((f) => f.floor === focusFloor).map((f) => ({
-            ...f,
-            z: 60, // center single floor cleanly in viewport
-        }));
-    }, [campus, focusFloor]);
-
     const selectedRoom = useMemo(() => {
         return roomMap[Number(selectedRoomId)] ?? rooms[0];
     }, [roomMap, selectedRoomId, rooms]);
+
+    const setCameraPreset = (preset) => {
+        const camera = cameraRef.current;
+        const controls = controlsRef.current;
+        if (!camera || !controls) return;
+
+        if (preset === 'iso') {
+            camera.position.set(14, 13, 15);
+        } else if (preset === 'front') {
+            camera.position.set(0, 7, 19);
+        } else if (preset === 'top') {
+            camera.position.set(0, 22, 2);
+        }
+        controls.target.set(0, campus === 'veteran' && focusFloor === 'all' ? 3.8 : 1.5, 0);
+        controls.update();
+    };
 
     const handleCampusChange = (nextCampus) => {
         setCampus(nextCampus);
@@ -187,13 +175,319 @@ export default function RoomFloorPlan3D({ rooms = [] }) {
         setSelectedRoomId(nextCampus === 'dieng' ? 13 : 1);
     };
 
-    const originX = 365;
-    const originY = campus === 'veteran' && focusFloor === 'all' ? 475 : 320;
-    const viewBoxHeight = campus === 'veteran' && focusFloor === 'all' ? 620 : 460;
+    // Build Three.js Scene
+    useEffect(() => {
+        const container = mountRef.current;
+        if (!container) return;
+
+        const width = container.clientWidth || 720;
+        const height = container.clientHeight || 480;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf1f5f9);
+        scene.fog = new THREE.Fog(0xf1f5f9, 32, 65);
+
+        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 120);
+        const targetY = campus === 'veteran' && focusFloor === 'all' ? 3.8 : 1.5;
+        camera.position.set(14, campus === 'veteran' && focusFloor === 'all' ? 13.5 : 10, 15);
+        cameraRef.current = camera;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.innerHTML = '';
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.07;
+        controls.maxPolarAngle = Math.PI / 2 - 0.04;
+        controls.minDistance = 8;
+        controls.maxDistance = 36;
+        controls.target.set(0, targetY, 0);
+        controls.update();
+        controlsRef.current = controls;
+
+        // Lighting
+        const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+        scene.add(ambient);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
+        dirLight.position.set(14, 24, 14);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 2;
+        dirLight.shadow.camera.far = 60;
+        const d = 16;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0xbfdbfe, 0.4);
+        fillLight.position.set(-12, 10, -10);
+        scene.add(fillLight);
+
+        // Campus Ground & Landscaping
+        const groundGeo = new THREE.BoxGeometry(22, 0.3, 18);
+        const groundMat = new THREE.MeshStandardMaterial({
+            color: campus === 'dieng' ? 0xdcfce7 : 0xe2e8f0,
+            roughness: 0.9,
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.position.y = -0.15;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        const gridHelper = new THREE.GridHelper(22, 22, 0xcbd5e1, 0xe2e8f0);
+        gridHelper.position.y = 0.01;
+        scene.add(gridHelper);
+
+        // Entrance Walkway & Steps
+        const walkway = new THREE.Mesh(
+            new THREE.BoxGeometry(3.4, 0.08, 3.2),
+            new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.7 })
+        );
+        walkway.position.set(0, 0.04, 6.2);
+        walkway.receiveShadow = true;
+        scene.add(walkway);
+
+        // Stylized Campus Trees
+        const addTree = (tx, tz) => {
+            const trunk = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.14, 0.18, 1.1, 8),
+                new THREE.MeshStandardMaterial({ color: 0x78350f })
+            );
+            trunk.position.set(tx, 0.55, tz);
+            trunk.castShadow = true;
+            scene.add(trunk);
+
+            const foliage = new THREE.Mesh(
+                new THREE.ConeGeometry(0.8, 1.9, 8),
+                new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.8 })
+            );
+            foliage.position.set(tx, 1.75, tz);
+            foliage.castShadow = true;
+            scene.add(foliage);
+        };
+        addTree(-8.4, 6.2);
+        addTree(-8.4, -5.8);
+        addTree(8.4, 6.2);
+        addTree(8.4, -5.8);
+
+        // Active Floors
+        const floorsToRender =
+            campus === 'dieng'
+                ? DIENG_FLOORS
+                : focusFloor === 'all'
+                  ? VETERAN_FLOORS
+                  : VETERAN_FLOORS.filter((f) => f.floor === focusFloor).map((f) => ({ ...f, yBase: 0.35 }));
+
+        const createdTextures = [];
+        const interactiveMeshes = [];
+
+        floorsToRender.forEach((floorCfg, floorIdx) => {
+            const fy = floorCfg.yBase;
+
+            // Structural Floor Slab
+            const slab = new THREE.Mesh(
+                new THREE.BoxGeometry(13.6, 0.35, 9.6),
+                new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.65 })
+            );
+            slab.position.set(0, fy, 0);
+            slab.castShadow = true;
+            slab.receiveShadow = true;
+            scene.add(slab);
+
+            // Slab Edge Accent Trim
+            const trim = new THREE.Mesh(
+                new THREE.BoxGeometry(13.7, 0.1, 9.7),
+                new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.5 })
+            );
+            trim.position.set(0, fy - 0.14, 0);
+            scene.add(trim);
+
+            // Glass Balcony Railing on Front Edge
+            const glass = new THREE.Mesh(
+                new THREE.BoxGeometry(13.4, 0.55, 0.08),
+                new THREE.MeshStandardMaterial({
+                    color: 0x60a5fa,
+                    transparent: true,
+                    opacity: 0.28,
+                    roughness: 0.1,
+                })
+            );
+            glass.position.set(0, fy + 0.45, 4.76);
+            scene.add(glass);
+
+            // Corner Concrete Columns connecting floors
+            if (campus === 'veteran' && focusFloor === 'all' && floorIdx < floorsToRender.length - 1) {
+                const colGeo = new THREE.BoxGeometry(0.32, 3.3, 0.32);
+                const colMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.6 });
+                [
+                    [-6.55, -4.55],
+                    [6.55, -4.55],
+                    [-6.55, 4.55],
+                    [6.55, 4.55],
+                ].forEach(([cx, cz]) => {
+                    const col = new THREE.Mesh(colGeo, colMat);
+                    col.position.set(cx, fy + 1.65, cz);
+                    col.castShadow = true;
+                    scene.add(col);
+                });
+            }
+
+            // 3D Room Blocks
+            floorCfg.rooms.forEach((slot) => {
+                const room = roomMap[slot.id];
+                if (!room) return;
+
+                const isSelected = Number(selectedIdRef.current) === Number(room.id);
+                const isBooked = room.status === 'booked';
+                const colors = getColors(isSelected, false, isBooked);
+                const tex = createLabelTexture(room.code, room.shortName, colors.topHex, colors.textHex);
+                createdTextures.push(tex);
+
+                const sideMat = new THREE.MeshStandardMaterial({ color: colors.side, roughness: 0.45 });
+                const topMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.35 });
+
+                const roomHeight = 1.45;
+                const roomGeo = new THREE.BoxGeometry(slot.w, roomHeight, slot.d);
+                // BoxGeometry face order: +x, -x, +y (top), -y, +z, -z
+                const mesh = new THREE.Mesh(roomGeo, [sideMat, sideMat, topMat, sideMat, sideMat, sideMat]);
+                mesh.position.set(slot.x, fy + 0.18 + roomHeight / 2 + (isSelected ? 0.35 : 0), slot.z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                mesh.userData = {
+                    room,
+                    baseY: fy + 0.18 + roomHeight / 2,
+                    sideMat,
+                    topMat,
+                };
+                scene.add(mesh);
+                interactiveMeshes.push(mesh);
+            });
+        });
+
+        roomMeshesRef.current = interactiveMeshes;
+
+        // Raycaster for hover & click
+        const raycaster = new THREE.Raycaster();
+        const pointer = new THREE.Vector2();
+        let downPos = { x: 0, y: 0 };
+
+        const updatePointer = (event) => {
+            const rect = renderer.domElement.getBoundingClientRect();
+            pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        };
+
+        const onPointerDown = (event) => {
+            downPos = { x: event.clientX, y: event.clientY };
+        };
+
+        const onPointerUp = (event) => {
+            const dist = Math.hypot(event.clientX - downPos.x, event.clientY - downPos.y);
+            if (dist > 6) return; // user was orbiting/dragging
+
+            updatePointer(event);
+            raycaster.setFromCamera(pointer, camera);
+            const hits = raycaster.intersectObjects(roomMeshesRef.current, false);
+            if (hits.length > 0) {
+                const hitRoom = hits[0].object.userData.room;
+                if (hitRoom) {
+                    setSelectedRoomId(hitRoom.id);
+                }
+            }
+        };
+
+        const onPointerMove = (event) => {
+            updatePointer(event);
+            raycaster.setFromCamera(pointer, camera);
+            const hits = raycaster.intersectObjects(roomMeshesRef.current, false);
+            if (hits.length > 0) {
+                renderer.domElement.style.cursor = 'pointer';
+                const hitId = hits[0].object.userData.room?.id ?? null;
+                if (hitId !== hoveredIdRef.current) {
+                    setHoveredRoomId(hitId);
+                }
+            } else {
+                renderer.domElement.style.cursor = 'grab';
+                if (hoveredIdRef.current !== null) {
+                    setHoveredRoomId(null);
+                }
+            }
+        };
+
+        renderer.domElement.style.cursor = 'grab';
+        renderer.domElement.addEventListener('pointerdown', onPointerDown);
+        renderer.domElement.addEventListener('pointerup', onPointerUp);
+        renderer.domElement.addEventListener('pointermove', onPointerMove);
+
+        // Resize handling
+        const resizeObserver = new ResizeObserver(() => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (w > 0 && h > 0) {
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            }
+        });
+        resizeObserver.observe(container);
+
+        // Animation Loop (smooth elevation + orbit damping)
+        let animId;
+        const animate = () => {
+            animId = requestAnimationFrame(animate);
+            roomMeshesRef.current.forEach((mesh) => {
+                const { room, baseY } = mesh.userData;
+                const isSel = Number(selectedIdRef.current) === Number(room.id);
+                const isHov = Number(hoveredIdRef.current) === Number(room.id);
+                const targetMeshY = baseY + (isSel ? 0.42 : isHov ? 0.2 : 0);
+                mesh.position.y += (targetMeshY - mesh.position.y) * 0.18;
+            });
+            controls.update();
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        return () => {
+            cancelAnimationFrame(animId);
+            resizeObserver.disconnect();
+            renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+            renderer.domElement.removeEventListener('pointerup', onPointerUp);
+            renderer.domElement.removeEventListener('pointermove', onPointerMove);
+            controls.dispose();
+            createdTextures.forEach((tex) => tex.dispose());
+            renderer.dispose();
+        };
+    }, [campus, focusFloor, roomMap]);
+
+    // Update room material colors when selectedRoomId or hoveredRoomId changes without rebuilding scene
+    useEffect(() => {
+        roomMeshesRef.current.forEach((mesh) => {
+            const { room, sideMat, topMat } = mesh.userData;
+            const isSelected = Number(selectedRoomId) === Number(room.id);
+            const isHovered = Number(hoveredRoomId) === Number(room.id);
+            const isBooked = room.status === 'booked';
+            const colors = getColors(isSelected, isHovered, isBooked);
+
+            sideMat.color.setHex(colors.side);
+            const newTex = createLabelTexture(room.code, room.shortName, colors.topHex, colors.textHex);
+            if (topMat.map) topMat.map.dispose();
+            topMat.map = newTex;
+            topMat.needsUpdate = true;
+        });
+    }, [selectedRoomId, hoveredRoomId]);
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
-            {/* 3D Isometric Building Viewport */}
+            {/* WebGL 3D Building Canvas */}
             <div className="xl:col-span-8 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col justify-between overflow-hidden">
                 {/* Top Controls */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -222,201 +516,63 @@ export default function RoomFloorPlan3D({ rooms = [] }) {
                         </button>
                     </div>
 
-                    {campus === 'veteran' && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        {campus === 'veteran' && (
+                            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1">
+                                {[
+                                    { id: 'all', label: 'Gedung Utuh' },
+                                    { id: 1, label: 'Lt. 1' },
+                                    { id: 2, label: 'Lt. 2' },
+                                    { id: 3, label: 'Lt. 3' },
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        type="button"
+                                        onClick={() => setFocusFloor(tab.id)}
+                                        className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold transition-all ${
+                                            focusFloor === tab.id
+                                                ? 'bg-white text-blue-600 shadow-sm'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                        }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1">
-                            {[
-                                { id: 'all', label: 'Gedung Utuh' },
-                                { id: 1, label: 'Lt. 1' },
-                                { id: 2, label: 'Lt. 2' },
-                                { id: 3, label: 'Lt. 3' },
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    type="button"
-                                    onClick={() => setFocusFloor(tab.id)}
-                                    className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold transition-all ${
-                                        focusFloor === tab.id
-                                            ? 'bg-white text-blue-600 shadow-sm'
-                                            : 'text-slate-500 hover:text-slate-800'
-                                    }`}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
+                            <button
+                                type="button"
+                                onClick={() => setCameraPreset('iso')}
+                                className="px-2 py-1 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-white hover:text-blue-600 transition-colors"
+                            >
+                                3D
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setCameraPreset('front')}
+                                className="px-2 py-1 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-white hover:text-blue-600 transition-colors"
+                            >
+                                Depan
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setCameraPreset('top')}
+                                className="px-2 py-1 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-white hover:text-blue-600 transition-colors"
+                            >
+                                Atas
+                            </button>
                         </div>
-                    )}
+                    </div>
                 </div>
 
-                {/* Isometric Building SVG Canvas */}
-                <div className="relative my-3 rounded-2xl bg-gradient-to-b from-sky-50/70 via-blue-50/30 to-slate-100/70 border border-slate-100 overflow-hidden flex items-center justify-center">
-                    {/* Subtle Grid */}
-                    <div
-                        className="absolute inset-0 opacity-40 pointer-events-none"
-                        style={{
-                            backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)',
-                            backgroundSize: '22px 22px',
-                        }}
-                    />
-
-                    <svg
-                        viewBox={`0 0 740 ${viewBoxHeight}`}
-                        className="w-full h-auto max-h-[540px] relative z-10 select-none"
-                    >
-                        {/* Ground Shadow & Base */}
-                        <IsoBox
-                            x={-16}
-                            y={-16}
-                            z={-12}
-                            w={302}
-                            d={242}
-                            h={12}
-                            topFill="#E2E8F0"
-                            leftFill="#CBD5E1"
-                            rightFill="#94A3B8"
-                            stroke="#CBD5E1"
-                            originX={originX}
-                            originY={originY}
-                        />
-
-                        {/* Campus Entrance Canopy Marker */}
-                        <IsoBox
-                            x={105}
-                            y={212}
-                            z={0}
-                            w={60}
-                            d={18}
-                            h={8}
-                            topFill="#93C5FD"
-                            leftFill="#3B82F6"
-                            rightFill="#2563EB"
-                            stroke="#1D4ED8"
-                            originX={originX}
-                            originY={originY}
-                        >
-                            {(c) => (
-                                <text
-                                    x={c.x}
-                                    y={c.y + 3}
-                                    textAnchor="middle"
-                                    fontSize="8.5"
-                                    fontWeight="800"
-                                    fill="#1E3A8A"
-                                >
-                                    PINTU UTAMA
-                                </text>
-                            )}
-                        </IsoBox>
-
-                        {/* Render Stacked Building Floors (bottom to top) */}
-                        {visibleFloors.map((floorObj) => {
-                            const fz = floorObj.z;
-                            const labelPos = iso(-24, 105, fz + 20, originX, originY);
-
-                            return (
-                                <g key={floorObj.floor}>
-                                    {/* Floor Slab */}
-                                    <IsoBox
-                                        x={0}
-                                        y={0}
-                                        z={fz}
-                                        w={270}
-                                        d={210}
-                                        h={12}
-                                        topFill="#F8FAFC"
-                                        leftFill="#E2E8F0"
-                                        rightFill="#CBD5E1"
-                                        stroke="#94A3B8"
-                                        strokeWidth={1.2}
-                                        originX={originX}
-                                        originY={originY}
-                                    />
-
-                                    {/* Structural Corner Pillars (when stacked 3-story) */}
-                                    {campus === 'veteran' && focusFloor === 'all' && floorObj.floor < 3 && (
-                                        <>
-                                            <IsoBox x={2} y={2} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
-                                            <IsoBox x={260} y={2} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
-                                            <IsoBox x={2} y={200} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
-                                            <IsoBox x={260} y={200} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
-                                        </>
-                                    )}
-
-                                    {/* Floor Label Tag on Left */}
-                                    <g transform={`translate(${labelPos.x - 42}, ${labelPos.y - 10})`}>
-                                        <rect
-                                            x="0"
-                                            y="0"
-                                            width="48"
-                                            height="20"
-                                            rx="6"
-                                            fill="#1E293B"
-                                        />
-                                        <text
-                                            x="24"
-                                            y="13.5"
-                                            textAnchor="middle"
-                                            fontSize="9.5"
-                                            fontWeight="800"
-                                            fill="#FFFFFF"
-                                        >
-                                            {floorObj.label}
-                                        </text>
-                                    </g>
-
-                                    {/* 3D Extruded Room Blocks */}
-                                    {floorObj.rooms.map((slot) => {
-                                        const room = roomMap[slot.id];
-                                        if (!room) return null;
-
-                                        const isSelected = Number(selectedRoom?.id) === Number(room.id);
-                                        const isHovered = Number(hoveredRoomId) === Number(room.id);
-                                        const isBooked = room.status === 'booked';
-                                        const palette = getRoomPalette(isSelected, isHovered, isBooked);
-                                        const blockHeight = isSelected ? 34 : isHovered ? 30 : 25;
-
-                                        return (
-                                            <IsoBox
-                                                key={room.id}
-                                                x={slot.x}
-                                                y={slot.y}
-                                                z={fz + 12}
-                                                w={slot.w}
-                                                d={slot.d}
-                                                h={blockHeight}
-                                                topFill={palette.top}
-                                                leftFill={palette.left}
-                                                rightFill={palette.right}
-                                                stroke={palette.stroke}
-                                                strokeWidth={isSelected ? 1.6 : 1}
-                                                originX={originX}
-                                                originY={originY}
-                                                className="cursor-pointer transition-opacity"
-                                                onClick={() => setSelectedRoomId(room.id)}
-                                                onMouseEnter={() => setHoveredRoomId(room.id)}
-                                                onMouseLeave={() => setHoveredRoomId(null)}
-                                            >
-                                                {(center) => (
-                                                    <text
-                                                        x={center.x}
-                                                        y={center.y + 3}
-                                                        textAnchor="middle"
-                                                        fontSize={slot.w < 60 ? '7.5' : '8.5'}
-                                                        fontWeight="800"
-                                                        fill={palette.text}
-                                                        style={{ pointerEvents: 'none' }}
-                                                    >
-                                                        {room.shortName.length > 14
-                                                            ? `${room.shortName.slice(0, 13)}…`
-                                                            : room.shortName}
-                                                    </text>
-                                                )}
-                                            </IsoBox>
-                                        );
-                                    })}
-                                </g>
-                            );
-                        })}
-                    </svg>
+                {/* 3D Canvas Container */}
+                <div className="relative my-3 rounded-2xl border border-slate-200/80 overflow-hidden bg-slate-100 h-[470px]">
+                    <div ref={mountRef} className="w-full h-full" />
+                    <div className="pointer-events-none absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-200/80 text-[10px] font-semibold text-slate-600 shadow-sm">
+                        Drag kiri: Putar 360° • Scroll: Zoom • Klik kanan: Geser • Klik blok: Pilih ruangan
+                    </div>
                 </div>
 
                 {/* Legend */}
@@ -436,7 +592,7 @@ export default function RoomFloorPlan3D({ rooms = [] }) {
                         </span>
                     </div>
                     <span className="text-[10px] text-slate-400">
-                        {t('rooms.map_hint', 'Klik blok ruangan pada gedung 3D untuk melihat detail & ajukan peminjaman.')}
+                        WebGL 3D Interactive • Fakultas Vokasi UB
                     </span>
                 </div>
             </div>
