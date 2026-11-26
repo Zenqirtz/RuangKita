@@ -39,6 +39,8 @@ function Field({ label, children, hint, className = '' }) {
 const inputClass =
     'w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11.5px] font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all placeholder:text-slate-400';
 
+const selectClass = `${inputClass} pr-10 truncate`;
+
 function UploadBox({ id, title, description, fileName, onFileChange }) {
     return (
         <div className="relative">
@@ -199,7 +201,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             </Field>
 
                             <Field label="Organisasi mahasiswa">
-                                <select value={form.ormawa} onChange={update('ormawa')} className={inputClass}>
+                                <select value={form.ormawa} onChange={update('ormawa')} className={selectClass}>
                                     {ormawaOptions.map((option) => (
                                         <option key={option} value={option}>
                                             {option}
@@ -241,7 +243,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <Field label="Ruangan" className="sm:col-span-2">
-                                <select value={form.roomId} onChange={update('roomId')} className={inputClass}>
+                                <select value={form.roomId} onChange={update('roomId')} className={selectClass}>
                                     {rooms.map((room) => (
                                         <option key={room.id} value={room.id}>
                                             {room.name} • {room.capacity} orang
