@@ -9,10 +9,12 @@ export default function DonutChart({
 }) {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
+    const activeSegments = segments.filter((segment) => (Number(segment.value) || 0) > 0);
+    const total = activeSegments.reduce((sum, segment) => sum + (Number(segment.value) || 0), 0);
     let cumulative = 0;
 
     return (
-        <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+        <div className="relative inline-flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
             <svg width={size} height={size} className="-rotate-90">
                 <circle
                     cx={size / 2}
@@ -22,11 +24,12 @@ export default function DonutChart({
                     stroke="#EEF2F7"
                     strokeWidth={strokeWidth}
                 />
-                {segments.map((segment) => {
-                    const dash = (segment.value / 100) * circumference;
-                    const gap = 3;
+                {total > 0 && activeSegments.map((segment) => {
+                    const percentage = ((Number(segment.value) || 0) / total) * 100;
+                    const dash = (percentage / 100) * circumference;
+                    const gap = activeSegments.length > 1 ? Math.min(3, dash * 0.2) : 0;
                     const offset = -(cumulative / 100) * circumference;
-                    cumulative += segment.value;
+                    cumulative += percentage;
 
                     return (
                         <circle
@@ -37,7 +40,7 @@ export default function DonutChart({
                             fill="transparent"
                             stroke={segment.color}
                             strokeWidth={strokeWidth}
-                            strokeLinecap="round"
+                            strokeLinecap="butt"
                             strokeDasharray={`${Math.max(dash - gap, 0)} ${circumference}`}
                             strokeDashoffset={offset}
                         />

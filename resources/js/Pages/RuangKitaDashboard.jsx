@@ -199,42 +199,43 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
 
                 {/* Performance overview from live stats */}
                 <SectionCard
+                    className="flex flex-col"
                     title={t('dash.performance_overview', 'Performance Overview')}
                     subtitle={t('dash.performance_subtitle', 'Tingkat kelancaran izin ormawa')}
                     action={t('dash.see_all', 'Lihat Semua')}
                     actionHref="/permits"
-                    bodyClassName="px-5 pb-5"
+                    bodyClassName="px-5 pb-5 flex-1 flex flex-col justify-between gap-4"
                 >
                     {hasDonut ? (
                         <>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 my-auto py-2">
                                 <DonutChart
                                     segments={donutSegments}
                                     centerValue={`${occupancyRate}%`}
                                     centerLabel={t('dash.approved', 'Disetujui')}
-                                    size={128}
-                                    strokeWidth={14}
+                                    size={140}
+                                    strokeWidth={16}
                                 />
 
-                                <div className="space-y-2 min-w-0 flex-1">
+                                <div className="space-y-3 min-w-0 flex-1">
                                     {donutSegments.map((item) => (
                                         <div key={item.label} className="flex items-center justify-between gap-2">
-                                            <span className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 min-w-0">
+                                            <span className="flex items-center gap-2 text-xs font-medium text-slate-600 min-w-0">
                                                 <span
-                                                    className="w-2 h-2 rounded-full shrink-0"
+                                                    className="w-2.5 h-2.5 rounded-full shrink-0"
                                                     style={{ backgroundColor: item.color }}
                                                 />
                                                 <span className="truncate">{item.label}</span>
                                             </span>
-                                            <span className="text-[11px] font-bold text-slate-700">{item.value}</span>
+                                            <span className="text-xs font-bold text-slate-800">{item.value}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="mt-4 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100 flex items-start gap-2">
-                                <Icon name="shield" className="w-3.5 h-3.5 text-blue-600 mt-0.5 shrink-0" />
-                                <p className="text-[9.5px] font-semibold text-blue-800 leading-snug">
+                            <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-100 flex items-start gap-2.5">
+                                <Icon name="shield" className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                                <p className="text-[10.5px] font-semibold text-blue-800 leading-snug">
                                     Auto conflict check aktif. Mencegah double-booking saat ormawa submit berkas.
                                 </p>
                             </div>
