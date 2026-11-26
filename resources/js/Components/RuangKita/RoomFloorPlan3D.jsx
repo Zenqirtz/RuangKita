@@ -2,307 +2,421 @@ import React, { useMemo, useState } from 'react';
 import Icon from '@/Components/RuangKita/Icon';
 import { useLanguage } from '@/Context/LanguageContext';
 
-const floorConfigs = [
+// Standard 2:1 isometric projection helper
+function iso(x, y, z, originX = 360, originY = 470) {
+    return {
+        x: originX + (x - y) * 0.88,
+        y: originY + (x + y) * 0.44 - z,
+    };
+}
+
+function pts(points) {
+    return points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+}
+
+function IsoBox({ x, y, z, w, d, h, topFill, leftFill, rightFill, stroke, strokeWidth = 1, onClick, onMouseEnter, onMouseLeave, className = '', originX, originY, children }) {
+    const pTop = [
+        iso(x, y, z + h, originX, originY),
+        iso(x + w, y, z + h, originX, originY),
+        iso(x + w, y + d, z + h, originX, originY),
+        iso(x, y + d, z + h, originX, originY),
+    ];
+    const pLeft = [
+        iso(x, y + d, z + h, originX, originY),
+        iso(x + w, y + d, z + h, originX, originY),
+        iso(x + w, y + d, z, originX, originY),
+        iso(x, y + d, z, originX, originY),
+    ];
+    const pRight = [
+        iso(x + w, y, z + h, originX, originY),
+        iso(x + w, y + d, z + h, originX, originY),
+        iso(x + w, y + d, z, originX, originY),
+        iso(x + w, y, z, originX, originY),
+    ];
+
+    const center = iso(x + w / 2, y + d / 2, z + h, originX, originY);
+
+    return (
+        <g
+            onClick={onClick}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            className={className}
+        >
+            <polygon points={pts(pLeft)} fill={leftFill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
+            <polygon points={pts(pRight)} fill={rightFill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
+            <polygon points={pts(pTop)} fill={topFill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
+            {children ? children(center) : null}
+        </g>
+    );
+}
+
+const VETERAN_FLOORS = [
     {
-        id: 'vet-1',
-        label: 'Veteran • Lt. 1',
-        title: 'Kampus Veteran — Lantai 1',
-        corridorLabel: 'Koridor Utama & Area Seminar',
-        roomIds: [1, 2, 4, 19, 21],
-        layout: [
-            { id: 1, col: 'col-span-4', row: 'row-span-1' },
-            { id: 2, col: 'col-span-4', row: 'row-span-1' },
-            { id: 19, col: 'col-span-4', row: 'row-span-1' },
-            { id: 4, col: 'col-span-7', row: 'row-span-1' },
-            { id: 21, col: 'col-span-5', row: 'row-span-1' },
+        floor: 1,
+        label: 'Lt. 1',
+        title: 'Lantai 1 • Kelas & Seminar',
+        z: 0,
+        rooms: [
+            { id: 1, x: 14, y: 14, w: 72, d: 78 },
+            { id: 2, x: 96, y: 14, w: 72, d: 78 },
+            { id: 19, x: 178, y: 14, w: 78, d: 78 },
+            { id: 4, x: 14, y: 118, w: 138, d: 76 },
+            { id: 21, x: 162, y: 118, w: 94, d: 76 },
         ],
     },
     {
-        id: 'vet-2',
-        label: 'Veteran • Lt. 2',
-        title: 'Kampus Veteran — Lantai 2',
-        corridorLabel: 'Koridor Studio Kreatif & Meeting',
-        roomIds: [8, 9, 10, 15, 17, 18],
-        layout: [
-            { id: 8, col: 'col-span-4', row: 'row-span-1' },
-            { id: 9, col: 'col-span-4', row: 'row-span-1' },
-            { id: 10, col: 'col-span-4', row: 'row-span-1' },
-            { id: 15, col: 'col-span-4', row: 'row-span-1' },
-            { id: 18, col: 'col-span-4', row: 'row-span-1' },
-            { id: 17, col: 'col-span-4', row: 'row-span-1' },
+        floor: 2,
+        label: 'Lt. 2',
+        title: 'Lantai 2 • Studio & Meeting',
+        z: 118,
+        rooms: [
+            { id: 8, x: 14, y: 14, w: 74, d: 78 },
+            { id: 9, x: 98, y: 14, w: 74, d: 78 },
+            { id: 10, x: 182, y: 14, w: 74, d: 78 },
+            { id: 15, x: 14, y: 118, w: 74, d: 76 },
+            { id: 18, x: 98, y: 118, w: 74, d: 76 },
+            { id: 17, x: 182, y: 118, w: 74, d: 76 },
         ],
     },
     {
-        id: 'vet-3',
-        label: 'Veteran • Lt. 3',
-        title: 'Kampus Veteran — Lantai 3',
-        corridorLabel: 'Koridor Lab Komputer & Ruang 306–310',
-        roomIds: [3, 5, 6, 7, 11, 12, 16],
-        layout: [
-            { id: 5, col: 'col-span-4', row: 'row-span-1' },
-            { id: 6, col: 'col-span-4', row: 'row-span-1' },
-            { id: 7, col: 'col-span-4', row: 'row-span-1' },
-            { id: 3, col: 'col-span-3', row: 'row-span-1' },
-            { id: 11, col: 'col-span-3', row: 'row-span-1' },
-            { id: 12, col: 'col-span-3', row: 'row-span-1' },
-            { id: 16, col: 'col-span-3', row: 'row-span-1' },
-        ],
-    },
-    {
-        id: 'dieng',
-        label: 'Kampus Dieng',
-        title: 'Kampus Vokasi Dieng',
-        corridorLabel: 'Koridor Hospitality & Workspace',
-        roomIds: [13, 14, 20],
-        layout: [
-            { id: 13, col: 'col-span-4', row: 'row-span-1' },
-            { id: 14, col: 'col-span-4', row: 'row-span-1' },
-            { id: 20, col: 'col-span-4', row: 'row-span-1' },
+        floor: 3,
+        label: 'Lt. 3',
+        title: 'Lantai 3 • Lab Komputer & Riset',
+        z: 236,
+        rooms: [
+            { id: 5, x: 14, y: 14, w: 74, d: 78 },
+            { id: 6, x: 98, y: 14, w: 74, d: 78 },
+            { id: 7, x: 182, y: 14, w: 74, d: 78 },
+            { id: 3, x: 14, y: 118, w: 54, d: 76 },
+            { id: 11, x: 76, y: 118, w: 54, d: 76 },
+            { id: 12, x: 138, y: 118, w: 54, d: 76 },
+            { id: 16, x: 200, y: 118, w: 56, d: 76 },
         ],
     },
 ];
 
+const DIENG_FLOOR = {
+    floor: 1,
+    label: 'Dieng',
+    title: 'Kampus Vokasi Dieng',
+    z: 40,
+    rooms: [
+        { id: 13, x: 16, y: 20, w: 74, d: 160 },
+        { id: 14, x: 100, y: 20, w: 74, d: 160 },
+        { id: 20, x: 184, y: 20, w: 72, d: 160 },
+    ],
+};
+
+function getRoomPalette(isSelected, isHovered, isBooked) {
+    if (isSelected) {
+        return {
+            top: '#2563EB',
+            left: '#1D4ED8',
+            right: '#1E40AF',
+            stroke: '#1E3A8A',
+            text: '#FFFFFF',
+            subText: '#DBEAFE',
+        };
+    }
+    if (isHovered) {
+        return {
+            top: '#60A5FA',
+            left: '#3B82F6',
+            right: '#2563EB',
+            stroke: '#1D4ED8',
+            text: '#FFFFFF',
+            subText: '#EFF6FF',
+        };
+    }
+    if (isBooked) {
+        return {
+            top: '#FDE68A',
+            left: '#F59E0B',
+            right: '#D97706',
+            stroke: '#B45309',
+            text: '#78350F',
+            subText: '#92400E',
+        };
+    }
+    return {
+        top: '#D1FAE5',
+        left: '#34D399',
+        right: '#10B981',
+        stroke: '#059669',
+        text: '#064E3B',
+        subText: '#047857',
+    };
+}
+
 export default function RoomFloorPlan3D({ rooms = [] }) {
     const { t } = useLanguage();
-    const [activeFloorId, setActiveFloorId] = useState('vet-1');
-    const [is3D, setIs3D] = useState(true);
-    const [rotateZ, setRotateZ] = useState(-28);
-    const [zoom, setZoom] = useState(1);
+    const [campus, setCampus] = useState('veteran'); // 'veteran' | 'dieng'
+    const [focusFloor, setFocusFloor] = useState('all'); // 'all' | 1 | 2 | 3
     const [selectedRoomId, setSelectedRoomId] = useState(1);
+    const [hoveredRoomId, setHoveredRoomId] = useState(null);
 
-    const activeFloor = useMemo(
-        () => floorConfigs.find((f) => f.id === activeFloorId) ?? floorConfigs[0],
-        [activeFloorId]
-    );
+    const roomMap = useMemo(() => {
+        const map = {};
+        rooms.forEach((r) => {
+            map[Number(r.id)] = r;
+        });
+        return map;
+    }, [rooms]);
 
-    const floorRooms = useMemo(() => {
-        return activeFloor.layout
-            .map((slot) => {
-                const room = rooms.find((r) => Number(r.id) === slot.id);
-                return room ? { ...room, col: slot.col } : null;
-            })
-            .filter(Boolean);
-    }, [activeFloor, rooms]);
+    const visibleFloors = useMemo(() => {
+        if (campus === 'dieng') {
+            return [DIENG_FLOOR];
+        }
+        if (focusFloor === 'all') {
+            return VETERAN_FLOORS;
+        }
+        return VETERAN_FLOORS.filter((f) => f.floor === focusFloor).map((f) => ({
+            ...f,
+            z: 60, // center single floor cleanly in viewport
+        }));
+    }, [campus, focusFloor]);
 
     const selectedRoom = useMemo(() => {
-        return rooms.find((r) => Number(r.id) === Number(selectedRoomId)) ?? floorRooms[0] ?? rooms[0];
-    }, [rooms, selectedRoomId, floorRooms]);
+        return roomMap[Number(selectedRoomId)] ?? rooms[0];
+    }, [roomMap, selectedRoomId, rooms]);
 
-    const handleFloorChange = (floorId) => {
-        setActiveFloorId(floorId);
-        const target = floorConfigs.find((f) => f.id === floorId);
-        if (target && target.roomIds.length > 0) {
-            setSelectedRoomId(target.roomIds[0]);
-        }
+    const handleCampusChange = (nextCampus) => {
+        setCampus(nextCampus);
+        setFocusFloor('all');
+        setSelectedRoomId(nextCampus === 'dieng' ? 13 : 1);
     };
 
-    const resetView = () => {
-        setIs3D(true);
-        setRotateZ(-28);
-        setZoom(1);
-    };
+    const originX = 365;
+    const originY = campus === 'veteran' && focusFloor === 'all' ? 475 : 320;
+    const viewBoxHeight = campus === 'veteran' && focusFloor === 'all' ? 620 : 460;
 
     return (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
-            {/* 3D Interactive Stage */}
+            {/* 3D Isometric Building Viewport */}
             <div className="xl:col-span-8 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col justify-between overflow-hidden">
-                {/* Top Controls: Floor Tabs + 3D Camera Controls */}
+                {/* Top Controls */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100">
                     <div className="flex flex-wrap items-center gap-1.5">
-                        {floorConfigs.map((floor) => {
-                            const active = floor.id === activeFloorId;
-                            return (
-                                <button
-                                    key={floor.id}
-                                    type="button"
-                                    onClick={() => handleFloorChange(floor.id)}
-                                    className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
-                                        active
-                                            ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
-                                            : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-                                    }`}
-                                >
-                                    {floor.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
                         <button
                             type="button"
-                            onClick={() => setIs3D((v) => !v)}
-                            className={`px-2.5 py-1.5 rounded-lg text-[10.5px] font-bold border transition-colors ${
-                                is3D
-                                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                    : 'bg-slate-50 text-slate-600 border-slate-200'
+                            onClick={() => handleCampusChange('veteran')}
+                            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+                                campus === 'veteran'
+                                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
+                                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                             }`}
                         >
-                            {is3D ? '3D Isometrik' : '2D Top-Down'}
-                        </button>
-                        {is3D && (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={() => setRotateZ((r) => r - 15)}
-                                    className="p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100"
-                                    title={t('rooms.rotate_left', 'Putar kiri')}
-                                >
-                                    <Icon name="chevronLeft" className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setRotateZ((r) => r + 15)}
-                                    className="p-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100"
-                                    title={t('rooms.rotate_right', 'Putar kanan')}
-                                >
-                                    <Icon name="chevronRight" className="w-3.5 h-3.5" />
-                                </button>
-                            </>
-                        )}
-                        <button
-                            type="button"
-                            onClick={() => setZoom((z) => Math.max(0.8, Number((z - 0.1).toFixed(1))))}
-                            className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100"
-                            title="Zoom Out"
-                        >
-                            -
+                            Gedung Kampus Veteran (3 Lt)
                         </button>
                         <button
                             type="button"
-                            onClick={() => setZoom((z) => Math.min(1.2, Number((z + 0.1).toFixed(1))))}
-                            className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100"
-                            title="Zoom In"
+                            onClick={() => handleCampusChange('dieng')}
+                            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+                                campus === 'dieng'
+                                    ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
+                                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                            }`}
                         >
-                            +
-                        </button>
-                        <button
-                            type="button"
-                            onClick={resetView}
-                            className="px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[10.5px] font-bold text-slate-600 hover:bg-slate-100"
-                        >
-                            Reset
+                            Gedung Kampus Dieng
                         </button>
                     </div>
+
+                    {campus === 'veteran' && (
+                        <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1">
+                            {[
+                                { id: 'all', label: 'Gedung Utuh' },
+                                { id: 1, label: 'Lt. 1' },
+                                { id: 2, label: 'Lt. 2' },
+                                { id: 3, label: 'Lt. 3' },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    type="button"
+                                    onClick={() => setFocusFloor(tab.id)}
+                                    className={`px-2.5 py-1 rounded-lg text-[10.5px] font-bold transition-all ${
+                                        focusFloor === tab.id
+                                            ? 'bg-white text-blue-600 shadow-sm'
+                                            : 'text-slate-500 hover:text-slate-800'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                {/* 3D Isometric Viewport */}
-                <div
-                    className="relative flex-1 min-h-[430px] flex items-center justify-center rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100/80 border border-slate-100 my-4 overflow-hidden select-none"
-                    style={{ perspective: '1200px' }}
-                >
-                    {/* Subtle Architectural Grid Background */}
+                {/* Isometric Building SVG Canvas */}
+                <div className="relative my-3 rounded-2xl bg-gradient-to-b from-sky-50/70 via-blue-50/30 to-slate-100/70 border border-slate-100 overflow-hidden flex items-center justify-center">
+                    {/* Subtle Grid */}
                     <div
                         className="absolute inset-0 opacity-40 pointer-events-none"
                         style={{
-                            backgroundImage:
-                                'radial-gradient(#cbd5e1 1px, transparent 1px)',
-                            backgroundSize: '20px 20px',
+                            backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)',
+                            backgroundSize: '22px 22px',
                         }}
                     />
 
-                    {/* 3D Floor Slab */}
-                    <div
-                        className="relative w-[92%] max-w-[660px] bg-white/95 rounded-2xl border-2 border-slate-200 p-5 transition-transform duration-500 ease-out"
-                        style={{
-                            transformStyle: 'preserve-3d',
-                            transform: is3D
-                                ? `scale(${zoom}) rotateX(52deg) rotateZ(${rotateZ}deg)`
-                                : `scale(${zoom}) rotateX(0deg) rotateZ(0deg)`,
-                            boxShadow: is3D
-                                ? '18px 24px 0px #cbd5e1, 24px 34px 40px rgba(15, 23, 42, 0.14)'
-                                : '0 10px 30px rgba(15, 23, 42, 0.08)',
-                        }}
+                    <svg
+                        viewBox={`0 0 740 ${viewBoxHeight}`}
+                        className="w-full h-auto max-h-[540px] relative z-10 select-none"
                     >
-                        {/* Floor Header Banner */}
-                        <div className="flex items-center justify-between mb-3 pb-2 border-b border-dashed border-slate-200">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                                {activeFloor.title}
-                            </span>
-                            <span className="text-[9.5px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                                {activeFloor.corridorLabel}
-                            </span>
-                        </div>
+                        {/* Ground Shadow & Base */}
+                        <IsoBox
+                            x={-16}
+                            y={-16}
+                            z={-12}
+                            w={302}
+                            d={242}
+                            h={12}
+                            topFill="#E2E8F0"
+                            leftFill="#CBD5E1"
+                            rightFill="#94A3B8"
+                            stroke="#CBD5E1"
+                            originX={originX}
+                            originY={originY}
+                        />
 
-                        {/* 3D Rooms Grid */}
-                        <div className="grid grid-cols-12 gap-3" style={{ transformStyle: 'preserve-3d' }}>
-                            {floorRooms.map((room) => {
-                                const isSelected = Number(selectedRoom?.id) === Number(room.id);
-                                const isBooked = room.status === 'booked';
+                        {/* Campus Entrance Canopy Marker */}
+                        <IsoBox
+                            x={105}
+                            y={212}
+                            z={0}
+                            w={60}
+                            d={18}
+                            h={8}
+                            topFill="#93C5FD"
+                            leftFill="#3B82F6"
+                            rightFill="#2563EB"
+                            stroke="#1D4ED8"
+                            originX={originX}
+                            originY={originY}
+                        >
+                            {(c) => (
+                                <text
+                                    x={c.x}
+                                    y={c.y + 3}
+                                    textAnchor="middle"
+                                    fontSize="8.5"
+                                    fontWeight="800"
+                                    fill="#1E3A8A"
+                                >
+                                    PINTU UTAMA
+                                </text>
+                            )}
+                        </IsoBox>
 
-                                return (
-                                    <button
-                                        key={room.id}
-                                        type="button"
-                                        onClick={() => setSelectedRoomId(room.id)}
-                                        className={`${room.col} group relative text-left rounded-xl p-3 border-2 transition-all duration-300 cursor-pointer ${
-                                            isSelected
-                                                ? 'bg-blue-600 border-blue-700 text-white'
-                                                : isBooked
-                                                  ? 'bg-amber-50/90 border-amber-300 text-slate-800 hover:bg-amber-100/80'
-                                                  : 'bg-emerald-50/70 border-emerald-200 text-slate-800 hover:bg-emerald-100/70'
-                                        }`}
-                                        style={{
-                                            transformStyle: 'preserve-3d',
-                                            transform: is3D
-                                                ? isSelected
-                                                    ? 'translateZ(26px)'
-                                                    : 'translateZ(10px)'
-                                                : 'translateZ(0px)',
-                                            boxShadow: is3D
-                                                ? isSelected
-                                                    ? '6px 10px 0px #1e40af, 10px 16px 20px rgba(37, 99, 235, 0.3)'
-                                                    : isBooked
-                                                      ? '4px 6px 0px #f59e0b'
-                                                      : '4px 6px 0px #6ee7b7'
-                                                : undefined,
-                                        }}
-                                    >
-                                        <div className="flex items-center justify-between gap-1">
-                                            <span
-                                                className={`text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                                                    isSelected
-                                                        ? 'bg-white/20 text-white'
-                                                        : 'bg-white/80 text-slate-600'
-                                                }`}
+                        {/* Render Stacked Building Floors (bottom to top) */}
+                        {visibleFloors.map((floorObj) => {
+                            const fz = floorObj.z;
+                            const labelPos = iso(-24, 105, fz + 20, originX, originY);
+
+                            return (
+                                <g key={floorObj.floor}>
+                                    {/* Floor Slab */}
+                                    <IsoBox
+                                        x={0}
+                                        y={0}
+                                        z={fz}
+                                        w={270}
+                                        d={210}
+                                        h={12}
+                                        topFill="#F8FAFC"
+                                        leftFill="#E2E8F0"
+                                        rightFill="#CBD5E1"
+                                        stroke="#94A3B8"
+                                        strokeWidth={1.2}
+                                        originX={originX}
+                                        originY={originY}
+                                    />
+
+                                    {/* Structural Corner Pillars (when stacked 3-story) */}
+                                    {campus === 'veteran' && focusFloor === 'all' && floorObj.floor < 3 && (
+                                        <>
+                                            <IsoBox x={2} y={2} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
+                                            <IsoBox x={260} y={2} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
+                                            <IsoBox x={2} y={200} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
+                                            <IsoBox x={260} y={200} z={fz + 12} w={8} d={8} h={106} topFill="#CBD5E1" leftFill="#94A3B8" rightFill="#64748B" stroke="#64748B" originX={originX} originY={originY} />
+                                        </>
+                                    )}
+
+                                    {/* Floor Label Tag on Left */}
+                                    <g transform={`translate(${labelPos.x - 42}, ${labelPos.y - 10})`}>
+                                        <rect
+                                            x="0"
+                                            y="0"
+                                            width="48"
+                                            height="20"
+                                            rx="6"
+                                            fill="#1E293B"
+                                        />
+                                        <text
+                                            x="24"
+                                            y="13.5"
+                                            textAnchor="middle"
+                                            fontSize="9.5"
+                                            fontWeight="800"
+                                            fill="#FFFFFF"
+                                        >
+                                            {floorObj.label}
+                                        </text>
+                                    </g>
+
+                                    {/* 3D Extruded Room Blocks */}
+                                    {floorObj.rooms.map((slot) => {
+                                        const room = roomMap[slot.id];
+                                        if (!room) return null;
+
+                                        const isSelected = Number(selectedRoom?.id) === Number(room.id);
+                                        const isHovered = Number(hoveredRoomId) === Number(room.id);
+                                        const isBooked = room.status === 'booked';
+                                        const palette = getRoomPalette(isSelected, isHovered, isBooked);
+                                        const blockHeight = isSelected ? 34 : isHovered ? 30 : 25;
+
+                                        return (
+                                            <IsoBox
+                                                key={room.id}
+                                                x={slot.x}
+                                                y={slot.y}
+                                                z={fz + 12}
+                                                w={slot.w}
+                                                d={slot.d}
+                                                h={blockHeight}
+                                                topFill={palette.top}
+                                                leftFill={palette.left}
+                                                rightFill={palette.right}
+                                                stroke={palette.stroke}
+                                                strokeWidth={isSelected ? 1.6 : 1}
+                                                originX={originX}
+                                                originY={originY}
+                                                className="cursor-pointer transition-opacity"
+                                                onClick={() => setSelectedRoomId(room.id)}
+                                                onMouseEnter={() => setHoveredRoomId(room.id)}
+                                                onMouseLeave={() => setHoveredRoomId(null)}
                                             >
-                                                {room.code}
-                                            </span>
-                                            <span
-                                                className={`w-2 h-2 rounded-full shrink-0 ${
-                                                    isSelected
-                                                        ? 'bg-white'
-                                                        : isBooked
-                                                          ? 'bg-amber-500'
-                                                          : 'bg-emerald-500'
-                                                }`}
-                                            />
-                                        </div>
-                                        <p
-                                            className={`mt-2 text-[11px] font-extrabold leading-snug line-clamp-2 ${
-                                                isSelected ? 'text-white' : 'text-slate-900'
-                                            }`}
-                                        >
-                                            {room.shortName}
-                                        </p>
-                                        <p
-                                            className={`mt-1 text-[9px] font-semibold ${
-                                                isSelected ? 'text-blue-100' : 'text-slate-500'
-                                            }`}
-                                        >
-                                            {room.capacity} {t('rooms.people', 'orang')}
-                                        </p>
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* Entrance Indicator */}
-                        <div className="mt-4 pt-2 border-t border-dashed border-slate-200 flex items-center justify-between text-[9px] font-bold text-slate-400">
-                            <span>▲ {t('rooms.map_entrance', 'Akses Tangga & Koridor')}</span>
-                            <span>{t('rooms.map_hint', 'Klik blok ruangan untuk detail')}</span>
-                        </div>
-                    </div>
+                                                {(center) => (
+                                                    <text
+                                                        x={center.x}
+                                                        y={center.y + 3}
+                                                        textAnchor="middle"
+                                                        fontSize={slot.w < 60 ? '7.5' : '8.5'}
+                                                        fontWeight="800"
+                                                        fill={palette.text}
+                                                        style={{ pointerEvents: 'none' }}
+                                                    >
+                                                        {room.shortName.length > 14
+                                                            ? `${room.shortName.slice(0, 13)}…`
+                                                            : room.shortName}
+                                                    </text>
+                                                )}
+                                            </IsoBox>
+                                        );
+                                    })}
+                                </g>
+                            );
+                        })}
+                    </svg>
                 </div>
 
                 {/* Legend */}
@@ -322,12 +436,12 @@ export default function RoomFloorPlan3D({ rooms = [] }) {
                         </span>
                     </div>
                     <span className="text-[10px] text-slate-400">
-                        {t('rooms.map_desktop_tip', 'Gunakan tombol putar & zoom untuk meninjau posisi ruangan.')}
+                        {t('rooms.map_hint', 'Klik blok ruangan pada gedung 3D untuk melihat detail & ajukan peminjaman.')}
                     </span>
                 </div>
             </div>
 
-            {/* Right Inspector Card for Selected Room */}
+            {/* Right Inspector Card */}
             <aside className="xl:col-span-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col justify-between">
                 {selectedRoom ? (
                     <div>
