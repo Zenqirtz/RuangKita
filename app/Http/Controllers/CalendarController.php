@@ -89,12 +89,14 @@ class CalendarController extends Controller
             $endOfWeek->translatedFormat('M Y')
         );
 
+        $roomsData = config('rooms', []);
+
         // Compute live stats
         $scheduledCount = $permits->where('stage', 'approved')->count();
         $pendingCount = Permit::whereIn('stage', ['submitted', 'admin', 'leadership'])->count();
-        $activeRoomsCount = 5;
+        $activeRoomsCount = max(1, count($roomsData));
 
-        // Estimated available slots % (5 rooms * 7 days * 14 hours = 490 available hour slots)
+        // Estimated available slots % (active rooms * 7 days * 14 hours)
         $totalSlotHours = $activeRoomsCount * 7 * 14;
         $bookedHours = $permits->where('stage', 'approved')->reduce(function ($carry, $p) {
             $startHour = (int) substr($p->start, 0, 2);
@@ -110,14 +112,6 @@ class CalendarController extends Controller
             ->whereDate('date', $today)
             ->where('stage', 'approved')
             ->get();
-
-        $roomsData = [
-            ['id' => 1, 'name' => 'Auditorium Gedung Utama', 'shortName' => 'Auditorium', 'capacity' => 250],
-            ['id' => 2, 'name' => 'Student Center Hall', 'shortName' => 'Student Center', 'capacity' => 120],
-            ['id' => 3, 'name' => 'Ruang Rapat Ormawa 101', 'shortName' => 'Ruang Rapat 101', 'capacity' => 40],
-            ['id' => 4, 'name' => 'Lab Multimedia & Komputer', 'shortName' => 'Lab Multimedia', 'capacity' => 40],
-            ['id' => 5, 'name' => 'Amphitheater Terbuka', 'shortName' => 'Amphitheater', 'capacity' => 200],
-        ];
 
         $todayRoomStatuses = array_map(function ($room) use ($todayPermits) {
             $booked = $todayPermits->firstWhere('room_id', $room['id']);

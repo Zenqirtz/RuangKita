@@ -76,7 +76,7 @@ export const translations = {
         'qa.track_permit': 'Lacak Izin',
         'qa.track_permit_desc': '4 tahap approval',
         'qa.manage_rooms': 'Daftar Ruangan',
-        'qa.manage_rooms_desc': '5 ruang fakultas',
+        'qa.manage_rooms_desc': '21 ruang Vokasi UB',
         'qa.history': 'Riwayat',
         'qa.history_desc': 'Peminjaman selesai',
         'qa.guidelines': 'Tata Tertib',
@@ -164,7 +164,7 @@ export const translations = {
 
         // Rooms
         'rooms.title': 'Daftar Ruangan',
-        'rooms.subtitle': 'Satu gedung fakultas, lima ruangan utama untuk kegiatan ormawa.',
+        'rooms.subtitle': 'Ruang kelas, laboratorium praktik, dan ruang penunjang Vokasi UB (Veteran & Dieng).',
         'rooms.apply_room': 'Ajukan Ruangan',
         'rooms.total_rooms': 'Total ruangan',
         'rooms.available_today': 'Tersedia hari ini',
@@ -173,10 +173,15 @@ export const translations = {
         'rooms.view_schedule': 'Lihat Jadwal',
         'rooms.apply': 'Ajukan',
         'rooms.need_other_title': 'Butuh ruangan lain?',
-        'rooms.need_other_desc': 'Versi pertama RuangKita mencakup satu gedung dan lima ruangan utama. Hubungi admin untuk kebutuhan khusus.',
+        'rooms.need_other_desc': 'Mencakup ruang kelas, lab praktik, dan ruang penunjang di Kampus Veteran & Dieng. Hubungi admin untuk kebutuhan khusus.',
         'rooms.contact_admin': 'Hubungi admin fakultas',
         'rooms.status_available': 'Tersedia',
         'rooms.status_booked': 'Terjadwal',
+        'rooms.cat_all': 'Semua Ruangan',
+        'rooms.cat_class': 'Ruang Kelas & Diskusi',
+        'rooms.cat_lab': 'Laboratorium & Studio',
+        'rooms.cat_support': 'Ruang Penunjang',
+        'rooms.search_placeholder': 'Cari nama ruangan, lab, atau kampus...',
 
         // Permits Hub
         'permits.title': 'Pusat Peminjaman & Izin',
@@ -373,7 +378,7 @@ export const translations = {
         'qa.track_permit': 'Track Permits',
         'qa.track_permit_desc': '4 approval stages',
         'qa.manage_rooms': 'Room List',
-        'qa.manage_rooms_desc': '5 faculty rooms',
+        'qa.manage_rooms_desc': '21 Vokasi UB rooms',
         'qa.history': 'History',
         'qa.history_desc': 'Completed bookings',
         'qa.guidelines': 'Guidelines',
@@ -461,7 +466,7 @@ export const translations = {
 
         // Rooms
         'rooms.title': 'Room List',
-        'rooms.subtitle': 'One faculty building, five main rooms for student organization events.',
+        'rooms.subtitle': 'Classrooms, practice labs, and support facilities across Vokasi UB (Veteran & Dieng).',
         'rooms.apply_room': 'Book Room',
         'rooms.total_rooms': 'Total rooms',
         'rooms.available_today': 'Available today',
@@ -470,10 +475,15 @@ export const translations = {
         'rooms.view_schedule': 'View Schedule',
         'rooms.apply': 'Book',
         'rooms.need_other_title': 'Need another room?',
-        'rooms.need_other_desc': 'RuangKita v1 covers one building and five main rooms. Contact admin for special requests.',
+        'rooms.need_other_desc': 'Covers classrooms, practice labs, and support rooms in Veteran & Dieng campuses. Contact admin for special requests.',
         'rooms.contact_admin': 'Contact faculty admin',
         'rooms.status_available': 'Available',
         'rooms.status_booked': 'Scheduled',
+        'rooms.cat_all': 'All Rooms',
+        'rooms.cat_class': 'Classrooms & Discussion',
+        'rooms.cat_lab': 'Labs & Studios',
+        'rooms.cat_support': 'Support Rooms',
+        'rooms.search_placeholder': 'Search room name, lab, or campus...',
 
         // Permits Hub
         'permits.title': 'Bookings & Permits Hub',

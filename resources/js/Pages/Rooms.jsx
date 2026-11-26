@@ -1,12 +1,36 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { roomStatusStyles } from '@/Data/ruangkita';
 import { accentStyles } from '@/Components/RuangKita/accent';
 import { useLanguage } from '@/Context/LanguageContext';
 
+const categories = [
+    { id: 'all', key: 'rooms.cat_all', fallback: 'Semua Ruangan' },
+    { id: 'Ruang Kelas & Diskusi', key: 'rooms.cat_class', fallback: 'Ruang Kelas & Diskusi' },
+    { id: 'Laboratorium & Studio', key: 'rooms.cat_lab', fallback: 'Laboratorium & Studio' },
+    { id: 'Ruang Penunjang', key: 'rooms.cat_support', fallback: 'Ruang Penunjang' },
+];
+
 export default function Rooms({ rooms = [], stats = {} }) {
     const { t } = useLanguage();
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [query, setQuery] = useState('');
+
+    const filteredRooms = useMemo(() => {
+        return rooms.filter((room) => {
+            const matchesCategory = selectedCategory === 'all' || room.category === selectedCategory;
+            const q = query.toLowerCase().trim();
+            const matchesQuery =
+                !q ||
+                room.name.toLowerCase().includes(q) ||
+                room.code.toLowerCase().includes(q) ||
+                (room.campus && room.campus.toLowerCase().includes(q)) ||
+                (room.floor && room.floor.toLowerCase().includes(q));
+
+            return matchesCategory && matchesQuery;
+        });
+    }, [rooms, selectedCategory, query]);
 
     return (
         <RuangKitaLayout activeTab="rooms">
@@ -14,12 +38,12 @@ export default function Rooms({ rooms = [], stats = {} }) {
                 <div>
                     <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{t('rooms.title', 'Daftar Ruangan')}</h1>
                     <p className="text-xs text-slate-400 mt-1">
-                        {t('rooms.subtitle', 'Satu gedung fakultas, lima ruangan utama untuk kegiatan ormawa.')}
+                        {t('rooms.subtitle', 'Ruang kelas, laboratorium praktik, dan ruang penunjang Vokasi UB (Veteran & Dieng).')}
                     </p>
                 </div>
                 <a
                     href="/bookings/create"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors shrink-0"
                 >
                     <Icon name="plus" className="w-4 h-4" />
                     {t('rooms.apply_room', 'Ajukan Ruangan')}
@@ -43,10 +67,53 @@ export default function Rooms({ rooms = [], stats = {} }) {
                 ))}
             </div>
 
+            {/* Category Filters + Search */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-3.5">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
+                    {categories.map((cat) => {
+                        const isActive = selectedCategory === cat.id;
+                        const count = cat.id === 'all' ? rooms.length : rooms.filter((r) => r.category === cat.id).length;
+
+                        return (
+                            <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all ${
+                                    isActive
+                                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20'
+                                        : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                                }`}
+                            >
+                                <span>{t(cat.key, cat.fallback)}</span>
+                                <span
+                                    className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold ${
+                                        isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                                    }`}
+                                >
+                                    {count}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="relative w-full lg:w-72">
+                    <Icon name="search" className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder={t('rooms.search_placeholder', 'Cari nama ruangan, lab, atau kampus...')}
+                        className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-slate-400"
+                    />
+                </div>
+            </div>
+
             <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                {rooms.map((room) => {
-                    const accent = accentStyles[room.accent];
-                    const status = roomStatusStyles[room.status];
+                {filteredRooms.map((room) => {
+                    const accent = accentStyles[room.accent] ?? accentStyles.blue;
+                    const status = roomStatusStyles[room.status] ?? roomStatusStyles.available;
 
                     return (
                         <article
@@ -59,7 +126,7 @@ export default function Rooms({ rooms = [], stats = {} }) {
                                 <div className={`relative w-14 h-14 rounded-2xl ${accent.solid} flex items-center justify-center shadow-lg ${accent.ring} ring-4`}>
                                     <Icon name="door" className="w-7 h-7" />
                                 </div>
-                                <span className="absolute top-3 left-3 text-[9px] font-bold text-slate-500 bg-white/80 backdrop-blur px-2 py-1 rounded-lg">
+                                <span className="absolute top-3 left-3 text-[9px] font-bold text-slate-600 bg-white/85 backdrop-blur px-2 py-1 rounded-lg">
                                     {room.code}
                                 </span>
                                 <span className={`absolute top-3 right-3 text-[9px] font-bold px-2 py-1 rounded-full border bg-white/90 ${status.badge}`}>
@@ -68,7 +135,9 @@ export default function Rooms({ rooms = [], stats = {} }) {
                             </div>
 
                             <div className="p-5 flex-1 flex flex-col">
-                                <h3 className="text-sm font-extrabold text-slate-900 leading-snug">{room.name}</h3>
+                                <div className="flex items-start justify-between gap-2">
+                                    <h3 className="text-sm font-extrabold text-slate-900 leading-snug">{room.name}</h3>
+                                </div>
                                 <p className="text-[10px] text-slate-400 font-medium mt-1">{room.floor}</p>
                                 <p className="text-[11px] text-slate-500 leading-relaxed mt-2.5 line-clamp-2">
                                     {room.description}
@@ -123,8 +192,8 @@ export default function Rooms({ rooms = [], stats = {} }) {
                         <Icon name="help" className="w-6 h-6" />
                     </div>
                     <h3 className="text-xs font-bold text-slate-700 mt-3">{t('rooms.need_other_title', 'Butuh ruangan lain?')}</h3>
-                    <p className="text-[10px] text-slate-400 leading-relaxed mt-1 max-w-[200px]">
-                        {t('rooms.need_other_desc', 'Versi pertama RuangKita mencakup satu gedung dan lima ruangan utama. Hubungi admin untuk kebutuhan khusus.')}
+                    <p className="text-[10px] text-slate-400 leading-relaxed mt-1 max-w-[220px]">
+                        {t('rooms.need_other_desc', 'Mencakup ruang kelas, lab praktik, dan ruang penunjang di Kampus Veteran & Dieng. Hubungi admin untuk kebutuhan khusus.')}
                     </p>
                     <a
                         href="/docs/"
