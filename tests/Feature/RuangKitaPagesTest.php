@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Permit;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -18,7 +19,6 @@ class RuangKitaPagesTest extends TestCase
     public static function pageProvider(): array
     {
         return [
-            'home' => ['/', 'RuangKitaDashboard'],
             'dashboard' => ['/dashboard', 'RuangKitaDashboard'],
             'calendar' => ['/calendar', 'Calendar'],
             'rooms' => ['/rooms', 'Rooms'],
@@ -31,15 +31,27 @@ class RuangKitaPagesTest extends TestCase
     }
 
     #[DataProvider('pageProvider')]
-    public function test_ruangkita_page_renders(string $uri, string $component): void
+    public function test_ruangkita_page_renders_for_authenticated_user(string $uri, string $component): void
     {
-        $this->get($uri)
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get($uri)
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component($component));
     }
 
+    public function test_unauthenticated_user_is_redirected_to_login(): void
+    {
+        $this->get('/dashboard')->assertRedirect('/login');
+        $this->get('/calendar')->assertRedirect('/login');
+        $this->get('/permits')->assertRedirect('/login');
+    }
+
     public function test_permit_detail_page_renders_with_real_permit(): void
     {
+        $user = User::factory()->create();
+
         $permit = Permit::create([
             'code' => 'RK-2026-TEST',
             'event' => 'Test Event',
@@ -54,7 +66,8 @@ class RuangKitaPagesTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $this->get('/permits/'.$permit->code)
+        $this->actingAs($user)
+            ->get('/permits/'.$permit->code)
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Permits/Show')
@@ -64,6 +77,8 @@ class RuangKitaPagesTest extends TestCase
 
     public function test_permit_detail_page_redirects_to_latest_when_code_not_found(): void
     {
+        $user = User::factory()->create();
+
         Permit::create([
             'code' => 'RK-FALLBACK',
             'event' => 'Fallback Event',
@@ -78,13 +93,16 @@ class RuangKitaPagesTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $this->get('/permits/RK-NONEXISTENT')
+        $this->actingAs($user)
+            ->get('/permits/RK-NONEXISTENT')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Permits/Show'));
     }
 
     public function test_approved_permit_can_view_official_letter(): void
     {
+        $user = User::factory()->create();
+
         $permit = Permit::create([
             'code' => 'RK-2026-APP',
             'event' => 'Seminar Nasional Vokasi',
@@ -99,7 +117,8 @@ class RuangKitaPagesTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $this->get('/permits/'.$permit->code.'/letter')
+        $this->actingAs($user)
+            ->get('/permits/'.$permit->code.'/letter')
             ->assertOk()
             ->assertSee('IZIN PENGGUNAAN RUANGAN')
             ->assertSee('Seminar Nasional Vokasi')
@@ -109,6 +128,8 @@ class RuangKitaPagesTest extends TestCase
 
     public function test_non_approved_permit_cannot_view_official_letter(): void
     {
+        $user = User::factory()->create();
+
         $permit = Permit::create([
             'code' => 'RK-2026-PENDING',
             'event' => 'Rapat Internal',
@@ -123,7 +144,8 @@ class RuangKitaPagesTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $this->get('/permits/'.$permit->code.'/letter')
+        $this->actingAs($user)
+            ->get('/permits/'.$permit->code.'/letter')
             ->assertNotFound();
     }
 }
