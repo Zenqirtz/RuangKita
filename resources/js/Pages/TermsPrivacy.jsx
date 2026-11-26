@@ -51,7 +51,7 @@ const privacySections = [
 export default function TermsPrivacy() {
     return (
         <RuangKitaLayout activeTab="terms" title="Ketentuan & Privasi">
-            <div className="max-w-4xl">
+            <div className="mx-auto max-w-4xl">
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1 className="text-lg font-extrabold text-slate-900">Syarat &amp; Ketentuan serta Kebijakan Privasi</h1>
