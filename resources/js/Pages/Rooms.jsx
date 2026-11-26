@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
+import RoomFloorPlan3D from '@/Components/RuangKita/RoomFloorPlan3D';
 import { roomStatusStyles } from '@/Data/ruangkita';
 import { accentStyles } from '@/Components/RuangKita/accent';
 import { useLanguage } from '@/Context/LanguageContext';
@@ -14,6 +15,7 @@ const categories = [
 
 export default function Rooms({ rooms = [], stats = {} }) {
     const { t } = useLanguage();
+    const [viewMode, setViewMode] = useState('grid');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [query, setQuery] = useState('');
 
@@ -41,13 +43,56 @@ export default function Rooms({ rooms = [], stats = {} }) {
                         {t('rooms.subtitle', 'Ruang kelas, laboratorium praktik, dan ruang penunjang Vokasi UB (Veteran & Dieng).')}
                     </p>
                 </div>
-                <a
-                    href="/bookings/create"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors shrink-0"
-                >
-                    <Icon name="plus" className="w-4 h-4" />
-                    {t('rooms.apply_room', 'Ajukan Ruangan')}
-                </a>
+                <div className="flex items-center gap-2.5 shrink-0">
+                    {/* Desktop-only View Switcher (Grid vs 3D Floor Plan) */}
+                    <div className="hidden lg:inline-flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode('grid')}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                                viewMode === 'grid'
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                        >
+                            <Icon name="dashboard" className="w-3.5 h-3.5" />
+                            {t('rooms.view_grid', 'Tampilan Grid')}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode('3d')}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                                viewMode === '3d'
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'text-slate-600 hover:text-slate-900'
+                            }`}
+                        >
+                            <Icon name="building" className="w-3.5 h-3.5" />
+                            {t('rooms.view_3d', 'Denah 3D')}
+                        </button>
+                    </div>
+
+                    <a
+                        href="/bookings/create"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-colors shrink-0"
+                    >
+                        <Icon name="plus" className="w-4 h-4" />
+                        {t('rooms.apply_room', 'Ajukan Ruangan')}
+                    </a>
+                </div>
+            </div>
+
+            {/* Mobile Notice: 3D experience is only available on PC/Laptop */}
+            <div className="lg:hidden rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 flex items-start gap-3">
+                <Icon name="info" className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                <div>
+                    <p className="text-[11px] font-bold text-blue-900">
+                        {t('rooms.mobile_3d_title', 'Denah 3D Tersedia di PC / Laptop')}
+                    </p>
+                    <p className="text-[10px] text-blue-700 mt-0.5 leading-relaxed">
+                        {t('rooms.mobile_3d_desc', 'Buka RuangKita melalui PC atau laptop untuk menikmati pengalaman denah lokasi ruangan 3D interaktif.')}
+                    </p>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -67,6 +112,13 @@ export default function Rooms({ rooms = [], stats = {} }) {
                 ))}
             </div>
 
+            {viewMode === '3d' ? (
+                <div className="hidden lg:block">
+                    <RoomFloorPlan3D rooms={rooms} />
+                </div>
+            ) : null}
+
+            <div className={viewMode === '3d' ? 'lg:hidden space-y-5' : 'space-y-5'}>
             {/* Category Filters + Search */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-3.5">
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
@@ -203,6 +255,7 @@ export default function Rooms({ rooms = [], stats = {} }) {
                     </a>
                 </article>
             </section>
+            </div>
         </RuangKitaLayout>
     );
 }
