@@ -20,12 +20,17 @@ class RegistrationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
+            'nim' => '245150200111001',
             'email' => 'test.user@student.ub.ac.id',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
         $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'test.user@student.ub.ac.id',
+            'nim' => '245150200111001',
+        ]);
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
@@ -33,6 +38,7 @@ class RegistrationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
+            'nim' => '245150200111002',
             'email' => 'test.user@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password',

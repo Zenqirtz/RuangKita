@@ -46,11 +46,6 @@ export default function GuestLayout({ children }) {
                             ))}
                         </div>
                     </div>
-
-                    <div className="relative z-10 pt-6 mt-6 border-t border-white/15 text-[10.5px] text-blue-200 flex items-center justify-between">
-                        <span>Tim Yakusa • Case 1</span>
-                        <span className="font-bold text-white">Smarter Campus</span>
-                    </div>
                 </div>
 
                 {/* Right Form Panel */}

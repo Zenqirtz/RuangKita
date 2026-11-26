@@ -33,6 +33,7 @@ class RegisteredUserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'nim' => ['required', 'string', 'max:30', 'regex:/^[0-9]+$/', 'unique:'.User::class],
             'email' => [
                 'required',
                 'string',
@@ -44,11 +45,15 @@ class RegisteredUserController extends Controller
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
+            'nim.required' => 'NIM wajib diisi.',
+            'nim.regex' => 'NIM hanya boleh berisi angka.',
+            'nim.unique' => 'NIM sudah terdaftar.',
             'email.ends_with' => 'Pendaftaran hanya dapat menggunakan email resmi @student.ub.ac.id (domain lain seperti @gmail.com tidak diizinkan).',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
+            'nim' => $validated['nim'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
