@@ -29,14 +29,33 @@
   display: none;
 }
 
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  height: auto;
+  margin-right: 0;
+}
+
 .navbar__logo img {
   height: 26px;
   width: auto;
+  display: block;
 }
 
 .navbar__title {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   color: var(--ifm-color-primary);
-  margin-left: 2px;
+  background: rgba(37, 99, 235, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  line-height: 1;
+  transform: translateY(-1px);
 }
