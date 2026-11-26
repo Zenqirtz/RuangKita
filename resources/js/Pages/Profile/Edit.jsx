@@ -114,10 +114,10 @@ export default function Edit({ mustVerifyEmail, status }) {
                         <div className="mt-4 border-t border-slate-100 pt-4">
                             <Link
                                 href={route('terms-privacy')}
-                                className="inline-flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-700"
+                                className="inline-flex w-full items-center justify-between gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-700"
                             >
-                                <span>Lihat Syarat &amp; Kebijakan Privasi</span>
-                                <Icon name="chevronRight" className="h-4 w-4" />
+                                <span>Baca Ketentuan &amp; Privasi</span>
+                                <Icon name="chevronRight" className="h-4 w-4 shrink-0" />
                             </Link>
                         </div>
                     </section>
