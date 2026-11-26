@@ -125,23 +125,16 @@ export default function Login({ status, canResetPassword }) {
 
             </form>
 
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
-                <Link
-                    href={route('register')}
-                    className="font-semibold text-slate-500 hover:text-blue-600 transition-colors"
-                >
-                    Belum memiliki akun ormawa?
-                </Link>
-            </div>
-
-            <div className="mt-3 text-center">
-                <Link
-                    href="/dashboard"
-                    className="text-[11px] font-semibold text-slate-400 hover:text-slate-600 inline-flex items-center gap-1"
-                >
-                    <span>Lanjut sebagai Tamu ke Dashboard</span>
-                    <Icon name="chevronRight" className="w-3 h-3" />
-                </Link>
+            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+                <p className="text-xs text-slate-500">
+                    Belum memiliki akun ormawa?{' '}
+                    <Link
+                        href={route('register')}
+                        className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    >
+                        Daftar sekarang
+                    </Link>
+                </p>
             </div>
         </GuestLayout>
     );

@@ -12,7 +12,7 @@ export default function GuestLayout({ children }) {
                     <div className="absolute -bottom-20 -left-16 w-60 h-60 rounded-full bg-blue-500/25 blur-3xl pointer-events-none" />
 
                     <div className="relative z-10">
-                        <Link href="/dashboard" className="inline-flex flex-col items-start gap-1 group">
+                        <Link href="/" className="inline-flex flex-col items-start gap-1 group">
                             <img src="/images/logo-white.svg" alt="RuangKita" className="h-10 w-auto object-contain" />
                             <p className="text-[10px] font-semibold text-blue-200 uppercase tracking-widest mt-1">
                                 Universitas Brawijaya
