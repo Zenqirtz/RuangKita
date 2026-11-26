@@ -47,10 +47,11 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'RuangKita Docs',
+        title: 'Docs',
         logo: {
           alt: 'RuangKita Logo',
-          src: 'img/logo-mark.svg',
+          src: 'img/logo.svg',
+          srcDark: 'img/logo-white.svg',
         },
         items: [
           {

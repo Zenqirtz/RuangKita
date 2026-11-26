@@ -28,3 +28,15 @@
 .navbar-back-link svg {
   display: none;
 }
+
+.navbar__logo img {
+  height: 26px;
+  width: auto;
+}
+
+.navbar__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  margin-left: 2px;
+}
