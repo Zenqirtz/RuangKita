@@ -214,11 +214,6 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                             {!isCollapsed && <span>{t('nav.login', 'Masuk Akun')}</span>}
                         </Link>
                     )}
-                    {!isCollapsed && (
-                        <p className="text-[9px] text-slate-300 font-medium text-center mt-3">
-                            RuangKita v1.0 • Tim Yakusa
-                        </p>
-                    )}
                 </div>
             </aside>
 
