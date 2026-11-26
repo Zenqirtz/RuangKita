@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { useLanguage } from '@/Context/LanguageContext';
@@ -99,13 +99,26 @@ export default function Edit({ mustVerifyEmail, status }) {
                         </div>
                     </section>
 
-                    <section className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
+                    <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm md:p-6">
                         <div className="flex items-start gap-3">
-                            <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
-                            <div>
-                                <p className="text-xs font-bold text-blue-900">RuangKita menjaga akun Anda</p>
-                                <p className="mt-1 text-[10px] leading-relaxed text-blue-800/80">Jangan bagikan kata sandi atau tautan verifikasi kepada orang lain.</p>
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                                <Icon name="file" className="h-5 w-5" />
                             </div>
+                            <div>
+                                <h2 className="text-sm font-extrabold text-slate-900">Ketentuan &amp; Privasi</h2>
+                                <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                                    Pelajari syarat penggunaan layanan dan kebijakan privasi pengelolaan data di RuangKita.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="mt-4 border-t border-slate-100 pt-4">
+                            <Link
+                                href={route('terms-privacy')}
+                                className="inline-flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-700"
+                            >
+                                <span>Lihat Syarat &amp; Kebijakan Privasi</span>
+                                <Icon name="chevronRight" className="h-4 w-4" />
+                            </Link>
                         </div>
                     </section>
                 </aside>

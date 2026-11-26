@@ -27,6 +27,7 @@ class RuangKitaPagesTest extends TestCase
             'revisions' => ['/revisions', 'Revisions'],
             'history' => ['/history', 'History'],
             'guidelines' => ['/guidelines', 'Guidelines'],
+            'terms privacy' => ['/terms-privacy', 'TermsPrivacy'],
         ];
     }
 

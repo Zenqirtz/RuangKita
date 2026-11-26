@@ -23,6 +23,7 @@ const pageTitles = {
     revisions: 'Catatan Revisi',
     history: 'Riwayat Peminjaman',
     guidelines: 'Tata Tertib',
+    terms: 'Ketentuan & Privasi',
 };
 
 const noticeIconStyles = {

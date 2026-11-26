@@ -36,6 +36,10 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Guidelines');
     })->name('guidelines.index');
 
+    Route::get('/terms-privacy', function () {
+        return Inertia::render('TermsPrivacy');
+    })->name('terms-privacy');
+
     Route::post('/admin/permits/{permit}/review', [AdminPermitController::class, 'updateStatus'])
         ->name('admin.permits.review');
 
