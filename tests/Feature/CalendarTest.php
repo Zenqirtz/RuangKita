@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Permit;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -14,6 +15,7 @@ class CalendarTest extends TestCase
 
     public function test_calendar_page_renders_with_real_events(): void
     {
+        $user = User::factory()->create();
         $monday = Carbon::today()->startOfWeek(Carbon::MONDAY);
 
         Permit::create([
@@ -31,7 +33,8 @@ class CalendarTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $this->get('/calendar')
+        $this->actingAs($user)
+            ->get('/calendar')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Calendar')
@@ -47,9 +50,11 @@ class CalendarTest extends TestCase
 
     public function test_calendar_navigates_weeks_with_start_query(): void
     {
+        $user = User::factory()->create();
         $nextMonday = Carbon::today()->startOfWeek(Carbon::MONDAY)->addWeek();
 
-        $this->get('/calendar?start='.$nextMonday->format('Y-m-d'))
+        $this->actingAs($user)
+            ->get('/calendar?start='.$nextMonday->format('Y-m-d'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Calendar')

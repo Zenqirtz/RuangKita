@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Permit;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -13,6 +14,8 @@ class RevisionAndHistoryTest extends TestCase
 
     public function test_revisions_page_renders_with_real_revisions(): void
     {
+        $user = User::factory()->create();
+
         Permit::create([
             'code' => 'RK-REV-001',
             'event' => 'Revisi Event',
@@ -27,7 +30,8 @@ class RevisionAndHistoryTest extends TestCase
             'admin_notes' => 'Tolong lengkapi proposal',
         ]);
 
-        $this->get('/revisions')
+        $this->actingAs($user)
+            ->get('/revisions')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Revisions')
@@ -38,6 +42,8 @@ class RevisionAndHistoryTest extends TestCase
 
     public function test_history_page_renders_with_completed_permits(): void
     {
+        $user = User::factory()->create();
+
         Permit::create([
             'code' => 'RK-HIST-001',
             'event' => 'Approved Event',
@@ -51,7 +57,8 @@ class RevisionAndHistoryTest extends TestCase
             'stage' => 'approved',
         ]);
 
-        $this->get('/history')
+        $this->actingAs($user)
+            ->get('/history')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('History')

@@ -10,6 +10,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
+        nim: '',
         email: '',
         password: '',
         password_confirmation: '',
@@ -38,7 +39,7 @@ export default function Register() {
 
             <form onSubmit={submit} className="space-y-3.5">
                 <div>
-                    <InputLabel htmlFor="name" value="Nama Lengkap (Ketua / PIC)" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="name" value="Nama Lengkap" className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -58,6 +59,28 @@ export default function Register() {
                     </div>
 
                     <InputError message={errors.name} className="mt-1.5 text-xs" />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="nim" value="NIM" className="text-xs font-bold text-slate-700" />
+
+                    <div className="relative mt-1">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <Icon name="graduation" className="w-4 h-4" />
+                        </div>
+                        <TextInput
+                            id="nim"
+                            name="nim"
+                            value={data.nim}
+                            className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
+                            placeholder="Contoh: 245150200111001"
+                            inputMode="numeric"
+                            onChange={(e) => setData('nim', e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <InputError message={errors.nim} className="mt-1.5 text-xs" />
                 </div>
 
                 <div>
@@ -161,13 +184,16 @@ export default function Register() {
                 </div>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
-                <Link
-                    href={route('login')}
-                    className="font-semibold text-slate-500 hover:text-blue-600 transition-colors"
-                >
-                    Sudah punya akun?
-                </Link>
+            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+                <p className="text-xs text-slate-500">
+                    Sudah punya akun?{' '}
+                    <Link
+                        href={route('login')}
+                        className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                    >
+                        Masuk di sini
+                    </Link>
+                </p>
             </div>
         </GuestLayout>
     );
