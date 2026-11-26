@@ -19,4 +19,6 @@ Proses verifikasi oleh Admin dan persetujuan Wakil Dekan III umumnya memakan wak
 Buka menu **Peminjaman & Izin**, klik detail pengajuan Anda untuk membaca catatan revisi dari Admin, lalu perbaiki dan unggah ulang berkas yang diminta.
 
 ### Di mana saya bisa mengunduh surat izin resmi?
-Setelah status pengajuan menjadi **Disetujui**, tombol **Unduh Surat Izin Resmi** akan otomatis aktif pada halaman daftar maupun detail pengajuan.
+Setelah status pengajuan menjadi **Disetujui**, tombol **Unduh Surat Izin Resmi** akan otomatis aktif pada halaman daftar maupun halaman **Detail Pengajuan**.
+
+![Halaman Detail Pengajuan dan Unduh Surat Izin](/img/screenshots/permit-detail.png)

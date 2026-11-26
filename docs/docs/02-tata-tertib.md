@@ -8,6 +8,12 @@ sidebar_position: 2
 
 Seluruh organisasi mahasiswa (Ormawa) dan civitas akademika Universitas Brawijaya wajib mematuhi tata tertib berikut saat meminjam dan menggunakan ruangan fakultas.
 
+## Daftar Ruangan Fakultas
+
+Pastikan Anda memilih ruangan dengan kapasitas dan fasilitas yang sesuai dengan kebutuhan kegiatan Anda melalui menu **Daftar Ruangan**.
+
+![Daftar Ruangan Fakultas RuangKita](/img/screenshots/rooms.png)
+
 ## Ketentuan Umum
 
 1. **Batas Waktu Pengajuan**  
