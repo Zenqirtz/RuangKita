@@ -9,7 +9,7 @@ const navItems = [
     { id: 'calendar', label: 'Kalender Live', icon: 'calendar', href: '/calendar' },
     { id: 'rooms', label: 'Daftar Ruangan', icon: 'door', href: '/rooms' },
     { id: 'permits', label: 'Peminjaman & Izin', icon: 'clipboardList', href: '/permits' },
-    { id: 'guidelines', label: 'Tata Tertib', icon: 'book', href: '/guidelines' },
+    { id: 'guidelines', label: 'Tata Tertib', icon: 'book', href: '/docs/' },
 ];
 
 const pageTitles = {
