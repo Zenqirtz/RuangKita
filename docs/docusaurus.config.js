@@ -8,10 +8,6 @@ const config = {
   tagline: 'Dokumentasi peminjaman ruangan dan pelacakan izin kegiatan Universitas Brawijaya',
   favicon: 'img/logo-mark.svg',
 
-  future: {
-    v4: true,
-  },
-
   url: 'http://127.0.0.1:8000',
   baseUrl: '/docs/',
   trailingSlash: true,
