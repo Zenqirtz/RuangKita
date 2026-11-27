@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Permit;
 use App\Models\PermitHistory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -101,20 +99,6 @@ class PermitController extends Controller
                 ]),
             ],
         ]);
-    }
-
-    /**
-     * Download the approval letter for an approved permit.
-     */
-    public function downloadLetter(string $permitCode): View|HttpResponse
-    {
-        $permit = Permit::query()
-            ->where('code', $permitCode)
-            ->firstOrFail();
-
-        abort_unless($permit->stage === 'approved', 404);
-
-        return response()->view('permits.letter', ['permit' => $permit]);
     }
 
     /**

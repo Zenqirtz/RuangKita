@@ -26,7 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookings', [PermitController::class, 'store'])->name('bookings.store');
 
     Route::get('/permits', [PermitController::class, 'index'])->name('permits.index');
-    Route::get('/permits/{permit}/letter', [PermitController::class, 'downloadLetter'])->name('permits.letter');
     Route::get('/permits/{permit}', [PermitController::class, 'show'])->name('permits.show');
 
     Route::get('/revisions', [RevisionController::class, 'index'])->name('revisions.index');

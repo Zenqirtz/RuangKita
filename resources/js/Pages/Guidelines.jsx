@@ -1,33 +1,60 @@
 import React, { useState } from 'react';
 import RuangKitaLayout from '@/Layouts/RuangKitaLayout';
 import Icon from '@/Components/RuangKita/Icon';
-import { faqs } from '@/Data/ruangkita';
-
-const steps = [
-    { title: 'Cek ketersediaan', description: 'Buka kalender live dan pilih slot yang tidak bentrok dengan jadwal lain.' },
-    { title: 'Isi formulir digital', description: 'Lengkapi data kegiatan, ruangan, jadwal, dan jumlah peserta.' },
-    { title: 'Unggah dokumen', description: 'Lampirkan proposal serta surat permohonan yang sudah ditandatangani.' },
-    { title: 'Pantau persetujuan', description: 'Ikuti progres verifikasi admin hingga surat izin diterbitkan.' },
-];
-
-const rules = [
-    'Pengajuan dilakukan paling lambat 3 hari kerja sebelum kegiatan.',
-    'Ruangan hanya digunakan sesuai jadwal yang disetujui.',
-    'Penanggung jawab wajib hadir dan menjaga ketertiban selama kegiatan.',
-    'Fasilitas yang rusak akibat kelalaian menjadi tanggung jawab ormawa.',
-    'Kebersihan ruangan wajib dikembalikan seperti semula setelah kegiatan.',
-    'Pembatalan diajukan paling lambat 2 hari kerja sebelum jadwal.',
-];
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function Guidelines() {
+    const { t } = useLanguage();
     const [openFaq, setOpenFaq] = useState(0);
+
+    const steps = [
+        { title: t('guidelines.step1_title', 'Cek ketersediaan'), description: t('guidelines.step1_desc', 'Buka kalender live dan pilih slot yang tidak bentrok dengan jadwal lain.') },
+        { title: t('guidelines.step2_title', 'Isi formulir digital'), description: t('guidelines.step2_desc', 'Lengkapi data kegiatan, ruangan, jadwal, dan jumlah peserta.') },
+        { title: t('guidelines.step3_title', 'Unggah dokumen'), description: t('guidelines.step3_desc', 'Lampirkan proposal serta surat permohonan yang sudah ditandatangani.') },
+        { title: t('guidelines.step4_title', 'Pantau persetujuan'), description: t('guidelines.step4_desc', 'Ikuti progres verifikasi admin hingga surat izin diterbitkan.') },
+    ];
+
+    const rules = [
+        t('guidelines.rule1', 'Pengajuan dilakukan paling lambat 3 hari kerja sebelum kegiatan.'),
+        t('guidelines.rule2', 'Ruangan hanya digunakan sesuai jadwal yang disetujui.'),
+        t('guidelines.rule3', 'Penanggung jawab wajib hadir dan menjaga ketertiban selama kegiatan.'),
+        t('guidelines.rule4', 'Fasilitas yang rusak akibat kelalaian menjadi tanggung jawab ormawa.'),
+        t('guidelines.rule5', 'Kebersihan ruangan wajib dikembalikan seperti semula setelah kegiatan.'),
+        t('guidelines.rule6', 'Pembatalan diajukan paling lambat 2 hari kerja sebelum jadwal.'),
+    ];
+
+    const faqs = [
+        { question: t('guidelines.faq1_q', 'Berapa lama proses persetujuan izin ruangan?'), answer: t('guidelines.faq1_a', 'Rata-rata 1 - 3 hari kerja. Status setiap tahap dapat dipantau secara real-time pada halaman Tracking Izin.') },
+        { question: t('guidelines.faq2_q', 'Dokumen apa saja yang wajib diunggah?'), answer: t('guidelines.faq2_a', 'Proposal kegiatan, surat permohonan ruangan yang ditandatangani ketua ormawa dan dosen pembimbing, serta rundown kegiatan.') },
+        { question: t('guidelines.faq3_q', 'Bagaimana jika jadwal yang dipilih bentrok?'), answer: t('guidelines.faq3_a', 'Sistem melakukan pengecekan otomatis saat pengajuan. Slot yang sudah terisi akan ditandai merah dan form tidak dapat dikirim.') },
+        { question: t('guidelines.faq4_q', 'Apakah izin yang disetujui bisa dibatalkan?'), answer: t('guidelines.faq4_a', 'Pembatalan dapat diajukan melalui admin fakultas paling lambat 2 hari sebelum kegiatan. Slot akan dibuka kembali untuk ormawa lain.') },
+    ];
+
+    const documents = [
+        { title: t('guidelines.doc1_title', 'Proposal kegiatan'), desc: t('guidelines.doc1_desc', 'Memuat latar belakang, tujuan, rundown, dan kebutuhan fasilitas.'), required: true },
+        { title: t('guidelines.doc2_title', 'Surat permohonan ruangan'), desc: t('guidelines.doc2_desc', 'Ditandatangani ketua ormawa dan dosen pembimbing.'), required: true },
+        { title: t('guidelines.doc3_title', 'Rundown kegiatan'), desc: t('guidelines.doc3_desc', 'Rincian waktu dan penanggung jawab setiap sesi.'), required: false },
+        { title: t('guidelines.doc4_title', 'Surat izin keramaian'), desc: t('guidelines.doc4_desc', 'Diperlukan untuk kegiatan dengan peserta di atas 100 orang.'), required: false },
+    ];
+
+    const contacts = [
+        { icon: 'building', label: t('guidelines.contact_loc_label', 'Lokasi'), value: t('guidelines.contact_loc_val', 'Gedung A, Lantai 1, Ruang Administrasi') },
+        { icon: 'phone', label: t('guidelines.contact_phone_label', 'Telepon'), value: '(0341) 555-0123' },
+        { icon: 'mail', label: t('guidelines.contact_email_label', 'Email'), value: 'ruangkita@ub.ac.id' },
+    ];
+
+    const operationalHours = [
+        { day: t('guidelines.mon_fri', 'Senin - Jumat'), time: '07.00 - 21.00' },
+        { day: t('guidelines.saturday', 'Sabtu'), time: '08.00 - 20.00' },
+        { day: t('guidelines.sunday', 'Minggu'), time: '09.00 - 17.00' },
+    ];
 
     return (
         <RuangKitaLayout activeTab="guidelines">
             <div>
-                <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Tata Tertib & Panduan</h1>
+                <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{t('guidelines.title', 'Tata Tertib & Panduan')}</h1>
                 <p className="text-xs text-slate-400 mt-1">
-                    Pahami alur, dokumen, dan aturan penggunaan ruangan fakultas.
+                    {t('guidelines.subtitle', 'Pahami alur, dokumen, dan aturan penggunaan ruangan fakultas.')}
                 </p>
             </div>
 
@@ -37,11 +64,10 @@ export default function Guidelines() {
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
                     <div className="max-w-xl">
                         <h2 className="text-xl md:text-2xl font-extrabold mt-2.5 leading-tight">
-                            Empat langkah, izin ruangan tanpa antre.
+                            {t('guidelines.hero_title', 'Empat langkah, izin ruangan tanpa antre.')}
                         </h2>
                         <p className="text-[11.5px] text-blue-100/90 leading-relaxed mt-1.5">
-                            Semua proses dilakukan online. Tidak perlu lagi mengunjungi beberapa kantor hanya untuk
-                            memeriksa status tanda tangan.
+                            {t('guidelines.hero_desc', 'Semua proses dilakukan online. Tidak perlu lagi mengunjungi beberapa kantor hanya untuk memeriksa status tanda tangan.')}
                         </p>
                     </div>
                     <a
@@ -49,7 +75,7 @@ export default function Guidelines() {
                         className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white text-blue-700 text-[11px] font-bold hover:bg-blue-50 transition-colors shrink-0"
                     >
                         <Icon name="plus" className="w-4 h-4" />
-                        Mulai Pengajuan
+                        {t('guidelines.start_application', 'Mulai Pengajuan')}
                     </a>
                 </div>
             </section>
@@ -72,16 +98,11 @@ export default function Guidelines() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
                 <div className="lg:col-span-2 space-y-5">
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
-                        <h3 className="text-sm font-bold text-slate-900">Dokumen Wajib</h3>
-                        <p className="text-[10px] text-slate-400 mt-0.5">Pastikan seluruh dokumen berformat PDF dan terbaca jelas.</p>
+                        <h3 className="text-sm font-bold text-slate-900">{t('guidelines.docs_title', 'Dokumen Wajib')}</h3>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{t('guidelines.docs_sub', 'Pastikan seluruh dokumen berformat PDF dan terbaca jelas.')}</p>
 
                         <div className="mt-4 space-y-2.5">
-                            {[
-                                { title: 'Proposal kegiatan', desc: 'Memuat latar belakang, tujuan, rundown, dan kebutuhan fasilitas.', required: true },
-                                { title: 'Surat permohonan ruangan', desc: 'Ditandatangani ketua ormawa dan dosen pembimbing.', required: true },
-                                { title: 'Rundown kegiatan', desc: 'Rincian waktu dan penanggung jawab setiap sesi.', required: false },
-                                { title: 'Surat izin keramaian', desc: 'Diperlukan untuk kegiatan dengan peserta di atas 100 orang.', required: false },
-                            ].map((document) => (
+                            {documents.map((document) => (
                                 <div key={document.title} className="flex items-start gap-3 p-3.5 rounded-xl border border-slate-100 bg-slate-50/40">
                                     <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-rose-500 flex items-center justify-center shrink-0">
                                         <Icon name="file" className="w-4 h-4" />
@@ -97,7 +118,7 @@ export default function Guidelines() {
                                                 : 'bg-slate-100 text-slate-500'
                                         }`}
                                     >
-                                        {document.required ? 'Wajib' : 'Kondisional'}
+                                        {document.required ? t('guidelines.required', 'Wajib') : t('guidelines.conditional', 'Kondisional')}
                                     </span>
                                 </div>
                             ))}
@@ -105,7 +126,7 @@ export default function Guidelines() {
                     </section>
 
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
-                        <h3 className="text-sm font-bold text-slate-900">Tata Tertib Ruangan</h3>
+                        <h3 className="text-sm font-bold text-slate-900">{t('guidelines.rules_title', 'Tata Tertib Ruangan')}</h3>
                         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {rules.map((rule) => (
                                 <div key={rule} className="flex items-start gap-2 p-2.5">
@@ -119,7 +140,7 @@ export default function Guidelines() {
                     </section>
 
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
-                        <h3 className="text-sm font-bold text-slate-900">Pertanyaan Umum</h3>
+                        <h3 className="text-sm font-bold text-slate-900">{t('guidelines.faq_title', 'Pertanyaan Umum')}</h3>
                         <div className="mt-3 divide-y divide-slate-100">
                             {faqs.map((faq, index) => {
                                 const isOpen = openFaq === index;
@@ -151,15 +172,11 @@ export default function Guidelines() {
 
                 <aside className="space-y-5 lg:sticky lg:top-24">
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                        <h3 className="text-sm font-bold text-slate-900">Kontak Admin Fakultas</h3>
-                        <p className="text-[10px] text-slate-400 mt-0.5">Senin - Jumat, 08.00 - 16.00 WIB</p>
+                        <h3 className="text-sm font-bold text-slate-900">{t('guidelines.contact_title', 'Kontak Admin Fakultas')}</h3>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{t('guidelines.contact_hours', 'Senin - Jumat, 08.00 - 16.00 WIB')}</p>
 
                         <div className="mt-4 space-y-2.5">
-                            {[
-                                { icon: 'building', label: 'Lokasi', value: 'Gedung A, Lantai 1, Ruang Administrasi' },
-                                { icon: 'phone', label: 'Telepon', value: '(0341) 555-0123' },
-                                { icon: 'mail', label: 'Email', value: 'ruangkita@ub.ac.id' },
-                            ].map((contact) => (
+                            {contacts.map((contact) => (
                                 <div key={contact.label} className="flex items-start gap-2.5">
                                     <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                                         <Icon name={contact.icon} className="w-3.5 h-3.5" />
@@ -179,18 +196,14 @@ export default function Guidelines() {
                             className="mt-4 w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-blue-100 bg-blue-50 text-blue-600 text-[10.5px] font-bold hover:bg-blue-100 transition-colors"
                         >
                             <Icon name="mail" className="w-3.5 h-3.5" />
-                            Hubungi Admin
+                            {t('guidelines.contact_button', 'Hubungi Admin')}
                         </button>
                     </section>
 
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                        <h3 className="text-sm font-bold text-slate-900">Jam Operasional Ruangan</h3>
+                        <h3 className="text-sm font-bold text-slate-900">{t('guidelines.op_hours_title', 'Jam Operasional Ruangan')}</h3>
                         <div className="mt-3 space-y-2">
-                            {[
-                                { day: 'Senin - Jumat', time: '07.00 - 21.00' },
-                                { day: 'Sabtu', time: '08.00 - 20.00' },
-                                { day: 'Minggu', time: '09.00 - 17.00' },
-                            ].map((schedule) => (
+                            {operationalHours.map((schedule) => (
                                 <div key={schedule.day} className="flex items-center justify-between text-[10px]">
                                     <span className="text-slate-500">{schedule.day}</span>
                                     <span className="font-bold text-slate-700">{schedule.time}</span>
@@ -200,7 +213,7 @@ export default function Guidelines() {
                         <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-100 flex items-start gap-2">
                             <Icon name="info" className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
                             <p className="text-[9px] text-amber-700 leading-relaxed">
-                                Penggunaan di luar jam operasional memerlukan izin khusus dari pimpinan fakultas.
+                                {t('guidelines.outside_hours_warning', 'Penggunaan di luar jam operasional memerlukan izin khusus dari pimpinan fakultas.')}
                             </p>
                         </div>
                     </section>
@@ -211,7 +224,7 @@ export default function Guidelines() {
                         </div>
                         <h3 className="text-xs font-bold mt-3">RuangKita v1.0</h3>
                         <p className="text-[10px] text-slate-300 leading-relaxed mt-1.5">
-                            Dikembangkan oleh Tim Yakusa untuk Case 1: Smarter Campus and Learning.
+                            {t('guidelines.developed_by', 'Dikembangkan oleh Tim Yakusa untuk Case 1: Smarter Campus and Learning.')}
                         </p>
                         <p className="text-[9px] text-slate-400 mt-2">Universitas Brawijaya • 2026</p>
                     </section>

@@ -50,7 +50,7 @@ export default function Calendar({
     todayRoomStatuses = [],
     availableSlots = [],
 }) {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
     const [roomFilter, setRoomFilter] = useState('all');
 
     const activeDays = days;
@@ -166,7 +166,7 @@ export default function Calendar({
                                 <Link
                                     href={`/calendar?start=${prevWeek}`}
                                     className="p-1.5 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm transition-all"
-                                    aria-label="Minggu sebelumnya"
+                                    aria-label={t('cal.prev_week', 'Minggu sebelumnya')}
                                 >
                                     <Icon name="chevronLeft" className="w-3.5 h-3.5" />
                                 </Link>
@@ -182,7 +182,7 @@ export default function Calendar({
                                 <Link
                                     href={`/calendar?start=${nextWeek}`}
                                     className="p-1.5 rounded-lg text-slate-500 hover:bg-white hover:shadow-sm transition-all"
-                                    aria-label="Minggu berikutnya"
+                                    aria-label={t('cal.next_week', 'Minggu berikutnya')}
                                 >
                                     <Icon name="chevronRight" className="w-3.5 h-3.5" />
                                 </Link>
@@ -205,7 +205,7 @@ export default function Calendar({
                         {Object.entries(eventStatusStyles).map(([key, style]) => (
                             <span key={key} className="inline-flex items-center gap-1.5">
                                 <span className={`w-2 h-2 rounded-full ${style.dot}`} />
-                                {style.label}
+                                {t(`cal.event_${key}`, style.label)}
                             </span>
                         ))}
                     </div>
@@ -217,10 +217,15 @@ export default function Calendar({
                             <div className="w-14 shrink-0" />
                             {activeDays.map((day) => {
                                 const isToday = Boolean(day.isToday);
+                                const dayLabelsMap = {
+                                    en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                                    id: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                                };
+                                const displayDayLabel = dayLabelsMap[lang]?.[day.day - 1] ?? day.label;
 
                                 return (
                                     <div key={day.date} className="flex-1 text-center px-1">
-                                        <p className="text-[10px] font-semibold text-slate-400 uppercase">{day.label}</p>
+                                        <p className="text-[10px] font-semibold text-slate-400 uppercase">{displayDayLabel}</p>
                                         <p
                                             className={`text-sm font-extrabold mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-lg ${
                                                 isToday
@@ -348,23 +353,33 @@ export default function Calendar({
                     <div className="mt-4 space-y-2.5 flex-1">
                         {availableSlots.length === 0 ? (
                             <p className="text-[11px] text-slate-400">{t('cal.no_schedule', 'Belum ada jadwal pengajuan di minggu ini.')}</p>
-                        ) : availableSlots.map((slot) => (
-                            <div
-                                key={slot.roomId}
-                                className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100"
-                            >
-                                <div className="min-w-0">
-                                    <p className="text-[11px] font-bold text-slate-700 truncate">{slot.room}</p>
-                                    <p className="text-[9.5px] text-slate-400 mt-0.5 truncate">{slot.time}</p>
-                                </div>
-                                <a
-                                    href="/bookings/create"
-                                    className="text-[9.5px] font-bold text-blue-600 bg-white border border-blue-100 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 shrink-0"
+                        ) : availableSlots.map((slot) => {
+                            let slotTimeDisplay = slot.time;
+                            if (slot.time && slot.time.includes('Kosong seharian')) {
+                                slotTimeDisplay = t('cal.empty_all_day', 'Hari ini (Kosong seharian)');
+                            } else if (slot.time && slot.time.includes('Tersedia setelah')) {
+                                const match = slot.time.match(/(\d{2}:\d{2})/);
+                                const timeStr = match ? match[1] : '';
+                                slotTimeDisplay = t('cal.available_after', 'Hari ini (Tersedia setelah :time WIB)').replace(':time', timeStr);
+                            }
+                            return (
+                                <div
+                                    key={slot.roomId}
+                                    className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100"
                                 >
-                                    {t('cal.apply', 'Ajukan')}
-                                </a>
-                            </div>
-                        ))}
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] font-bold text-slate-700 truncate">{slot.room}</p>
+                                        <p className="text-[9.5px] text-slate-400 mt-0.5 truncate">{slotTimeDisplay}</p>
+                                    </div>
+                                    <a
+                                        href="/bookings/create"
+                                        className="text-[9.5px] font-bold text-blue-600 bg-white border border-blue-100 px-2.5 py-1.5 rounded-lg hover:bg-blue-50 shrink-0"
+                                    >
+                                        {t('cal.apply', 'Ajukan')}
+                                    </a>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 

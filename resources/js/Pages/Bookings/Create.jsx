@@ -15,12 +15,12 @@ const ormawaOptions = [
     'Badan Eksekutif Mahasiswa (BEM) Vokasi UB',
 ];
 
-function formatDate(isoDate) {
+function formatDate(isoDate, lang = 'id') {
     if (!isoDate) {
         return '-';
     }
 
-    return new Date(`${isoDate}T00:00:00`).toLocaleDateString('id-ID', {
+    return new Date(`${isoDate}T00:00:00`).toLocaleDateString(lang === 'en' ? 'en-US' : 'id-ID', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
@@ -42,7 +42,7 @@ const inputClass =
 
 const selectClass = `${inputClass} pr-10 truncate`;
 
-function UploadBox({ id, title, description, fileName, onFileChange }) {
+function UploadBox({ id, title, description, fileName, onFileChange, replaceText = 'Klik untuk mengganti file' }) {
     return (
         <div className="relative">
             <input
@@ -69,7 +69,7 @@ function UploadBox({ id, title, description, fileName, onFileChange }) {
                 </div>
                 <div className="min-w-0">
                     <p className="text-[11px] font-bold text-slate-700 truncate">{fileName || title}</p>
-                    <p className="text-[9.5px] text-slate-400 truncate">{fileName ? 'Klik untuk mengganti file' : description}</p>
+                    <p className="text-[9.5px] text-slate-400 truncate">{fileName ? replaceText : description}</p>
                 </div>
             </label>
         </div>
@@ -77,7 +77,7 @@ function UploadBox({ id, title, description, fileName, onFileChange }) {
 }
 
 export default function BookingCreate({ existingBookings = [], preselectedRoomId = null, minDate = null }) {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
     const { auth } = usePage().props;
     const user = auth?.user;
 
@@ -105,6 +105,17 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
     };
 
     const selectedRoom = rooms.find((room) => room.id === Number(form.roomId));
+    const formatFormDate = (isoDate) => {
+        if (!isoDate) {
+            return '-';
+        }
+
+        return new Date(`${isoDate}T00:00:00`).toLocaleDateString(lang === 'en' ? 'en-US' : 'id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+    };
 
     const conflict = useMemo(() => {
         if (!form.date || !form.start || !form.end) {
@@ -248,13 +259,13 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 <select value={form.roomId} onChange={update('roomId')} className={selectClass}>
                                     {rooms.map((room) => (
                                         <option key={room.id} value={room.id}>
-                                            {room.name} • {room.capacity} orang
+                                            {room.name} • {room.capacity} {t('common.people', 'orang')}
                                         </option>
                                     ))}
                                 </select>
                             </Field>
 
-                            <Field label="Tanggal kegiatan">
+                            <Field label={t('booking.event_date', 'Tanggal kegiatan')}>
                                 <input
                                     type="date"
                                     min={minDate || new Date().toISOString().split('T')[0]}
@@ -266,21 +277,21 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             </Field>
 
                             <div className="grid grid-cols-2 gap-3">
-                                <Field label="Mulai">
+                                <Field label={t('booking.start', 'Mulai')}>
                                     <input type="time" value={form.start} onChange={update('start')} className={inputClass} required />
                                 </Field>
-                                <Field label="Selesai">
+                                <Field label={t('booking.end', 'Selesai')}>
                                     <input type="time" value={form.end} onChange={update('end')} className={inputClass} required />
                                 </Field>
                             </div>
 
-                            <Field label="Catatan kebutuhan ruangan" className="sm:col-span-2">
+                            <Field label={t('booking.room_notes', 'Catatan kebutuhan ruangan')} className="sm:col-span-2">
                                 <textarea
                                     rows={3}
                                     value={form.notes}
                                     onChange={update('notes')}
                                     className={`${inputClass} resize-none`}
-                                    placeholder="Contoh: butuh 2 proyektor, sound system, dan meja registrasi."
+                                    placeholder={t('booking.room_notes_ph', 'Contoh: butuh 2 proyektor, sound system, dan meja registrasi.')}
                                 />
                             </Field>
                         </div>
@@ -289,10 +300,12 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             <div className="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5">
                                 <Icon name="warning" className="w-4 h-4 text-rose-500 mt-0.5 shrink-0" />
                                 <div>
-                                    <p className="text-[11px] font-bold text-rose-700">Jadwal bentrok dengan pengajuan lain</p>
+                                    <p className="text-[11px] font-bold text-rose-700">{t('booking.conflict_title', 'Jadwal bentrok dengan pengajuan lain')}</p>
                                     <p className="text-[10px] text-rose-600 mt-0.5 leading-relaxed">
-                                        {conflict.event} ({conflict.time}) sudah memakai {conflict.room}. Pilih slot atau
-                                        ruangan lain.
+                                        {t('booking.conflict_desc', ':event (:time) sudah memakai :room. Pilih slot atau ruangan lain.')
+                                            .replace(':event', conflict.event)
+                                            .replace(':time', conflict.time)
+                                            .replace(':room', conflict.room)}
                                     </p>
                                 </div>
                             </div>
@@ -317,6 +330,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 description={t('booking.doc_proposal_desc', 'Wajib • PDF maks. 5 MB')}
                                 fileName={proposalFile}
                                 onFileChange={setProposalFile}
+                                replaceText={t('booking.replace_file', 'Klik untuk mengganti file')}
                             />
                             <UploadBox
                                 id="letter"
@@ -324,6 +338,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 description={t('booking.doc_letter_desc', 'Wajib • sudah ditandatangani')}
                                 fileName={letterFile}
                                 onFileChange={setLetterFile}
+                                replaceText={t('booking.replace_file', 'Klik untuk mengganti file')}
                             />
                         </div>
 
@@ -335,8 +350,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/30"
                             />
                             <span className="text-[10px] text-slate-500 leading-relaxed">
-                                Saya menyatakan data dan dokumen yang diunggah benar, serta menyetujui tata tertib
-                                penggunaan ruangan fakultas.
+                                {t('booking.agreed_label', 'Saya menyatakan data dan dokumen yang diunggah benar, serta menyetujui tata tertib penggunaan ruangan fakultas.')}
                             </span>
                         </label>
                     </section>
@@ -353,12 +367,12 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             </div>
                             <div className="flex items-start justify-between gap-3">
                                 <span className="text-[10px] font-medium text-slate-400">{t('common.date', 'Tanggal')}</span>
-                                <span className="text-[10.5px] font-bold text-slate-700">{formatDate(form.date)}</span>
+                                <span className="text-[10.5px] font-bold text-slate-700">{formatDate(form.date, lang)}</span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
                                 <span className="text-[10px] font-medium text-slate-400">{t('common.time', 'Waktu')}</span>
                                 <span className="text-[10.5px] font-bold text-slate-700">
-                                    {form.start} - {form.end} ({duration > 0 ? duration : 0} jam)
+                                    {form.start} - {form.end} ({duration > 0 ? duration : 0} {t('common.hours', 'jam')})
                                 </span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
@@ -366,9 +380,9 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 <span className="text-[10.5px] font-bold text-slate-700">{form.participants} {t('common.participants', 'peserta')}</span>
                             </div>
                             <div className="flex items-start justify-between gap-3">
-                                <span className="text-[10px] font-medium text-slate-400">Dokumen</span>
+                                <span className="text-[10px] font-medium text-slate-400">{t('booking.documents_label', 'Dokumen')}</span>
                                 <span className="text-[10.5px] font-bold text-slate-700">
-                                    {(proposalFile ? 1 : 0) + (letterFile ? 1 : 0)} dari 2
+                                    {(proposalFile ? 1 : 0) + (letterFile ? 1 : 0)} {t('booking.from_two_docs', 'dari 2')}
                                 </span>
                             </div>
                         </div>
@@ -394,7 +408,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                         conflict ? 'text-rose-700' : isValidDuration ? 'text-emerald-800' : 'text-amber-700'
                                     }`}
                                 >
-                                    {conflict ? 'Slot tidak tersedia' : isValidDuration ? 'Slot tersedia' : 'Periksa jam kegiatan'}
+                                    {conflict ? t('booking.slot_unavailable', 'Slot tidak tersedia') : isValidDuration ? t('booking.slot_available', 'Slot tersedia') : t('booking.check_hours', 'Periksa jam kegiatan')}
                                 </p>
                                 <p
                                     className={`text-[9.5px] mt-0.5 leading-snug ${
@@ -402,10 +416,10 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                     }`}
                                 >
                                     {conflict
-                                        ? 'Pilih waktu atau ruangan lain sebelum mengirim.'
+                                        ? t('booking.conflict_note', 'Pilih waktu atau ruangan lain sebelum mengirim.')
                                         : isValidDuration
-                                          ? 'Tidak ada bentrok dengan jadwal yang sudah disetujui.'
-                                          : 'Jam selesai harus lebih besar dari jam mulai.'}
+                                          ? t('booking.available_note', 'Tidak ada bentrok dengan jadwal yang sudah disetujui.')
+                                          : t('booking.invalid_duration_note', 'Jam selesai harus lebih besar dari jam mulai.')}
                                 </p>
                             </div>
                         </div>
@@ -419,23 +433,23 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             {loading ? t('booking.submitting', 'Mengirim...') : t('booking.submit', 'Kirim Pengajuan')}
                         </button>
                         <p className="text-[9px] text-slate-400 text-center mt-2">
-                            Dengan mengirim, pengajuan masuk ke tahap verifikasi admin.
+                            {t('booking.submission_hint', 'Dengan mengirim, pengajuan masuk ke tahap verifikasi admin.')}
                         </p>
                     </section>
 
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-bold text-slate-900">Alur Persetujuan</h3>
+                            <h3 className="text-sm font-bold text-slate-900">{t('booking.flow_title', 'Alur Persetujuan')}</h3>
                             <span className="text-[9px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
-                                4 tahap
+                                {t('booking.four_stages', '4 tahap')}
                             </span>
                         </div>
                         <ApprovalStepper stage="submitted" compact />
                         <div className="mt-4 space-y-2">
                             {[
-                                { icon: 'clipboard', text: 'Admin memverifikasi dokumen & jadwal' },
-                                { icon: 'pen', text: 'Pimpinan menandatangani izin' },
-                                { icon: 'download', text: 'Surat izin dapat diunduh' },
+                                { icon: 'clipboard', text: t('booking.flow_step1', 'Admin memverifikasi dokumen & jadwal') },
+                                { icon: 'pen', text: t('booking.flow_step2', 'Pimpinan menandatangani izin') },
+                                { icon: 'check', text: t('booking.flow_step3', 'Izin resmi disetujui') },
                             ].map((step) => (
                                 <div key={step.text} className="flex items-center gap-2 text-[10px] text-slate-500">
                                     <Icon name={step.icon} className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -454,7 +468,7 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                             type="button"
                             onClick={() => setSubmitted(null)}
                             className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:bg-slate-100"
-                            aria-label="Tutup"
+                            aria-label={t('common.close', 'Tutup')}
                         >
                             <Icon name="x" className="w-4 h-4" />
                         </button>
@@ -462,23 +476,22 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                         <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
                             <Icon name="check" className="w-8 h-8" />
                         </div>
-                        <h3 className="text-lg font-extrabold text-slate-900 mt-4">Pengajuan berhasil dikirim!</h3>
+                        <h3 className="text-lg font-extrabold text-slate-900 mt-4">{t('booking.submitted_success', 'Pengajuan berhasil dikirim!')}</h3>
                         <p className="text-[11px] text-slate-500 leading-relaxed mt-1.5">
-                            Pengajuan <span className="font-bold text-slate-700">{submitted.id}</span> sudah masuk ke
-                            tahap verifikasi admin fakultas.
+                            {t('booking.submitted_success_sub', 'Pengajuan :id sudah masuk ke tahap verifikasi admin fakultas.').replace(':id', submitted.id)}
                         </p>
 
                         <div className="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left space-y-2">
                             <div className="flex justify-between gap-3">
-                                <span className="text-[10px] text-slate-400">Kegiatan</span>
+                                <span className="text-[10px] text-slate-400">{t('booking.event_name', 'Kegiatan')}</span>
                                 <span className="text-[10px] font-bold text-slate-700 text-right">{submitted.event}</span>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <span className="text-[10px] text-slate-400">Ruangan</span>
+                                <span className="text-[10px] text-slate-400">{t('dash.table_room', 'Ruangan')}</span>
                                 <span className="text-[10px] font-bold text-slate-700 text-right">{submitted.room}</span>
                             </div>
                             <div className="flex justify-between gap-3">
-                                <span className="text-[10px] text-slate-400">Jadwal</span>
+                                <span className="text-[10px] text-slate-400">{t('dash.table_date', 'Jadwal')}</span>
                                 <span className="text-[10px] font-bold text-slate-700 text-right">
                                     {submitted.date} • {submitted.time}
                                 </span>
@@ -490,14 +503,14 @@ export default function BookingCreate({ existingBookings = [], preselectedRoomId
                                 href="/permits"
                                 className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-600 text-white text-[11px] font-bold hover:bg-blue-700 transition-colors"
                             >
-                                Lacak Izin
+                                {t('booking.track_permit', 'Lacak Izin')}
                                 <Icon name="arrowRight" className="w-3.5 h-3.5" />
                             </a>
                             <a
                                 href="/dashboard"
                                 className="flex-1 inline-flex items-center justify-center py-2.5 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-colors"
                             >
-                                Ke Dashboard
+                                {t('booking.to_dashboard', 'Ke Dashboard')}
                             </a>
                         </div>
                     </div>

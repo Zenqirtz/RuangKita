@@ -6,8 +6,10 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function ForgotPassword({ status }) {
+    const { t } = useLanguage();
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
@@ -20,14 +22,14 @@ export default function ForgotPassword({ status }) {
 
     return (
         <GuestLayout>
-            <Head title="Lupa Kata Sandi" />
+            <Head title={t('auth.forgot_password_title', 'Lupa Kata Sandi')} />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                    Lupa Kata Sandi
+                    {t('auth.forgot_password_title', 'Lupa Kata Sandi')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                    Masukkan email akun Anda. Kami akan mengirimkan tautan reset kata sandi jika email terdaftar.
+                    {t('auth.forgot_password_desc', 'Masukkan email akun Anda. Kami akan mengirimkan tautan reset kata sandi jika email terdaftar.')}
                 </p>
             </div>
 
@@ -39,7 +41,7 @@ export default function ForgotPassword({ status }) {
 
             <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <InputLabel htmlFor="email" value="Email Terdaftar" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="email" value={t('auth.registered_email_label', 'Email Terdaftar')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -51,7 +53,7 @@ export default function ForgotPassword({ status }) {
                             name="email"
                             value={data.email}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="nama@student.ub.ac.id atau email admin"
+                            placeholder={t('auth.registered_email_placeholder', 'nama@student.ub.ac.id atau email admin')}
                             isFocused={true}
                             onChange={(e) => setData('email', e.target.value)}
                             required
@@ -66,7 +68,7 @@ export default function ForgotPassword({ status }) {
                         className="w-full justify-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all"
                         disabled={processing}
                     >
-                        Kirim Tautan Reset Sandi
+                        {t('auth.send_reset_link', 'Kirim Tautan Reset Sandi')}
                     </PrimaryButton>
                 </div>
             </form>
@@ -76,7 +78,7 @@ export default function ForgotPassword({ status }) {
                     href={route('login')}
                     className="text-xs font-bold text-blue-600 hover:text-blue-700"
                 >
-                    Kembali ke Halaman Masuk
+                    {t('auth.back_to_login', 'Kembali ke Halaman Masuk')}
                 </Link>
             </div>
         </GuestLayout>

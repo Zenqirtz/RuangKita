@@ -14,13 +14,13 @@ export default function History({ history = [] }) {
             <div>
                 <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{t('nav.history', 'Riwayat Peminjaman')}</h1>
                 <p className="text-xs text-slate-400 mt-1">
-                    Arsip peminjaman ruangan yang telah selesai diverifikasi atau diproses.
+                    {t('history.subtitle', 'Arsip peminjaman ruangan yang telah selesai diverifikasi atau diproses.')}
                 </p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                 {[
-                    { label: 'Total Arsip', value: history.length, unit: 'kegiatan' },
+                    { label: t('history.total', 'Total Arsip'), value: history.length, unit: t('history.unit', 'kegiatan') },
                     { label: t('stage.approved', 'Disetujui'), value: approvedCount, unit: lang === 'en' ? 'permits' : 'izin' },
                     { label: t('stage.rejected', 'Ditolak'), value: rejectedCount, unit: lang === 'en' ? 'files' : 'berkas' },
                 ].map((stat) => (
@@ -34,7 +34,7 @@ export default function History({ history = [] }) {
 
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                    <h2 className="text-sm font-extrabold text-slate-900">Daftar Peminjaman Selesai</h2>
+                    <h2 className="text-sm font-extrabold text-slate-900">{t('history.title', 'Daftar Peminjaman Selesai')}</h2>
                 </div>
 
                 {history.length === 0 ? (
@@ -42,9 +42,9 @@ export default function History({ history = [] }) {
                         <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-300 flex items-center justify-center mb-3">
                             <Icon name="clock" className="w-7 h-7" />
                         </div>
-                        <p className="text-sm font-bold text-slate-600">Belum ada riwayat</p>
+                        <p className="text-sm font-bold text-slate-600">{t('history.empty', 'Belum ada riwayat')}</p>
                         <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
-                            Pengajuan yang sudah disetujui atau ditolak akan otomatis diarsipkan di sini.
+                            {t('history.empty_desc', 'Pengajuan yang sudah disetujui atau ditolak akan otomatis diarsipkan di sini.')}
                         </p>
                     </div>
                 ) : (

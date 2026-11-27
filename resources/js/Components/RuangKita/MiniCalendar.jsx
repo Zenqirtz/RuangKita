@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useLanguage } from '@/Context/LanguageContext';
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const WEEKDAYS = { en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], id: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] };
 
 function buildCells(year, month) {
     const firstDay = new Date(year, month, 1);
@@ -70,7 +70,7 @@ export default function MiniCalendar({
 
             {/* Weekdays and Dates Grid */}
             <div className="grid grid-cols-7 gap-y-1">
-                {WEEKDAYS.map((day) => (
+                {WEEKDAYS[lang].map((day) => (
                     <div key={day} className="text-[10px] font-semibold text-slate-400 text-center py-1">
                         {day}
                     </div>
@@ -112,10 +112,10 @@ export default function MiniCalendar({
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 text-[10px] font-medium text-slate-500">
                 <div className="flex items-center gap-3.5">
                     <span className="inline-flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Hari ini
+                        <span className="w-2 h-2 rounded-full bg-blue-500" /> {t('common.today', 'Hari ini')}
                     </span>
                     <span className="inline-flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-rose-400" /> Ada pengajuan
+                        <span className="w-2 h-2 rounded-full bg-rose-400" /> {t('common.booking_marked', 'Ada pengajuan')}
                     </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -123,7 +123,7 @@ export default function MiniCalendar({
                         type="button"
                         onClick={handlePrevMonth}
                         className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                        aria-label="Bulan sebelumnya"
+                        aria-label={t('common.previous_month', 'Bulan sebelumnya')}
                     >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -133,7 +133,7 @@ export default function MiniCalendar({
                         type="button"
                         onClick={handleNextMonth}
                         className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                        aria-label="Bulan berikutnya"
+                        aria-label={t('common.next_month', 'Bulan berikutnya')}
                     >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="m9 18 6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />

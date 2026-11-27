@@ -47,30 +47,30 @@ export default function PermitShow({ permit: serverPermit = {} }) {
     const timelineItems = permit.histories?.length > 0
         ? permit.histories.map((h) => ({
             title: h.action === 'approved'
-                ? 'Pengajuan Disetujui'
+                ? t('permit_detail.hist_approved', 'Pengajuan Disetujui')
                 : h.action === 'revision_requested'
-                    ? 'Catatan Revisi Diterbitkan'
+                    ? t('permit_detail.hist_revision', 'Catatan Revisi Diterbitkan')
                     : h.action === 'rejected'
-                        ? 'Pengajuan Ditolak'
-                        : 'Verifikasi Lolos',
+                        ? t('permit_detail.hist_rejected', 'Pengajuan Ditolak')
+                        : t('permit_detail.hist_verified', 'Verifikasi Lolos'),
             actor: h.actor,
             time: h.time,
             state: 'done',
             notes: h.notes,
         }))
         : (permit.timeline ?? [
-            { title: 'Pengajuan Dikirim', actor: permit.pic ?? 'Ormawa', time: permit.submittedAt ?? '1 hari lalu', state: 'done' },
+            { title: t('permit_detail.hist_submitted', 'Pengajuan Dikirim'), actor: permit.pic ?? 'Ormawa', time: permit.submittedAt ?? '1 hari lalu', state: 'done' },
         ]);
 
     return (
-        <RuangKitaLayout activeTab="permits" title="Detail Pengajuan">
+        <RuangKitaLayout activeTab="permits" title={t('nav.permitDetail', 'Detail Pengajuan')}>
             <div className="flex items-center justify-between gap-3">
                 <a
                     href="/permits"
                     className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-blue-600 transition-colors"
                 >
                     <Icon name="arrowLeft" className="w-3.5 h-3.5" />
-                    Kembali ke Tracking Izin
+                    {t('permit_detail.back', 'Kembali ke Tracking Izin')}
                 </a>
 
             </div>
@@ -101,17 +101,6 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                        {isApproved && (
-                            <a
-                                href={route('permits.letter', permit.id)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white text-[10.5px] font-bold hover:bg-blue-700 transition-colors shadow-sm"
-                            >
-                                <Icon name="download" className="w-3.5 h-3.5" />
-                                {t('common.download_permit', 'Unduh Surat Izin')}
-                            </a>
-                        )}
                         <a
                             href="/guidelines"
                             className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 text-[10.5px] font-bold text-slate-600 hover:bg-slate-50 transition-colors"
@@ -129,14 +118,14 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                             <div>
                                 <h4 className="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
                                     <Icon name="fileCheck" className="w-4 h-4 text-blue-600" />
-                                    Tindakan Verifikasi Berkas (Admin Kemahasiswaan)
+                                    {t('permit_detail.admin_panel_title', 'Tindakan Verifikasi Berkas (Admin Kemahasiswaan)')}
                                 </h4>
                                 <p className="text-[10px] text-slate-400 mt-0.5">
-                                    Putuskan kelayakan peminjaman ruangan dan kelengkapan dokumen ormawa.
+                                    {t('permit_detail.admin_panel_sub', 'Putuskan kelayakan peminjaman ruangan dan kelengkapan dokumen ormawa.')}
                                 </p>
                             </div>
                             <span className="text-[10px] font-bold text-slate-500">
-                                Status saat ini: <span className="uppercase text-blue-600 font-black">{permit.stage}</span>
+                                {t('permit_detail.current_status', 'Status saat ini:')} <span className="uppercase text-blue-600 font-black">{permit.stage}</span>
                             </span>
                         </div>
 
@@ -147,7 +136,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/20 active:scale-[0.98] transition-all"
                             >
                                 <Icon name="check" className="w-4 h-4" />
-                                {permit.stage === 'leadership' ? 'Setujui Final' : 'Loloskan Verifikasi Admin'}
+                                {permit.stage === 'leadership' ? t('permit_detail.final_approve', 'Setujui Final') : t('permit_detail.pass_admin', 'Loloskan Verifikasi Admin')}
                             </button>
 
                             <button
@@ -156,7 +145,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm shadow-amber-500/20 active:scale-[0.98] transition-all"
                             >
                                 <Icon name="alert" className="w-4 h-4" />
-                                Minta Revisi Berkas
+                                {t('permit_detail.request_revision', 'Minta Revisi Berkas')}
                             </button>
 
                             <button
@@ -165,7 +154,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shadow-sm shadow-rose-500/20 active:scale-[0.98] transition-all"
                             >
                                 <Icon name="x" className="w-4 h-4" />
-                                Tolak Pengajuan
+                                {t('permit_detail.reject_permit', 'Tolak Pengajuan')}
                             </button>
                         </div>
                     </div>
@@ -178,13 +167,13 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
                         <div className="flex items-center justify-between gap-3 mb-6">
                             <div>
-                                <h3 className="text-sm font-bold text-slate-900">Progres Persetujuan</h3>
+                                <h3 className="text-sm font-bold text-slate-900">{t('permit_detail.progress_title', 'Progres Persetujuan')}</h3>
                                 <p className="text-[10px] text-slate-400 mt-0.5">
-                                    Status diperbarui otomatis setiap ada tindakan dari petugas.
+                                    {t('permit_detail.progress_sub', 'Status diperbarui otomatis setiap ada tindakan dari petugas.')}
                                 </p>
                             </div>
                             <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md whitespace-nowrap">
-                                Tahap {permit.stage === 'revision' ? 2 : Math.max(approvalStages.findIndex((s) => s.key === permit.stage), 0) + 1} / 4
+                                {t('stepper.stage', 'Tahap')} {permit.stage === 'revision' ? 2 : Math.max(approvalStages.findIndex((s) => s.key === permit.stage), 0) + 1} / 4
                             </span>
                         </div>
 
@@ -211,14 +200,14 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                         isRevision || isRejected ? 'text-rose-700' : isApproved ? 'text-emerald-800' : 'text-blue-800'
                                     }`}
                                 >
-                                    {isRevision ? 'Pengajuan memerlukan revisi' : isRejected ? 'Pengajuan ditolak' : isApproved ? 'Izin telah disetujui' : stageInfo?.title ?? 'Sedang diproses'}
+                                    {isRevision ? t('permit_detail.state_revision', 'Pengajuan memerlukan revisi') : isRejected ? t('permit_detail.state_rejected', 'Pengajuan ditolak') : isApproved ? t('permit_detail.state_approved', 'Izin telah disetujui') : stageInfo?.title ?? 'Sedang diproses'}
                                 </p>
                                 <p
                                     className={`text-[10px] leading-relaxed mt-0.5 ${
                                         isRevision || isRejected ? 'text-rose-600' : isApproved ? 'text-emerald-700' : 'text-blue-700'
                                     }`}
                                 >
-                                    {permit.adminNotes || (isApproved ? 'Surat izin resmi sudah dapat diunduh.' : 'Berkas sedang dalam antrean verifikasi.')}
+                                    {permit.adminNotes || (isApproved ? t('permit_detail.letter_ready', 'Surat izin resmi sudah dapat diunduh.') : t('permit_detail.queued_for_verif', 'Berkas sedang dalam antrean verifikasi.'))}
                                 </p>
                             </div>
                         </div>
@@ -226,7 +215,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
 
                     {/* Timeline history */}
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
-                        <h3 className="text-sm font-bold text-slate-900">Riwayat Proses & Catatan Verifikator</h3>
+                        <h3 className="text-sm font-bold text-slate-900">{t('permit_detail.history_title', 'Riwayat Proses & Catatan Verifikator')}</h3>
                         <div className="mt-5 space-y-4">
                             {timelineItems.map((item, index) => (
                                 <div key={index} className="flex gap-3 pb-4 border-b border-slate-50 last:border-0 last:pb-0">
@@ -253,14 +242,14 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                     {/* Supporting documents */}
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-bold text-slate-900">Dokumen Pendukung</h3>
-                            <span className="text-[9px] font-bold text-slate-400">2 berkas wajib</span>
+                            <h3 className="text-sm font-bold text-slate-900">{t('permit_detail.docs_title', 'Dokumen Pendukung')}</h3>
+                            <span className="text-[9px] font-bold text-slate-400">{t('permit_detail.docs_count', '2 berkas wajib')}</span>
                         </div>
 
                         <div className="space-y-2.5">
                             {[
-                                { name: permit.proposalName || 'Proposal_Kegiatan.pdf', desc: 'Proposal Kegiatan • Format PDF' },
-                                { name: permit.letterName || 'Surat_Permohonan.pdf', desc: 'Surat Permohonan Ruangan • Ditandatangani' },
+                                { name: permit.proposalName || 'Proposal_Kegiatan.pdf', desc: t('permit_detail.proposal_desc', 'Proposal Kegiatan • Format PDF') },
+                                { name: permit.letterName || 'Surat_Permohonan.pdf', desc: t('permit_detail.letter_desc', 'Surat Permohonan Ruangan • Ditandatangani') },
                             ].map((doc) => (
                                 <div
                                     key={doc.name}
@@ -274,7 +263,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                         <p className="text-[9px] text-slate-400 mt-0.5">{doc.desc}</p>
                                     </div>
                                     <span className="text-[9.5px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
-                                        Tersedia
+                                        {t('status.available', 'Tersedia')}
                                     </span>
                                 </div>
                             ))}
@@ -285,17 +274,17 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                 {/* Right side info */}
                 <aside className="space-y-5">
                     <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                        <h3 className="text-sm font-bold text-slate-900">Detail Kegiatan</h3>
+                        <h3 className="text-sm font-bold text-slate-900">{t('permit_detail.event_detail', 'Detail Kegiatan')}</h3>
 
                         <div className="mt-4 space-y-3.5">
                             {[
-                                { icon: 'door', label: 'Ruangan', value: permit.room },
-                                { icon: 'calendar', label: 'Tanggal', value: permit.date },
-                                { icon: 'clock', label: 'Waktu', value: `${permit.time} WIB` },
-                                { icon: 'users', label: 'Peserta', value: `${permit.participants || 40} orang` },
-                                { icon: 'building', label: 'Ormawa', value: permit.ormawa },
-                                { icon: 'user', label: 'Penanggung Jawab', value: permit.pic },
-                                { icon: 'phone', label: 'Kontak', value: permit.phone || '-' },
+                                { icon: 'door', label: t('dash.table_room', 'Ruangan'), value: permit.room },
+                                { icon: 'calendar', label: t('common.date', 'Tanggal'), value: permit.date },
+                                { icon: 'clock', label: t('common.time', 'Waktu'), value: `${permit.time} WIB` },
+                                { icon: 'users', label: t('common.participants', 'Peserta'), value: `${permit.participants || 40} ${t('common.participants', 'peserta')}` },
+                                { icon: 'building', label: t('permit_detail.ormawa', 'Ormawa'), value: permit.ormawa },
+                                { icon: 'user', label: t('permit_detail.pic', 'Penanggung Jawab'), value: permit.pic },
+                                { icon: 'phone', label: t('permit_detail.contact', 'Kontak'), value: permit.phone || '-' },
                             ].map((detail) => (
                                 <div key={detail.label} className="flex items-start gap-2.5">
                                     <div className="w-7 h-7 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
@@ -314,7 +303,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
 
                     {permit.notes && (
                         <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-                            <h3 className="text-sm font-bold text-slate-900">Catatan Kebutuhan Ruangan</h3>
+                            <h3 className="text-sm font-bold text-slate-900">{t('permit_detail.room_notes', 'Catatan Kebutuhan Ruangan')}</h3>
                             <div className="mt-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                                 <p className="text-[10.5px] text-slate-600 leading-relaxed">{permit.notes}</p>
                             </div>
@@ -353,10 +342,10 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                             <div>
                                 <h3 className="text-base font-extrabold text-slate-900">
                                     {activeModal === 'approve'
-                                        ? 'Setujui Pengajuan'
+                                        ? t('permit_detail.modal_approve_title', 'Setujui Pengajuan')
                                         : activeModal === 'revision'
-                                            ? 'Minta Revisi Dokumen'
-                                            : 'Tolak Pengajuan'}
+                                            ? t('permit_detail.modal_revision_title', 'Minta Revisi Dokumen')
+                                            : t('permit_detail.modal_reject_title', 'Tolak Pengajuan')}
                                 </h3>
                                 <p className="text-[10px] text-slate-400 font-mono mt-0.5">{permit.id}</p>
                             </div>
@@ -365,7 +354,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                         <form onSubmit={submitReview} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                                    Catatan Verifikator untuk Ormawa
+                                    {t('permit_detail.modal_note_label', 'Catatan Verifikator untuk Ormawa')}
                                 </label>
                                 <textarea
                                     rows={3}
@@ -373,10 +362,10 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                     onChange={(e) => setData('notes', e.target.value)}
                                     placeholder={
                                         activeModal === 'approve'
-                                            ? 'Berkas lengkap dan sesuai ketentuan.'
+                                            ? t('permit_detail.modal_approve_ph', 'Berkas lengkap dan sesuai ketentuan.')
                                             : activeModal === 'revision'
-                                                ? 'Tuliskan poin yang wajib diperbaiki ormawa...'
-                                                : 'Alasan penolakan pengajuan...'
+                                                ? t('permit_detail.modal_revision_ph', 'Tuliskan poin yang wajib diperbaiki ormawa...')
+                                                : t('permit_detail.modal_reject_ph', 'Alasan penolakan pengajuan...')
                                     }
                                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 resize-none"
                                 />
@@ -388,7 +377,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                     onClick={() => setActiveModal(null)}
                                     className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
                                 >
-                                    Batal
+                                    {t('common.cancel', 'Batal')}
                                 </button>
                                 <button
                                     type="submit"
@@ -401,7 +390,7 @@ export default function PermitShow({ permit: serverPermit = {} }) {
                                                 : 'bg-rose-500 hover:bg-rose-600 shadow-rose-500/20'
                                     }`}
                                 >
-                                    Konfirmasi Tindakan
+                                    {t('permit_detail.modal_confirm', 'Konfirmasi Tindakan')}
                                 </button>
                             </div>
                         </form>

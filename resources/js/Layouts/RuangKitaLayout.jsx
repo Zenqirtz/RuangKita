@@ -62,8 +62,8 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
     };
 
     const user = auth?.user;
-    const userName = user?.name ?? 'Tamu Civitas UB';
-    const userEmail = user?.email ?? 'Belum masuk akun';
+    const userName = user?.name ?? t('nav.guest_civitas', 'Tamu Civitas UB');
+    const userEmail = user?.email ?? t('nav.not_logged_in', 'Belum masuk akun');
     const initials = user?.name
         ? user.name
             .split(' ')
@@ -98,8 +98,8 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                     type="button"
                     onClick={toggleCollapsed}
                     className="hidden lg:flex absolute -right-3.5 top-7 z-50 w-7 h-7 rounded-full bg-white border border-slate-200/90 shadow-md items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-400 hover:scale-105 transition-all"
-                    title={isCollapsed ? 'Perluas Sidebar' : 'Kecilkan Sidebar'}
-                    aria-label="Toggle sidebar collapse"
+                    title={isCollapsed ? t('common.expand_sidebar', 'Perluas Sidebar') : t('common.collapse_sidebar', 'Kecilkan Sidebar')}
+                    aria-label={t('common.toggle_sidebar', 'Toggle sidebar')}
                 >
                     <Icon name={isCollapsed ? 'chevronRight' : 'chevronLeft'} className="w-3.5 h-3.5" />
                 </button>
@@ -163,7 +163,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                                 className={`absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full ${
                                                     isBadgeAlert ? 'bg-rose-500 ring-2 ring-white' : 'bg-blue-500 ring-2 ring-white'
                                                 }`}
-                                                title={`${count} notifikasi`}
+                                                title={`${count} ${t('nav.notifications', 'notifikasi')}`}
                                             />
                                         ) : (
                                             <span
@@ -224,7 +224,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                             type="button"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 lg:hidden"
-                            aria-label="Buka menu"
+                            aria-label={t('nav.open_menu', 'Buka menu')}
                         >
                             <Icon name="menu" className="w-5 h-5" />
                         </button>
@@ -280,7 +280,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                                 <div className="py-8 px-4 text-center">
                                                     <p className="text-xs font-semibold text-slate-600">{t('nav.no_notifications', 'Tidak ada notifikasi baru')}</p>
                                                     <p className="text-[10px] text-slate-400 mt-1">
-                                                        Pembaruan pengajuan izin akan muncul di sini.
+                                                        {t('common.notification_updates', 'Pembaruan pengajuan izin akan muncul di sini.')}
                                                     </p>
                                                 </div>
                                             ) : (
@@ -371,7 +371,7 @@ export default function RuangKitaLayout({ children, activeTab = 'dashboard', tit
                                             onClick={() => setProfileDropdownOpen(false)}
                                         >
                                             <Icon name="logout" className="w-4 h-4 text-rose-500" />
-                                            <span>Logout</span>
+                                            <span>{t('nav.logout', 'Keluar Akun')}</span>
                                         </Link>
                                     </div>
                                 </>

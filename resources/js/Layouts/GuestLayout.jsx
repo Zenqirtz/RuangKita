@@ -64,7 +64,7 @@ export default function GuestLayout({ children }) {
             </div>
 
             <div className="text-center text-[11px] text-slate-400 mt-5">
-                © 2026 RuangKita • Universitas Brawijaya. All rights reserved.
+                {t('guest.copyright', '© 2026 RuangKita • Universitas Brawijaya. All rights reserved.')}
             </div>
         </div>
     );

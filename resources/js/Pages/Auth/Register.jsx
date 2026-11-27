@@ -104,7 +104,7 @@ export default function Register() {
                             }`}
                             placeholder="nama.mahasiswa@student.ub.ac.id"
                             pattern=".+@student\.ub\.ac\.id"
-                            title="Pendaftaran wajib menggunakan email resmi @student.ub.ac.id"
+                            title={t('auth.email_domain_title', 'Pendaftaran wajib menggunakan email resmi @student.ub.ac.id')}
                             autoComplete="username"
                             onChange={(e) => setData('email', e.target.value)}
                             required
@@ -114,7 +114,7 @@ export default function Register() {
                     {data.email && !data.email.endsWith('@student.ub.ac.id') && (
                         <p className="mt-1 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
                             <Icon name="alert" className="w-3.5 h-3.5 shrink-0" />
-                            Email harus berakhiran @student.ub.ac.id (domain @gmail.com tidak diizinkan).
+                            {t('auth.email_domain_error', 'Email harus berakhiran @student.ub.ac.id (domain @gmail.com tidak diizinkan).')}
                         </p>
                     )}
 
@@ -134,7 +134,7 @@ export default function Register() {
                             name="password"
                             value={data.password}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="Minimal 8 karakter"
+                            placeholder={t('auth.password_placeholder', 'Minimal 8 karakter')}
                             autoComplete="new-password"
                             onChange={(e) => setData('password', e.target.value)}
                             required
@@ -161,7 +161,7 @@ export default function Register() {
                             name="password_confirmation"
                             value={data.password_confirmation}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="Ulangi kata sandi"
+                            placeholder={t('auth.password_confirmation_placeholder', 'Ulangi kata sandi')}
                             autoComplete="new-password"
                             onChange={(e) =>
                                 setData('password_confirmation', e.target.value)

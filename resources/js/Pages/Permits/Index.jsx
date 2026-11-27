@@ -293,17 +293,6 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
                                 <div className="flex items-center justify-between md:justify-end gap-2.5 md:w-64 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-50">
                                     <StatusBadge stage={permit.stage} />
 
-                                    {permit.stage === 'approved' && (
-                                        <a
-                                            href={`/permits/${permit.id}/letter`}
-                                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[10.5px] font-bold transition-colors"
-                                            title={t('permits.download_letter_title', 'Unduh Surat Izin Resmi')}
-                                        >
-                                            <Icon name="download" className="w-3.5 h-3.5" />
-                                            {t('permits.download_letter', 'Surat')}
-                                        </a>
-                                    )}
-
                                     <a
                                         href={`/permits/${permit.id}`}
                                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-[10.5px] font-bold text-slate-700 transition-colors"
@@ -341,7 +330,7 @@ export default function PermitsIndex({ permits = [], stats = {} }) {
             <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-start gap-3">
                 <Icon name="info" className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
                 <p className="text-[11px] text-blue-900 leading-relaxed">
-                    Setiap peminjaman diproses bertahap mulai dari verifikasi kelengkapan berkas oleh admin hingga tanda tangan surat izin oleh pimpinan. Notifikasi perubahan status akan muncul otomatis pada dashboard Anda.
+                    {t('permits.guidance_info', 'Setiap peminjaman diproses bertahap mulai dari verifikasi kelengkapan berkas oleh admin hingga tanda tangan surat izin oleh pimpinan. Notifikasi perubahan status akan muncul otomatis pada dashboard Anda.')}
                 </p>
             </div>
         </RuangKitaLayout>

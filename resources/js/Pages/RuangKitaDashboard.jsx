@@ -236,7 +236,7 @@ export default function RuangKitaDashboard({ recentPermits = [], stats = {} }) {
                             <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-100 flex items-start gap-2.5">
                                 <Icon name="shield" className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
                                 <p className="text-[10.5px] font-semibold text-blue-800 leading-snug">
-                                    Auto conflict check aktif. Mencegah double-booking saat ormawa submit berkas.
+                                    {t('dash.conflict_check', 'Pemeriksaan bentrok otomatis aktif. Mencegah pemesanan ganda saat ormawa mengirim berkas.')}
                                 </p>
                             </div>
                         </>

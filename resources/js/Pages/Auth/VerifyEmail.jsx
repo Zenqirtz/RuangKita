@@ -1,8 +1,11 @@
+import React from 'react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function VerifyEmail({ status }) {
+    const { t } = useLanguage();
     const { post, processing } = useForm({});
 
     const submit = (e) => {
@@ -13,35 +16,31 @@ export default function VerifyEmail({ status }) {
 
     return (
         <GuestLayout>
-            <Head title="Email Verification" />
+            <Head title={t('auth.verify_email_title', 'Verifikasi Email')} />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Thanks for signing up! Before getting started, could you verify
-                your email address by clicking on the link we just emailed to
-                you? If you didn't receive the email, we will gladly send you
-                another.
+            <div className="mb-4 text-sm text-slate-600 leading-relaxed">
+                {t('auth.verify_email_desc', 'Terima kasih telah mendaftar! Sebelum mulai, silakan verifikasi alamat email Anda dengan mengeklik tautan yang baru saja kami kirimkan. Jika tidak menerima email, kami akan mengirimkan yang baru.')}
             </div>
 
             {status === 'verification-link-sent' && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+                <div className="mb-4 text-xs font-semibold p-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    {t('auth.verification_link_sent', 'Tautan verifikasi baru telah dikirim ke alamat email yang Anda berikan saat pendaftaran.')}
                 </div>
             )}
 
             <form onSubmit={submit}>
                 <div className="mt-4 flex items-center justify-between">
-                    <PrimaryButton disabled={processing}>
-                        Resend Verification Email
+                    <PrimaryButton disabled={processing} className="rounded-xl py-2.5 px-4 text-xs font-bold">
+                        {t('auth.resend_verification', 'Kirim Ulang Email Verifikasi')}
                     </PrimaryButton>
 
                     <Link
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="rounded-md text-xs font-bold text-slate-500 underline hover:text-slate-800 focus:outline-none"
                     >
-                        Log Out
+                        {t('common.logout', 'Keluar Akun')}
                     </Link>
                 </div>
             </form>

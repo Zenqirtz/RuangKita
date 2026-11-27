@@ -6,8 +6,10 @@ import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import Icon from '@/Components/RuangKita/Icon';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useLanguage } from '@/Context/LanguageContext';
 
 export default function ResetPassword({ token, email }) {
+    const { t } = useLanguage();
     const { data, setData, post, processing, errors, reset } = useForm({
         token: token,
         email: email,
@@ -25,20 +27,20 @@ export default function ResetPassword({ token, email }) {
 
     return (
         <GuestLayout>
-            <Head title="Atur Ulang Kata Sandi" />
+            <Head title={t('auth.reset_password_title', 'Atur Kata Sandi Baru')} />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                    Atur Kata Sandi Baru
+                    {t('auth.reset_password_title', 'Atur Kata Sandi Baru')}
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                    Silakan masukkan kata sandi baru untuk akun Anda.
+                    {t('auth.reset_password_desc', 'Silakan masukkan kata sandi baru untuk akun Anda.')}
                 </p>
             </div>
 
             <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <InputLabel htmlFor="email" value="Email Akun" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="email" value={t('auth.account_email_label', 'Email Akun')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -59,7 +61,7 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="Kata Sandi Baru" className="text-xs font-bold text-slate-700" />
+                    <InputLabel htmlFor="password" value={t('auth.new_password_label', 'Kata Sandi Baru')} className="text-xs font-bold text-slate-700" />
 
                     <div className="relative mt-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -71,7 +73,7 @@ export default function ResetPassword({ token, email }) {
                             name="password"
                             value={data.password}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="Minimal 8 karakter"
+                            placeholder={t('auth.password_placeholder', 'Minimal 8 karakter')}
                             autoComplete="new-password"
                             isFocused={true}
                             onChange={(e) => setData('password', e.target.value)}
@@ -85,7 +87,7 @@ export default function ResetPassword({ token, email }) {
                 <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Konfirmasi Kata Sandi Baru"
+                        value={t('auth.confirm_new_password_label', 'Konfirmasi Kata Sandi Baru')}
                         className="text-xs font-bold text-slate-700"
                     />
 
@@ -99,7 +101,7 @@ export default function ResetPassword({ token, email }) {
                             name="password_confirmation"
                             value={data.password_confirmation}
                             className="pl-9 text-xs rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 block w-full py-2.5"
-                            placeholder="Ulangi kata sandi baru"
+                            placeholder={t('auth.confirm_new_password_placeholder', 'Ulangi kata sandi baru')}
                             autoComplete="new-password"
                             onChange={(e) =>
                                 setData('password_confirmation', e.target.value)
@@ -119,7 +121,7 @@ export default function ResetPassword({ token, email }) {
                         className="w-full justify-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all"
                         disabled={processing}
                     >
-                        Simpan Kata Sandi Baru
+                        {t('auth.save_new_password', 'Simpan Kata Sandi Baru')}
                     </PrimaryButton>
                 </div>
             </form>
@@ -129,7 +131,7 @@ export default function ResetPassword({ token, email }) {
                     href={route('login')}
                     className="text-xs font-bold text-blue-600 hover:text-blue-700"
                 >
-                    Kembali ke Halaman Masuk
+                    {t('auth.back_to_login', 'Kembali ke Halaman Masuk')}
                 </Link>
             </div>
         </GuestLayout>
