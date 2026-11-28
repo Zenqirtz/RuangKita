@@ -38,15 +38,21 @@ class HandleInertiaRequests extends Middleware
         $notifications = [];
 
         if (Schema::hasTable('permits')) {
+            $user = $request->user();
+            $scopeAll = $user?->canViewAllPermits() ?? false;
+
             $badgeCounts['tracking'] = Permit::query()
                 ->whereIn('stage', ['submitted', 'admin', 'leadership'])
+                ->when($user && ! $scopeAll, fn ($query) => $query->where('user_id', $user->id))
                 ->count();
 
             $badgeCounts['revisions'] = Permit::query()
                 ->where('stage', 'revision')
+                ->when($user && ! $scopeAll, fn ($query) => $query->where('user_id', $user->id))
                 ->count();
 
             $notifications = Permit::query()
+                ->when($user && ! $scopeAll, fn ($query) => $query->where('user_id', $user->id))
                 ->latest('updated_at')
                 ->take(5)
                 ->get()

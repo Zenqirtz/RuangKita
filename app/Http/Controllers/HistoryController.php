@@ -14,8 +14,12 @@ class HistoryController extends Controller
      */
     public function index(Request $request): Response
     {
+        $user = $request->user();
+        $scopeAll = $user->canViewAllPermits();
+
         $history = Permit::query()
             ->whereIn('stage', ['approved', 'rejected'])
+            ->when(! $scopeAll, fn ($query) => $query->where('user_id', $user->id))
             ->latest('updated_at')
             ->get()
             ->map(function (Permit $p) {

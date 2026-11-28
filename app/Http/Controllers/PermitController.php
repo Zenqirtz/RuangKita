@@ -16,7 +16,12 @@ class PermitController extends Controller
      */
     public function index(Request $request): Response
     {
-        $permits = Permit::query()
+        $user = $request->user();
+        $scopeAll = $user->canViewAllPermits();
+
+        $permitQuery = Permit::query()->when(! $scopeAll, fn ($query) => $query->where('user_id', $user->id));
+
+        $permits = (clone $permitQuery)
             ->latest('submitted_at')
             ->get()
             ->map(fn (Permit $p) => [
@@ -37,10 +42,10 @@ class PermitController extends Controller
                 'submittedAt' => $p->submitted_at?->diffForHumans() ?? 'baru saja',
             ]);
 
-        $activeCount = Permit::whereNotIn('stage', ['approved', 'rejected'])->count();
-        $approvedCount = Permit::where('stage', 'approved')->count();
-        $revisionCount = Permit::where('stage', 'revision')->count();
-        $totalCount = Permit::count();
+        $activeCount = (clone $permitQuery)->whereNotIn('stage', ['approved', 'rejected'])->count();
+        $approvedCount = (clone $permitQuery)->where('stage', 'approved')->count();
+        $revisionCount = (clone $permitQuery)->where('stage', 'revision')->count();
+        $totalCount = (clone $permitQuery)->count();
 
         return Inertia::render('Permits/Index', [
             'permits' => $permits,
@@ -56,15 +61,17 @@ class PermitController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $permitCode): Response
+    public function show(Request $request, string $permitCode): Response
     {
-        $permit = Permit::with('histories')
-            ->where('code', $permitCode)
-            ->first();
+        $user = $request->user();
 
-        if (! $permit) {
-            $permit = Permit::with('histories')->latest()->firstOrFail();
+        $permitQuery = Permit::with('histories')->where('code', $permitCode);
+
+        if (! $user->canViewAllPermits()) {
+            $permitQuery->where('user_id', $user->id);
         }
+
+        $permit = $permitQuery->firstOrFail();
 
         return Inertia::render('Permits/Show', [
             'permit' => [

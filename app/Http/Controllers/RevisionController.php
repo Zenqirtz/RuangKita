@@ -14,8 +14,12 @@ class RevisionController extends Controller
      */
     public function index(Request $request): Response
     {
+        $user = $request->user();
+        $scopeAll = $user->canViewAllPermits();
+
         $revisions = Permit::query()
             ->where('stage', 'revision')
+            ->when(! $scopeAll, fn ($query) => $query->where('user_id', $user->id))
             ->latest('updated_at')
             ->get()
             ->map(fn (Permit $p) => [

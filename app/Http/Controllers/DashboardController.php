@@ -14,7 +14,12 @@ class DashboardController extends Controller
      */
     public function index(Request $request): Response
     {
-        $recentPermits = Permit::query()
+        $user = $request->user();
+        $scopeAll = $user->canViewAllPermits();
+
+        $permitQuery = Permit::query()->when(! $scopeAll, fn ($query) => $query->where('user_id', $user->id));
+
+        $recentPermits = (clone $permitQuery)
             ->latest('submitted_at')
             ->take(5)
             ->get()
@@ -31,11 +36,11 @@ class DashboardController extends Controller
                 'submittedAt' => $p->submitted_at?->diffForHumans() ?? 'baru saja',
             ]);
 
-        $totalPermits = Permit::count();
-        $adminReviewCount = Permit::where('stage', 'admin')->count();
-        $leadershipCount = Permit::where('stage', 'leadership')->count();
-        $approvedCount = Permit::where('stage', 'approved')->count();
-        $revisionCount = Permit::where('stage', 'revision')->count();
+        $totalPermits = (clone $permitQuery)->count();
+        $adminReviewCount = (clone $permitQuery)->where('stage', 'admin')->count();
+        $leadershipCount = (clone $permitQuery)->where('stage', 'leadership')->count();
+        $approvedCount = (clone $permitQuery)->where('stage', 'approved')->count();
+        $revisionCount = (clone $permitQuery)->where('stage', 'revision')->count();
 
         // Calculate occupancy percentage based on approved permits
         $occupancyRate = $totalPermits > 0

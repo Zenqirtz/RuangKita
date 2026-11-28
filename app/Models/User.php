@@ -45,6 +45,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user can see every permit record (admin) or only their own.
+     */
+    public function canViewAllPermits(): bool
+    {
+        return $this->isAdmin();
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
